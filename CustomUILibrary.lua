@@ -72,6 +72,20 @@ local Themes = {
 		Section = Color3.fromRGB(10,10,10),
 		Button = Color3.fromRGB(20,20,20),
 	},
+	["Aurora"] = {
+		Background = Color3.fromRGB(25,0,40),
+		Accent = Color3.fromRGB(100,0,150),
+		Text = Color3.fromRGB(230,230,255),
+		Section = Color3.fromRGB(40,10,60),
+		Button = Color3.fromRGB(60,20,80),
+	},
+	["Nebula"] = {
+		Background = Color3.fromRGB(10,10,20),
+		Accent = Color3.fromRGB(150,0,150),
+		Text = Color3.fromRGB(200,200,255),
+		Section = Color3.fromRGB(20,20,40),
+		Button = Color3.fromRGB(30,30,50),
+	},
 }
 
 local CurrentTheme = Themes["Midnight"]
@@ -98,8 +112,8 @@ function Library:CreateWindow(config)
 	gui.Parent = PlayerGui
 
 	local main = Instance.new("Frame")
-	main.Size = UDim2.new(0,500,0,320)
-	main.Position = UDim2.new(0.5,-250,0.5,-160)
+	main.Size = UDim2.new(0, 500, 0, 320)
+	main.Position = UDim2.new(0.5, -250, 0.5, -160)
 	main.BackgroundColor3 = CurrentTheme.Background
 	main.BorderSizePixel = 0
 	main.Parent = gui
@@ -109,7 +123,7 @@ function Library:CreateWindow(config)
 
 	local title = Instance.new("TextLabel")
 	title.Text = config.Title or "Custom UI"
-	title.Size = UDim2.new(1,0,0,40)
+	title.Size = UDim2.new(1, 0, 0, 40)
 	title.BackgroundTransparency = 1
 	title.Font = Enum.Font.GothamBold
 	title.TextSize = 20
@@ -117,16 +131,16 @@ function Library:CreateWindow(config)
 	title.Parent = main
 
 	local tabHolder = Instance.new("Frame")
-	tabHolder.Size = UDim2.new(0,120,1,-40)
-	tabHolder.Position = UDim2.new(0,0,0,40)
+	tabHolder.Size = UDim2.new(0, 120, 1, -40)
+	tabHolder.Position = UDim2.new(0, 0, 0, 40)
 	tabHolder.BackgroundColor3 = CurrentTheme.Section
 	tabHolder.BorderSizePixel = 0
 	tabHolder.Parent = main
 	createUICorner(0).Parent = tabHolder
 
 	local contentHolder = Instance.new("Frame")
-	contentHolder.Size = UDim2.new(1,-120,1,-40)
-	contentHolder.Position = UDim2.new(0,120,0,40)
+	contentHolder.Size = UDim2.new(1, -120, 1, -40)
+	contentHolder.Position = UDim2.new(0, 120, 0, 40)
 	contentHolder.BackgroundColor3 = CurrentTheme.Background
 	contentHolder.BorderSizePixel = 0
 	contentHolder.Parent = main
@@ -136,7 +150,7 @@ function Library:CreateWindow(config)
 		tab.Sections = {}
 
 		local tabBtn = Instance.new("TextButton")
-		tabBtn.Size = UDim2.new(1,0,0,30)
+		tabBtn.Size = UDim2.new(1, 0, 0, 30)
 		tabBtn.BackgroundColor3 = CurrentTheme.Button
 		tabBtn.Text = name
 		tabBtn.TextColor3 = CurrentTheme.Text
@@ -146,13 +160,13 @@ function Library:CreateWindow(config)
 		createUICorner(6).Parent = tabBtn
 
 		local tabPage = Instance.new("Frame")
-		tabPage.Size = UDim2.new(1,0,1,0)
+		tabPage.Size = UDim2.new(1, 0, 1, 0)
 		tabPage.BackgroundTransparency = 1
 		tabPage.Visible = false
 		tabPage.Parent = contentHolder
 
 		local layout = Instance.new("UIListLayout")
-		layout.Padding = UDim.new(0,8)
+		layout.Padding = UDim.new(0, 8)
 		layout.SortOrder = Enum.SortOrder.LayoutOrder
 		layout.Parent = tabPage
 
@@ -169,14 +183,14 @@ function Library:CreateWindow(config)
 			local section = {}
 
 			local container = Instance.new("Frame")
-			container.Size = UDim2.new(1,-10,0,30)
+			container.Size = UDim2.new(1, -10, 0, 30)
 			container.BackgroundColor3 = CurrentTheme.Section
 			container.Parent = tabPage
 			createUICorner(8).Parent = container
 
 			local label = Instance.new("TextLabel")
-			label.Size = UDim2.new(1,-10,1,0)
-			label.Position = UDim2.new(0,5,0,0)
+			label.Size = UDim2.new(1, -10, 1, 0)
+			label.Position = UDim2.new(0, 5, 0, 0)
 			label.BackgroundTransparency = 1
 			label.Text = titleText
 			label.Font = Enum.Font.GothamBold
@@ -186,13 +200,13 @@ function Library:CreateWindow(config)
 			label.Parent = container
 
 			local sectionLayout = Instance.new("UIListLayout")
-			sectionLayout.Padding = UDim.new(0,6)
+			sectionLayout.Padding = UDim.new(0, 6)
 			sectionLayout.SortOrder = Enum.SortOrder.LayoutOrder
 			sectionLayout.Parent = container
 
 			function section:CreateButton(text, callback)
 				local btn = Instance.new("TextButton")
-				btn.Size = UDim2.new(1,-10,0,30)
+				btn.Size = UDim2.new(1, -10, 0, 30)
 				btn.BackgroundColor3 = CurrentTheme.Button
 				btn.Text = text
 				btn.TextColor3 = CurrentTheme.Text
@@ -205,7 +219,7 @@ function Library:CreateWindow(config)
 
 			function section:CreateToggle(text, default, callback)
 				local toggle = Instance.new("TextButton")
-				toggle.Size = UDim2.new(1,-10,0,30)
+				toggle.Size = UDim2.new(1, -10, 0, 30)
 				toggle.BackgroundColor3 = CurrentTheme.Button
 				local state = default or false
 				toggle.Text = text .. ": " .. (state and "ON" or "OFF")
@@ -223,7 +237,7 @@ function Library:CreateWindow(config)
 
 			function section:CreateSlider(text, min, max, default, callback)
 				local sliderLabel = Instance.new("TextLabel")
-				sliderLabel.Size = UDim2.new(1,-10,0,20)
+				sliderLabel.Size = UDim2.new(1, -10, 0, 20)
 				sliderLabel.BackgroundTransparency = 1
 				sliderLabel.Text = text .. ": " .. tostring(default)
 				sliderLabel.TextColor3 = CurrentTheme.Text
@@ -232,14 +246,14 @@ function Library:CreateWindow(config)
 				sliderLabel.Parent = container
 
 				local slider = Instance.new("Frame")
-				slider.Size = UDim2.new(1,-10,0,20)
+				slider.Size = UDim2.new(1, -10, 0, 20)
 				slider.BackgroundColor3 = CurrentTheme.Button
 				slider.Parent = container
 				createUICorner(6).Parent = slider
 
 				local fill = Instance.new("Frame")
 				fill.BackgroundColor3 = CurrentTheme.Accent
-				fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+				fill.Size = UDim2.new((default - min)/(max - min), 0, 1, 0)
 				fill.Parent = slider
 
 				local dragging = false
@@ -267,7 +281,7 @@ function Library:CreateWindow(config)
 
 			function section:CreateDropdown(title, list, callback)
 				local drop = Instance.new("TextButton")
-				drop.Size = UDim2.new(1,-10,0,30)
+				drop.Size = UDim2.new(1, -10, 0, 30)
 				drop.BackgroundColor3 = CurrentTheme.Button
 				drop.Text = title
 				drop.TextColor3 = CurrentTheme.Text
@@ -295,7 +309,7 @@ function Library:CreateWindow(config)
 						open = true
 						for i, item in ipairs(list) do
 							local opt = Instance.new("TextButton")
-							opt.Size = UDim2.new(1,-10,0,30)
+							opt.Size = UDim2.new(1, -10, 0, 30)
 							opt.BackgroundColor3 = CurrentTheme.Section
 							opt.Text = tostring(item)
 							opt.TextColor3 = CurrentTheme.Text
@@ -311,19 +325,15 @@ function Library:CreateWindow(config)
 							end)
 							table.insert(dropdownItems, opt)
 						end
-						spawn(function()
-							wait(0.1)
-							local connection
-							connection = UserInputService.InputBegan:Connect(function(input)
-								if input.UserInputType == Enum.UserInputType.MouseButton1 then
-									local mousePos = UserInputService:GetMouseLocation() - Vector2.new(0,36)
-									if not drop.AbsoluteWindowSize or not drop.AbsolutePosition then return end
-									if mousePos.X < drop.AbsolutePosition.X or mousePos.X > drop.AbsolutePosition.X + drop.AbsoluteSize.X or mousePos.Y < drop.AbsolutePosition.Y or mousePos.Y > drop.AbsolutePosition.Y + drop.AbsoluteSize.Y then
-										closeDropdown()
-										connection:Disconnect()
-									end
+						local conn
+						conn = UserInputService.InputBegan:Connect(function(input)
+							if input.UserInputType == Enum.UserInputType.MouseButton1 then
+								local mousePos = UserInputService:GetMouseLocation() - Vector2.new(0,36)
+								if mousePos.X < drop.AbsolutePosition.X or mousePos.X > drop.AbsolutePosition.X + drop.AbsoluteSize.X or mousePos.Y < drop.AbsolutePosition.Y or mousePos.Y > drop.AbsolutePosition.Y + drop.AbsoluteSize.Y then
+									closeDropdown()
+									conn:Disconnect()
 								end
-							end)
+							end
 						end)
 					end
 				end)
@@ -331,7 +341,7 @@ function Library:CreateWindow(config)
 
 			function section:CreateTextbox(labelText, placeholder, callback)
 				local boxLabel = Instance.new("TextLabel")
-				boxLabel.Size = UDim2.new(1,-10,0,20)
+				boxLabel.Size = UDim2.new(1, -10, 0, 20)
 				boxLabel.BackgroundTransparency = 1
 				boxLabel.Text = labelText
 				boxLabel.TextColor3 = CurrentTheme.Text
@@ -340,7 +350,7 @@ function Library:CreateWindow(config)
 				boxLabel.Parent = container
 
 				local textbox = Instance.new("TextBox")
-				textbox.Size = UDim2.new(1,-10,0,30)
+				textbox.Size = UDim2.new(1, -10, 0, 30)
 				textbox.BackgroundColor3 = CurrentTheme.Button
 				textbox.PlaceholderText = placeholder
 				textbox.TextColor3 = CurrentTheme.Text
@@ -358,9 +368,9 @@ function Library:CreateWindow(config)
 
 			function section:CreateKeybind(labelText, defaultKey, callback)
 				local bindLabel = Instance.new("TextLabel")
-				bindLabel.Size = UDim2.new(1,-10,0,20)
+				bindLabel.Size = UDim2.new(1, -10, 0, 20)
 				bindLabel.BackgroundTransparency = 1
-				bindLabel.Text = labelText .. ": " .. tostring(defaultKey.Name)"
+				bindLabel.Text = labelText .. ": " .. tostring(defaultKey.Name)
 				bindLabel.TextColor3 = CurrentTheme.Text
 				bindLabel.Font = Enum.Font.Gotham
 				bindLabel.TextSize = 14
@@ -369,12 +379,22 @@ function Library:CreateWindow(config)
 				local currentKey = defaultKey
 				bindLabel.InputBegan:Connect(function(input)
 					if input.KeyCode == Enum.KeyCode.Backspace then
-						-- Wait for a new key press\n						local connection; connection = UserInputService.InputBegan:Connect(function(newInput)\n							if newInput.UserInputType == Enum.UserInputType.Keyboard then\n								currentKey = newInput.KeyCode\n								bindLabel.Text = labelText .. \": \" .. tostring(currentKey.Name)\n								callback(currentKey)\n								connection:Disconnect()\n							end\n						end)\n					end\n				end)
+						local connection
+						connection = UserInputService.InputBegan:Connect(function(newInput)
+							if newInput.UserInputType == Enum.UserInputType.Keyboard then
+								currentKey = newInput.KeyCode
+								bindLabel.Text = labelText .. ": " .. tostring(currentKey.Name)
+								callback(currentKey)
+								connection:Disconnect()
+							end
+						end)
+					end
+				end)
 			end
 
 			function section:CreateColorPicker(labelText, defaultColor, callback)
 				local pickerLabel = Instance.new("TextLabel")
-				pickerLabel.Size = UDim2.new(1,-10,0,20)
+				pickerLabel.Size = UDim2.new(1, -10, 0, 20)
 				pickerLabel.BackgroundTransparency = 1
 				pickerLabel.Text = labelText
 				pickerLabel.TextColor3 = CurrentTheme.Text
@@ -383,7 +403,7 @@ function Library:CreateWindow(config)
 				pickerLabel.Parent = container
 
 				local colorBtn = Instance.new("TextButton")
-				colorBtn.Size = UDim2.new(1,-10,0,30)
+				colorBtn.Size = UDim2.new(1, -10, 0, 30)
 				colorBtn.BackgroundColor3 = defaultColor
 				colorBtn.Text = \"\"
 				colorBtn.Parent = container
@@ -396,7 +416,7 @@ function Library:CreateWindow(config)
 
 			function section:CreateLabel(text)
 				local label = Instance.new("TextLabel")
-				label.Size = UDim2.new(1,-10,0,20)
+				label.Size = UDim2.new(1, -10, 0, 20)
 				label.BackgroundTransparency = 1
 				label.Text = text
 				label.TextColor3 = CurrentTheme.Text
@@ -415,14 +435,14 @@ function Library:CreateWindow(config)
 
 	function Library:CreateNotification(title, message, duration)
 		local notif = Instance.new("Frame")
-		notif.Size = UDim2.new(0,300,0,80)
-		notif.Position = UDim2.new(1,-310,0,50)
+		notif.Size = UDim2.new(0, 300, 0, 80)
+		notif.Position = UDim2.new(1, -310, 0, 50)
 		notif.BackgroundColor3 = CurrentTheme.Button
 		notif.Parent = PlayerGui
 		createUICorner(8).Parent = notif
 
 		local tLabel = Instance.new("TextLabel")
-		tLabel.Size = UDim2.new(1,0,0,30)
+		tLabel.Size = UDim2.new(1, 0, 0, 30)
 		tLabel.BackgroundTransparency = 1
 		tLabel.Text = title
 		tLabel.TextColor3 = CurrentTheme.Text
@@ -431,8 +451,8 @@ function Library:CreateWindow(config)
 		tLabel.Parent = notif
 
 		local mLabel = Instance.new("TextLabel")
-		mLabel.Size = UDim2.new(1,0,0,40)
-		mLabel.Position = UDim2.new(0,0,0,30)
+		mLabel.Size = UDim2.new(1, 0, 0, 40)
+		mLabel.Position = UDim2.new(0, 0, 0, 30)
 		mLabel.BackgroundTransparency = 1
 		mLabel.Text = message
 		mLabel.TextColor3 = CurrentTheme.Text
@@ -440,9 +460,9 @@ function Library:CreateWindow(config)
 		mLabel.TextSize = 14
 		mLabel.Parent = notif
 
-		TweenService:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1,-310,0,100)}):Play()
+		TweenService:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1, -310, 0, 100)}):Play()
 		delay(duration, function()
-			TweenService:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1,310,0,100)}):Play()
+			TweenService:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1, 310, 0, 100)}):Play()
 			wait(0.6)
 			notif:Destroy()
 		end)
