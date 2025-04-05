@@ -111,8 +111,8 @@ function Library:CreateWindow(config)
 	gui.Parent = PlayerGui
 
 	local main = Instance.new("Frame")
-	main.Size = UDim2.new(0, 500, 0, 320)
-	main.Position = UDim2.new(0.5, -250, 0.5, -160)
+	main.Size = UDim2.new(0,500,0,320)
+	main.Position = UDim2.new(0.5,-250,0.5,-160)
 	main.BackgroundColor3 = CurrentTheme.Background
 	main.BorderSizePixel = 0
 	main.Parent = gui
@@ -122,7 +122,7 @@ function Library:CreateWindow(config)
 
 	local title = Instance.new("TextLabel")
 	title.Text = config.Title or "Custom UI"
-	title.Size = UDim2.new(1, 0, 0, 40)
+	title.Size = UDim2.new(1,0,0,40)
 	title.BackgroundTransparency = 1
 	title.Font = Enum.Font.GothamBold
 	title.TextSize = 20
@@ -130,16 +130,16 @@ function Library:CreateWindow(config)
 	title.Parent = main
 
 	local tabHolder = Instance.new("Frame")
-	tabHolder.Size = UDim2.new(0, 120, 1, -40)
-	tabHolder.Position = UDim2.new(0, 0, 0, 40)
+	tabHolder.Size = UDim2.new(0,120,1,-40)
+	tabHolder.Position = UDim2.new(0,0,0,40)
 	tabHolder.BackgroundColor3 = CurrentTheme.Section
 	tabHolder.BorderSizePixel = 0
 	tabHolder.Parent = main
 	createUICorner(0).Parent = tabHolder
 
 	local contentHolder = Instance.new("Frame")
-	contentHolder.Size = UDim2.new(1, -120, 1, -40)
-	contentHolder.Position = UDim2.new(0, 120, 0, 40)
+	contentHolder.Size = UDim2.new(1,-120,1,-40)
+	contentHolder.Position = UDim2.new(0,120,0,40)
 	contentHolder.BackgroundColor3 = CurrentTheme.Background
 	contentHolder.BorderSizePixel = 0
 	contentHolder.Parent = main
@@ -149,7 +149,7 @@ function Library:CreateWindow(config)
 		tab.Sections = {}
 
 		local tabBtn = Instance.new("TextButton")
-		tabBtn.Size = UDim2.new(1, 0, 0, 30)
+		tabBtn.Size = UDim2.new(1,0,0,30)
 		tabBtn.BackgroundColor3 = CurrentTheme.Button
 		tabBtn.Text = name
 		tabBtn.TextColor3 = CurrentTheme.Text
@@ -159,13 +159,13 @@ function Library:CreateWindow(config)
 		createUICorner(6).Parent = tabBtn
 
 		local tabPage = Instance.new("Frame")
-		tabPage.Size = UDim2.new(1, 0, 1, 0)
+		tabPage.Size = UDim2.new(1,0,1,0)
 		tabPage.BackgroundTransparency = 1
 		tabPage.Visible = false
 		tabPage.Parent = contentHolder
 
 		local layout = Instance.new("UIListLayout")
-		layout.Padding = UDim.new(0, 8)
+		layout.Padding = UDim.new(0,8)
 		layout.SortOrder = Enum.SortOrder.LayoutOrder
 		layout.Parent = tabPage
 
@@ -181,14 +181,14 @@ function Library:CreateWindow(config)
 		function tab:CreateSection(titleText)
 			local section = {}
 			local container = Instance.new("Frame")
-			container.Size = UDim2.new(1, -10, 0, 30)
+			container.Size = UDim2.new(1,-10,0,30)
 			container.BackgroundColor3 = CurrentTheme.Section
 			container.Parent = tabPage
 			createUICorner(8).Parent = container
 
 			local label = Instance.new("TextLabel")
-			label.Size = UDim2.new(1, -10, 1, 0)
-			label.Position = UDim2.new(0, 5, 0, 0)
+			label.Size = UDim2.new(1,-10,1,0)
+			label.Position = UDim2.new(0,5,0,0)
 			label.BackgroundTransparency = 1
 			label.Text = titleText
 			label.Font = Enum.Font.GothamBold
@@ -198,13 +198,13 @@ function Library:CreateWindow(config)
 			label.Parent = container
 
 			local sectionLayout = Instance.new("UIListLayout")
-			sectionLayout.Padding = UDim.new(0, 6)
+			sectionLayout.Padding = UDim.new(0,6)
 			sectionLayout.SortOrder = Enum.SortOrder.LayoutOrder
 			sectionLayout.Parent = container
 
 			function section:CreateButton(text, callback)
 				local btn = Instance.new("TextButton")
-				btn.Size = UDim2.new(1, -10, 0, 30)
+				btn.Size = UDim2.new(1,-10,0,30)
 				btn.BackgroundColor3 = CurrentTheme.Button
 				btn.Text = text
 				btn.TextColor3 = CurrentTheme.Text
@@ -217,7 +217,7 @@ function Library:CreateWindow(config)
 
 			function section:CreateToggle(text, default, callback)
 				local toggle = Instance.new("TextButton")
-				toggle.Size = UDim2.new(1, -10, 0, 30)
+				toggle.Size = UDim2.new(1,-10,0,30)
 				toggle.BackgroundColor3 = CurrentTheme.Button
 				local state = default or false
 				toggle.Text = text .. ": " .. (state and "ON" or "OFF")
@@ -235,7 +235,7 @@ function Library:CreateWindow(config)
 
 			function section:CreateSlider(text, min, max, default, callback)
 				local sliderLabel = Instance.new("TextLabel")
-				sliderLabel.Size = UDim2.new(1, -10, 0, 20)
+				sliderLabel.Size = UDim2.new(1,-10,0,20)
 				sliderLabel.BackgroundTransparency = 1
 				sliderLabel.Text = text .. ": " .. tostring(default)
 				sliderLabel.TextColor3 = CurrentTheme.Text
@@ -244,7 +244,7 @@ function Library:CreateWindow(config)
 				sliderLabel.Parent = container
 
 				local slider = Instance.new("Frame")
-				slider.Size = UDim2.new(1, -10, 0, 20)
+				slider.Size = UDim2.new(1,-10,0,20)
 				slider.BackgroundColor3 = CurrentTheme.Button
 				slider.Parent = container
 				createUICorner(6).Parent = slider
@@ -403,7 +403,7 @@ function Library:CreateWindow(config)
 				local colorBtn = Instance.new("TextButton")
 				colorBtn.Size = UDim2.new(1, -10, 0, 30)
 				colorBtn.BackgroundColor3 = defaultColor
-				colorBtn.Text = \"\"
+				colorBtn.Text = ""
 				colorBtn.Parent = container
 				createUICorner(6).Parent = colorBtn
 
@@ -433,14 +433,14 @@ function Library:CreateWindow(config)
 
 	function Library:CreateNotification(title, message, duration)
 		local notif = Instance.new("Frame")
-		notif.Size = UDim2.new(0, 300, 0, 80)
-		notif.Position = UDim2.new(1, -310, 0, 50)
+		notif.Size = UDim2.new(0,300,0,80)
+		notif.Position = UDim2.new(1,-310,0,50)
 		notif.BackgroundColor3 = CurrentTheme.Button
 		notif.Parent = PlayerGui
 		createUICorner(8).Parent = notif
 
 		local tLabel = Instance.new("TextLabel")
-		tLabel.Size = UDim2.new(1, 0, 0, 30)
+		tLabel.Size = UDim2.new(1,0,0,30)
 		tLabel.BackgroundTransparency = 1
 		tLabel.Text = title
 		tLabel.TextColor3 = CurrentTheme.Text
@@ -449,8 +449,8 @@ function Library:CreateWindow(config)
 		tLabel.Parent = notif
 
 		local mLabel = Instance.new("TextLabel")
-		mLabel.Size = UDim2.new(1, 0, 0, 40)
-		mLabel.Position = UDim2.new(0, 0, 0, 30)
+		mLabel.Size = UDim2.new(1,0,0,40)
+		mLabel.Position = UDim2.new(0,0,0,30)
 		mLabel.BackgroundTransparency = 1
 		mLabel.Text = message
 		mLabel.TextColor3 = CurrentTheme.Text
@@ -458,11 +458,69 @@ function Library:CreateWindow(config)
 		mLabel.TextSize = 14
 		mLabel.Parent = notif
 
-		TweenService:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1, -310, 0, 100)}):Play()
+		TweenService:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1,-310,0,100)}):Play()
 		delay(duration, function()
-			TweenService:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1, 310, 0, 100)}):Play()
+			TweenService:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1,310,0,100)}):Play()
 			wait(0.6)
 			notif:Destroy()
+		end)
+	end
+
+	-- Custom Key System (Rayfield-style)
+	function Library:CreateKeySystem(config)
+		local keyGui = Instance.new("ScreenGui")
+		keyGui.Name = "KeySystem"
+		keyGui.ResetOnSpawn = false
+		keyGui.Parent = PlayerGui
+
+		local mainFrame = Instance.new("Frame")
+		mainFrame.Size = UDim2.new(0,300,0,150)
+		mainFrame.Position = UDim2.new(0.5,-150,0.5,-75)
+		mainFrame.BackgroundColor3 = CurrentTheme.Background
+		mainFrame.Parent = keyGui
+		createUICorner(12).Parent = mainFrame
+
+		local titleLabel = Instance.new("TextLabel")
+		titleLabel.Size = UDim2.new(1,0,0,40)
+		titleLabel.BackgroundTransparency = 1
+		titleLabel.Text = config.Title or "Enter Key"
+		titleLabel.Font = Enum.Font.GothamBold
+		titleLabel.TextSize = 20
+		titleLabel.TextColor3 = CurrentTheme.Text
+		titleLabel.Parent = mainFrame
+
+		local inputBox = Instance.new("TextBox")
+		inputBox.Size = UDim2.new(1,-20,0,40)
+		inputBox.Position = UDim2.new(0,10,0,60)
+		inputBox.BackgroundColor3 = CurrentTheme.Button
+		inputBox.PlaceholderText = config.Placeholder or "Enter key here"
+		inputBox.TextColor3 = CurrentTheme.Text
+		inputBox.Font = Enum.Font.Gotham
+		inputBox.TextSize = 18
+		inputBox.Parent = mainFrame
+		createUICorner(6).Parent = inputBox
+
+		local submitButton = Instance.new("TextButton")
+		submitButton.Size = UDim2.new(1,-20,0,30)
+		submitButton.Position = UDim2.new(0,10,0,110)
+		submitButton.BackgroundColor3 = CurrentTheme.Accent
+		submitButton.Text = "Submit"
+		submitButton.TextColor3 = CurrentTheme.Text
+		submitButton.Font = Enum.Font.GothamBold
+		submitButton.TextSize = 16
+		submitButton.Parent = mainFrame
+		createUICorner(6).Parent = submitButton
+
+		submitButton.MouseButton1Click:Connect(function()
+			if inputBox.Text == config.Key then
+				keyGui:Destroy()
+				if config.Callback then
+					config.Callback()
+				end
+			else
+				inputBox.Text = ""
+				inputBox.PlaceholderText = "Incorrect key!"
+			end
 		end)
 	end
 
