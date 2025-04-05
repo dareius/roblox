@@ -1,4 +1,6 @@
 --// CustomUILibrary.lua
+-- Robust Rayfield-style UI Library with Enhanced Error Handling
+
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
@@ -91,38 +93,65 @@ local Themes = {
 local CurrentTheme = Themes["Midnight"]
 
 local function createUICorner(radius)
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, radius)
-	return corner
+	local ok, corner = pcall(function()
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(0, radius)
+		return c
+	end)
+	return ok and corner or nil
+end
+
+local function notifyError(errMsg)
+	-- Show a simple error notification on screen
+	local errFrame = Instance.new("Frame")
+	errFrame.Size = UDim2.new(0, 300, 0, 80)
+	errFrame.Position = UDim2.new(0.5, -150, 0, 50)
+	errFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+	errFrame.Parent = PlayerGui
+	local errLabel = Instance.new("TextLabel")
+	errLabel.Size = UDim2.new(1, 0, 1, 0)
+	errLabel.BackgroundTransparency = 1
+	errLabel.Text = "Error: " .. errMsg
+	errLabel.TextColor3 = Color3.new(1,1,1)
+	errLabel.Font = Enum.Font.GothamBold
+	errLabel.TextSize = 16
+	errLabel.Parent = errFrame
+	delay(3, function() errFrame:Destroy() end)
 end
 
 function Library:AddTheme(name, themeTable)
-	Themes[name] = themeTable
+	local success, err = pcall(function()
+		Themes[name] = themeTable
+	end)
+	if not success then
+		notifyError("AddTheme failed: " .. tostring(err))
+	end
 end
 
 function Library:CreateWindow(config)
 	local self = setmetatable({}, Library)
 	self.Tabs = {}
 	CurrentTheme = Themes[config.Theme] or Themes["Midnight"]
-
+	
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "CustomUILibrary"
 	gui.ResetOnSpawn = false
 	gui.Parent = PlayerGui
 
 	local main = Instance.new("Frame")
-	main.Size = UDim2.new(0,500,0,320)
-	main.Position = UDim2.new(0.5,-250,0.5,-160)
+	main.Size = UDim2.new(0, 500, 0, 320)
+	main.Position = UDim2.new(0.5, -250, 0.5, -160)
 	main.BackgroundColor3 = CurrentTheme.Background
 	main.BorderSizePixel = 0
 	main.Parent = gui
 	main.Active = true
 	main.Draggable = true
-	createUICorner(12).Parent = main
+	local corner = createUICorner(12)
+	if corner then corner.Parent = main end
 
 	local title = Instance.new("TextLabel")
 	title.Text = config.Title or "Custom UI"
-	title.Size = UDim2.new(1,0,0,40)
+	title.Size = UDim2.new(1, 0, 0, 40)
 	title.BackgroundTransparency = 1
 	title.Font = Enum.Font.GothamBold
 	title.TextSize = 20
@@ -130,16 +159,17 @@ function Library:CreateWindow(config)
 	title.Parent = main
 
 	local tabHolder = Instance.new("Frame")
-	tabHolder.Size = UDim2.new(0,120,1,-40)
-	tabHolder.Position = UDim2.new(0,0,0,40)
+	tabHolder.Size = UDim2.new(0, 120, 1, -40)
+	tabHolder.Position = UDim2.new(0, 0, 0, 40)
 	tabHolder.BackgroundColor3 = CurrentTheme.Section
 	tabHolder.BorderSizePixel = 0
 	tabHolder.Parent = main
-	createUICorner(0).Parent = tabHolder
+	local tc = createUICorner(0)
+	if tc then tc.Parent = tabHolder end
 
 	local contentHolder = Instance.new("Frame")
-	contentHolder.Size = UDim2.new(1,-120,1,-40)
-	contentHolder.Position = UDim2.new(0,120,0,40)
+	contentHolder.Size = UDim2.new(1, -120, 1, -40)
+	contentHolder.Position = UDim2.new(0, 120, 0, 40)
 	contentHolder.BackgroundColor3 = CurrentTheme.Background
 	contentHolder.BorderSizePixel = 0
 	contentHolder.Parent = main
@@ -147,25 +177,25 @@ function Library:CreateWindow(config)
 	function self:CreateTab(name)
 		local tab = {}
 		tab.Sections = {}
-
 		local tabBtn = Instance.new("TextButton")
-		tabBtn.Size = UDim2.new(1,0,0,30)
+		tabBtn.Size = UDim2.new(1, 0, 0, 30)
 		tabBtn.BackgroundColor3 = CurrentTheme.Button
 		tabBtn.Text = name
 		tabBtn.TextColor3 = CurrentTheme.Text
 		tabBtn.Font = Enum.Font.GothamSemibold
 		tabBtn.TextSize = 14
 		tabBtn.Parent = tabHolder
-		createUICorner(6).Parent = tabBtn
+		local tcb = createUICorner(6)
+		if tcb then tcb.Parent = tabBtn end
 
 		local tabPage = Instance.new("Frame")
-		tabPage.Size = UDim2.new(1,0,1,0)
+		tabPage.Size = UDim2.new(1, 0, 1, 0)
 		tabPage.BackgroundTransparency = 1
 		tabPage.Visible = false
 		tabPage.Parent = contentHolder
 
 		local layout = Instance.new("UIListLayout")
-		layout.Padding = UDim.new(0,8)
+		layout.Padding = UDim.new(0, 8)
 		layout.SortOrder = Enum.SortOrder.LayoutOrder
 		layout.Parent = tabPage
 
@@ -181,14 +211,15 @@ function Library:CreateWindow(config)
 		function tab:CreateSection(titleText)
 			local section = {}
 			local container = Instance.new("Frame")
-			container.Size = UDim2.new(1,-10,0,30)
+			container.Size = UDim2.new(1, -10, 0, 30)
 			container.BackgroundColor3 = CurrentTheme.Section
 			container.Parent = tabPage
-			createUICorner(8).Parent = container
+			local cc = createUICorner(8)
+			if cc then cc.Parent = container end
 
 			local label = Instance.new("TextLabel")
-			label.Size = UDim2.new(1,-10,1,0)
-			label.Position = UDim2.new(0,5,0,0)
+			label.Size = UDim2.new(1, -10, 1, 0)
+			label.Position = UDim2.new(0, 5, 0, 0)
 			label.BackgroundTransparency = 1
 			label.Text = titleText
 			label.Font = Enum.Font.GothamBold
@@ -198,26 +229,32 @@ function Library:CreateWindow(config)
 			label.Parent = container
 
 			local sectionLayout = Instance.new("UIListLayout")
-			sectionLayout.Padding = UDim.new(0,6)
+			sectionLayout.Padding = UDim.new(0, 6)
 			sectionLayout.SortOrder = Enum.SortOrder.LayoutOrder
 			sectionLayout.Parent = container
 
+			-- CreateButton
 			function section:CreateButton(text, callback)
 				local btn = Instance.new("TextButton")
-				btn.Size = UDim2.new(1,-10,0,30)
+				btn.Size = UDim2.new(1, -10, 0, 30)
 				btn.BackgroundColor3 = CurrentTheme.Button
 				btn.Text = text
 				btn.TextColor3 = CurrentTheme.Text
 				btn.Font = Enum.Font.Gotham
 				btn.TextSize = 14
 				btn.Parent = container
-				createUICorner(6).Parent = btn
-				btn.MouseButton1Click:Connect(callback)
+				local bc = createUICorner(6)
+				if bc then bc.Parent = btn end
+				btn.MouseButton1Click:Connect(function()
+					local s, e = pcall(callback)
+					if not s then notifyError("Button error: " .. tostring(e)) end
+				end)
 			end
 
+			-- CreateToggle
 			function section:CreateToggle(text, default, callback)
 				local toggle = Instance.new("TextButton")
-				toggle.Size = UDim2.new(1,-10,0,30)
+				toggle.Size = UDim2.new(1, -10, 0, 30)
 				toggle.BackgroundColor3 = CurrentTheme.Button
 				local state = default or false
 				toggle.Text = text .. ": " .. (state and "ON" or "OFF")
@@ -225,17 +262,20 @@ function Library:CreateWindow(config)
 				toggle.Font = Enum.Font.Gotham
 				toggle.TextSize = 14
 				toggle.Parent = container
-				createUICorner(6).Parent = toggle
+				local tc = createUICorner(6)
+				if tc then tc.Parent = toggle end
 				toggle.MouseButton1Click:Connect(function()
 					state = not state
 					toggle.Text = text .. ": " .. (state and "ON" or "OFF")
-					callback(state)
+					local s, e = pcall(function() callback(state) end)
+					if not s then notifyError("Toggle error: " .. tostring(e)) end
 				end)
 			end
 
+			-- CreateSlider
 			function section:CreateSlider(text, min, max, default, callback)
 				local sliderLabel = Instance.new("TextLabel")
-				sliderLabel.Size = UDim2.new(1,-10,0,20)
+				sliderLabel.Size = UDim2.new(1, -10, 0, 20)
 				sliderLabel.BackgroundTransparency = 1
 				sliderLabel.Text = text .. ": " .. tostring(default)
 				sliderLabel.TextColor3 = CurrentTheme.Text
@@ -244,10 +284,11 @@ function Library:CreateWindow(config)
 				sliderLabel.Parent = container
 
 				local slider = Instance.new("Frame")
-				slider.Size = UDim2.new(1,-10,0,20)
+				slider.Size = UDim2.new(1, -10, 0, 20)
 				slider.BackgroundColor3 = CurrentTheme.Button
 				slider.Parent = container
-				createUICorner(6).Parent = slider
+				local sc = createUICorner(6)
+				if sc then sc.Parent = slider end
 
 				local fill = Instance.new("Frame")
 				fill.BackgroundColor3 = CurrentTheme.Accent
@@ -271,12 +312,14 @@ function Library:CreateWindow(config)
 						local pct = rel / slider.AbsoluteSize.X
 						TweenService:Create(fill, TweenInfo.new(0.1), {Size = UDim2.new(pct, 0, 1, 0)}):Play()
 						local val = math.floor(min + (max - min) * pct)
-						sliderLabel.Text = text .. ": " .. val
-						callback(val)
+						sliderLabel.Text = text .. ": " .. tostring(val)
+						local s, e = pcall(function() callback(val) end)
+						if not s then notifyError("Slider error: " .. tostring(e)) end
 					end
 				end)
 			end
 
+			-- CreateDropdown
 			function section:CreateDropdown(title, list, callback)
 				local drop = Instance.new("TextButton")
 				drop.Size = UDim2.new(1, -10, 0, 30)
@@ -286,7 +329,8 @@ function Library:CreateWindow(config)
 				drop.Font = Enum.Font.Gotham
 				drop.TextSize = 14
 				drop.Parent = container
-				createUICorner(6).Parent = drop
+				local dc = createUICorner(6)
+				if dc then dc.Parent = drop end
 
 				local open = false
 				local dropdownItems = {}
@@ -315,10 +359,12 @@ function Library:CreateWindow(config)
 							opt.TextSize = 13
 							opt.Parent = container
 							opt.LayoutOrder = i + 100
-							createUICorner(6).Parent = opt
+							local oc = createUICorner(6)
+							if oc then oc.Parent = opt end
 							opt.MouseButton1Click:Connect(function()
 								drop.Text = title .. ": " .. tostring(item)
-								callback(item)
+								local s, e = pcall(function() callback(item) end)
+								if not s then notifyError("Dropdown error: " .. tostring(e)) end
 								closeDropdown()
 							end)
 							table.insert(dropdownItems, opt)
@@ -337,6 +383,7 @@ function Library:CreateWindow(config)
 				end)
 			end
 
+			-- CreateTextbox
 			function section:CreateTextbox(labelText, placeholder, callback)
 				local boxLabel = Instance.new("TextLabel")
 				boxLabel.Size = UDim2.new(1, -10, 0, 20)
@@ -355,15 +402,18 @@ function Library:CreateWindow(config)
 				textbox.Font = Enum.Font.Gotham
 				textbox.TextSize = 14
 				textbox.Parent = container
-				createUICorner(6).Parent = textbox
+				local tc = createUICorner(6)
+				if tc then tc.Parent = textbox end
 
 				textbox.FocusLost:Connect(function(enterPressed)
 					if enterPressed then
-						callback(textbox.Text)
+						local s, e = pcall(function() callback(textbox.Text) end)
+						if not s then notifyError("Textbox error: " .. tostring(e)) end
 					end
 				end)
 			end
 
+			-- CreateKeybind
 			function section:CreateKeybind(labelText, defaultKey, callback)
 				local bindLabel = Instance.new("TextLabel")
 				bindLabel.Size = UDim2.new(1, -10, 0, 20)
@@ -382,7 +432,8 @@ function Library:CreateWindow(config)
 							if newInput.UserInputType == Enum.UserInputType.Keyboard then
 								currentKey = newInput.KeyCode
 								bindLabel.Text = labelText .. ": " .. tostring(currentKey.Name)
-								callback(currentKey)
+								local s, e = pcall(function() callback(currentKey) end)
+								if not s then notifyError("Keybind error: " .. tostring(e)) end
 								connection:Disconnect()
 							end
 						end)
@@ -390,6 +441,7 @@ function Library:CreateWindow(config)
 				end)
 			end
 
+			-- CreateColorPicker
 			function section:CreateColorPicker(labelText, defaultColor, callback)
 				local pickerLabel = Instance.new("TextLabel")
 				pickerLabel.Size = UDim2.new(1, -10, 0, 20)
@@ -405,13 +457,16 @@ function Library:CreateWindow(config)
 				colorBtn.BackgroundColor3 = defaultColor
 				colorBtn.Text = ""
 				colorBtn.Parent = container
-				createUICorner(6).Parent = colorBtn
+				local cc = createUICorner(6)
+				if cc then cc.Parent = colorBtn end
 
 				colorBtn.MouseButton1Click:Connect(function()
-					callback(colorBtn.BackgroundColor3)
+					local s, e = pcall(function() callback(colorBtn.BackgroundColor3) end)
+					if not s then notifyError("ColorPicker error: " .. tostring(e)) end
 				end)
 			end
 
+			-- CreateLabel
 			function section:CreateLabel(text)
 				local label = Instance.new("TextLabel")
 				label.Size = UDim2.new(1, -10, 0, 20)
@@ -431,13 +486,15 @@ function Library:CreateWindow(config)
 		return tab
 	end
 
+	-- CreateNotification: Displays a temporary message.
 	function Library:CreateNotification(title, message, duration)
 		local notif = Instance.new("Frame")
 		notif.Size = UDim2.new(0,300,0,80)
 		notif.Position = UDim2.new(1,-310,0,50)
 		notif.BackgroundColor3 = CurrentTheme.Button
 		notif.Parent = PlayerGui
-		createUICorner(8).Parent = notif
+		local nc = createUICorner(8)
+		if nc then nc.Parent = notif end
 
 		local tLabel = Instance.new("TextLabel")
 		tLabel.Size = UDim2.new(1,0,0,30)
@@ -466,7 +523,7 @@ function Library:CreateWindow(config)
 		end)
 	end
 
-	-- Custom Key System (Rayfield-style)
+	-- CreateKeySystem: Protects UI behind a key input.
 	function Library:CreateKeySystem(config)
 		local keyGui = Instance.new("ScreenGui")
 		keyGui.Name = "KeySystem"
@@ -478,7 +535,8 @@ function Library:CreateWindow(config)
 		mainFrame.Position = UDim2.new(0.5,-150,0.5,-75)
 		mainFrame.BackgroundColor3 = CurrentTheme.Background
 		mainFrame.Parent = keyGui
-		createUICorner(12).Parent = mainFrame
+		local mfc = createUICorner(12)
+		if mfc then mfc.Parent = mainFrame end
 
 		local titleLabel = Instance.new("TextLabel")
 		titleLabel.Size = UDim2.new(1,0,0,40)
@@ -498,7 +556,8 @@ function Library:CreateWindow(config)
 		inputBox.Font = Enum.Font.Gotham
 		inputBox.TextSize = 18
 		inputBox.Parent = mainFrame
-		createUICorner(6).Parent = inputBox
+		local ibc = createUICorner(6)
+		if ibc then ibc.Parent = inputBox end
 
 		local submitButton = Instance.new("TextButton")
 		submitButton.Size = UDim2.new(1,-20,0,30)
@@ -509,13 +568,15 @@ function Library:CreateWindow(config)
 		submitButton.Font = Enum.Font.GothamBold
 		submitButton.TextSize = 16
 		submitButton.Parent = mainFrame
-		createUICorner(6).Parent = submitButton
+		local sbc = createUICorner(6)
+		if sbc then sbc.Parent = submitButton end
 
 		submitButton.MouseButton1Click:Connect(function()
 			if inputBox.Text == config.Key then
 				keyGui:Destroy()
 				if config.Callback then
-					config.Callback()
+					local s, e = pcall(config.Callback)
+					if not s then notifyError("KeySystem callback error: " .. tostring(e)) end
 				end
 			else
 				inputBox.Text = ""
