@@ -1,6 +1,6 @@
 --// FlowUI.lua
--- FlowUI: A minimal, advanced Roblox UI library with a left-side tab bar.
--- Designed to match a dark, modern style similar to your image.
+-- FlowUI: A minimal, advanced Roblox UI library with a left-side tab bar
+-- Designed with a dark, semi-transparent style similar to your image.
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -11,14 +11,20 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local FlowUI = {}
 FlowUI.__index = FlowUI
 
--- Single, fixed style settings (no themes)
+-- Single style settings with transparency values for a unified look.
 local UIStyles = {
-    Background = Color3.fromRGB(25, 25, 25),      -- Main window background
-    BackgroundTransparency = 0.1,
-    Section = Color3.fromRGB(30, 30, 30),         -- For section headers, etc.
-    Button = Color3.fromRGB(40, 40, 40),            -- For buttons and dropdown triggers
-    Text = Color3.fromRGB(235, 235, 235),           -- Light text color
-    Accent = Color3.fromRGB(70, 70, 70),            -- For slider fills, progress bars, etc.
+    Background = Color3.fromRGB(25, 25, 25),
+    BackgroundTransparency = 0.2,
+    Section = Color3.fromRGB(30, 30, 30),
+    SectionTransparency = 0.15,
+    Button = Color3.fromRGB(40, 40, 40),
+    ButtonTransparency = 0.1,
+    Tab = Color3.fromRGB(35, 35, 35),
+    TabTransparency = 0.15,
+    Text = Color3.fromRGB(235, 235, 235),
+    Accent = Color3.fromRGB(70, 70, 70),
+    AccentTransparency = 0,
+    TopBarTransparency = 0,
 }
 
 local function createUICorner(radius)
@@ -40,7 +46,7 @@ local function notifyError(errMsg)
     errLabel.Size = UDim2.new(1, 0, 1, 0)
     errLabel.BackgroundTransparency = 1
     errLabel.Text = "Error: " .. errMsg
-    errLabel.TextColor3 = Color3.new(1, 1, 1)
+    errLabel.TextColor3 = Color3.new(1,1,1)
     errLabel.Font = Enum.Font.GothamBold
     errLabel.TextSize = 14
     errLabel.Parent = errFrame
@@ -50,7 +56,7 @@ local function notifyError(errMsg)
     end)
 end
 
--- CreateWindow: builds a draggable window with a left-side tab bar.
+-- CreateWindow: Builds a draggable window with a top bar and a left-side tab bar.
 function FlowUI:CreateWindow(title)
     local self = setmetatable({}, FlowUI)
     self.Tabs = {}
@@ -73,7 +79,8 @@ function FlowUI:CreateWindow(title)
     -- Top Bar
     local topBar = Instance.new("Frame")
     topBar.Size = UDim2.new(1, 0, 0, 40)
-    topBar.BackgroundTransparency = 1
+    topBar.BackgroundColor3 = UIStyles.Background
+    topBar.BackgroundTransparency = UIStyles.TopBarTransparency
     topBar.Parent = main
 
     local titleLabel = Instance.new("TextLabel")
@@ -91,8 +98,8 @@ function FlowUI:CreateWindow(title)
     local tabHolder = Instance.new("Frame")
     tabHolder.Size = UDim2.new(0, 140, 1, -40)
     tabHolder.Position = UDim2.new(0, 0, 0, 40)
-    tabHolder.BackgroundColor3 = UIStyles.Section
-    tabHolder.BorderSizePixel = 0
+    tabHolder.BackgroundColor3 = UIStyles.Tab
+    tabHolder.BackgroundTransparency = UIStyles.TabTransparency
     tabHolder.Parent = main
     createUICorner(0).Parent = tabHolder
 
@@ -108,10 +115,11 @@ function FlowUI:CreateWindow(title)
         local tab = {}
         tab.Sections = {}
 
-        -- Create a tab button in the left tab holder.
+        -- Tab Button on the left
         local tabBtn = Instance.new("TextButton")
         tabBtn.Size = UDim2.new(1, 0, 0, 40)
         tabBtn.BackgroundColor3 = UIStyles.Button
+        tabBtn.BackgroundTransparency = UIStyles.ButtonTransparency
         tabBtn.Text = tabName
         tabBtn.TextColor3 = UIStyles.Text
         tabBtn.Font = Enum.Font.GothamBold
@@ -119,7 +127,7 @@ function FlowUI:CreateWindow(title)
         tabBtn.Parent = tabHolder
         createUICorner(6).Parent = tabBtn
 
-        -- Create a scrolling frame for the tab content.
+        -- Tab content as a scrolling frame
         local tabPage = Instance.new("ScrollingFrame")
         tabPage.Size = UDim2.new(1, 0, 1, 0)
         tabPage.BackgroundTransparency = 1
@@ -139,14 +147,12 @@ function FlowUI:CreateWindow(title)
         tab.Content = tabPage
 
         tabBtn.MouseButton1Click:Connect(function()
-            -- Hide all other tabs
-            for _, otherTab in pairs(self.Tabs) do
-                otherTab.Visible = false
+            for _, t in pairs(self.Tabs) do
+                t.Visible = false
             end
             tabPage.Visible = true
         end)
 
-        -- CreateSection: adds a section header and returns a container for UI elements.
         function tab:CreateSection(sectionName)
             local section = {}
 
@@ -164,7 +170,8 @@ function FlowUI:CreateWindow(title)
             local container = Instance.new("Frame")
             container.Size = UDim2.new(1, -20, 0, 40)
             container.Position = UDim2.new(0, 10, 0, 30)
-            container.BackgroundTransparency = 1
+            container.BackgroundColor3 = UIStyles.Section
+            container.BackgroundTransparency = UIStyles.SectionTransparency
             container.Parent = tabPage
 
             local containerLayout = Instance.new("UIListLayout")
@@ -175,10 +182,13 @@ function FlowUI:CreateWindow(title)
                 container.Size = UDim2.new(1, -20, 0, containerLayout.AbsoluteContentSize.Y)
             end)
 
+            -- Example UI elements (you can add more as needed)
+
             function section:CreateButton(text, callback)
                 local btn = Instance.new("TextButton")
                 btn.Size = UDim2.new(1, 0, 0, 35)
                 btn.BackgroundColor3 = UIStyles.Button
+                btn.BackgroundTransparency = UIStyles.ButtonTransparency
                 btn.Text = text
                 btn.TextColor3 = UIStyles.Text
                 btn.Font = Enum.Font.Gotham
@@ -195,6 +205,7 @@ function FlowUI:CreateWindow(title)
                 local toggle = Instance.new("TextButton")
                 toggle.Size = UDim2.new(1, 0, 0, 35)
                 toggle.BackgroundColor3 = UIStyles.Button
+                toggle.BackgroundTransparency = UIStyles.ButtonTransparency
                 local state = default or false
                 toggle.Text = text .. ": " .. (state and "ON" or "OFF")
                 toggle.TextColor3 = UIStyles.Text
@@ -223,11 +234,13 @@ function FlowUI:CreateWindow(title)
                 local slider = Instance.new("Frame")
                 slider.Size = UDim2.new(1, 0, 0, 20)
                 slider.BackgroundColor3 = UIStyles.Button
+                slider.BackgroundTransparency = UIStyles.ButtonTransparency
                 slider.Parent = container
                 createUICorner(6).Parent = slider
 
                 local fill = Instance.new("Frame")
                 fill.BackgroundColor3 = UIStyles.Accent
+                fill.BackgroundTransparency = UIStyles.AccentTransparency
                 local pct = math.clamp((default - min) / (max - min), 0, 1)
                 fill.Size = UDim2.new(pct, 0, 1, 0)
                 fill.Parent = slider
@@ -269,6 +282,7 @@ function FlowUI:CreateWindow(title)
                 local textbox = Instance.new("TextBox")
                 textbox.Size = UDim2.new(1, 0, 0, 60)
                 textbox.BackgroundColor3 = UIStyles.Button
+                textbox.BackgroundTransparency = UIStyles.ButtonTransparency
                 textbox.PlaceholderText = placeholder
                 textbox.TextColor3 = UIStyles.Text
                 textbox.Font = Enum.Font.Gotham
@@ -300,16 +314,17 @@ function FlowUI:CreateWindow(title)
                 local colorBtn = Instance.new("TextButton")
                 colorBtn.Size = UDim2.new(1, 0, 0, 30)
                 colorBtn.BackgroundColor3 = defaultColor
+                colorBtn.BackgroundTransparency = 0
                 colorBtn.Text = ""
                 colorBtn.Parent = container
                 createUICorner(6).Parent = colorBtn
 
                 colorBtn.MouseButton1Click:Connect(function()
-                    -- Open a simple color palette popup
                     local palette = Instance.new("Frame")
                     palette.Size = UDim2.new(0, 200, 0, 80)
                     palette.Position = colorBtn.AbsolutePosition + Vector2.new(0, colorBtn.AbsoluteSize.Y)
                     palette.BackgroundColor3 = UIStyles.Section
+                    palette.BackgroundTransparency = UIStyles.SectionTransparency
                     palette.Parent = PlayerGui
                     createUICorner(6).Parent = palette
 
@@ -353,6 +368,7 @@ function FlowUI:CreateWindow(title)
                 local checkbox = Instance.new("TextButton")
                 checkbox.Size = UDim2.new(1, 0, 0, 35)
                 checkbox.BackgroundColor3 = UIStyles.Button
+                checkbox.BackgroundTransparency = UIStyles.ButtonTransparency
                 local state = default or false
                 checkbox.Text = (state and "[X] " or "[ ] ") .. text
                 checkbox.TextColor3 = UIStyles.Text
@@ -381,11 +397,13 @@ function FlowUI:CreateWindow(title)
                 local bar = Instance.new("Frame")
                 bar.Size = UDim2.new(1, 0, 0, 20)
                 bar.BackgroundColor3 = UIStyles.Button
+                bar.BackgroundTransparency = UIStyles.ButtonTransparency
                 bar.Parent = container
                 createUICorner(6).Parent = bar
 
                 local fill = Instance.new("Frame")
                 fill.BackgroundColor3 = UIStyles.Accent
+                fill.BackgroundTransparency = UIStyles.AccentTransparency
                 local pct = math.clamp(default / 100, 0, 1)
                 fill.Size = UDim2.new(pct, 0, 1, 0)
                 fill.Parent = bar
@@ -416,12 +434,12 @@ function FlowUI:CreateWindow(title)
         return tab
     end
 
-    -- CreateNotification: A sleek notification popup.
     function self:CreateNotification(title, message, duration)
         local notif = Instance.new("Frame")
         notif.Size = UDim2.new(0, 300, 0, 80)
         notif.Position = UDim2.new(1, -310, 0, 50)
         notif.BackgroundColor3 = UIStyles.Button
+        notif.BackgroundTransparency = UIStyles.ButtonTransparency
         notif.Parent = PlayerGui
         createUICorner(8).Parent = notif
 
