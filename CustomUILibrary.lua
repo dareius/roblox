@@ -1,6 +1,5 @@
 --// CustomUILibrary.lua
--- Robust Rayfield-style UI Library with Enhanced Error Handling
-
+-- Robust Rayfield-style UI Library (Executor-friendly)
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
@@ -102,7 +101,6 @@ local function createUICorner(radius)
 end
 
 local function notifyError(errMsg)
-	-- Show a simple error notification on screen
 	local errFrame = Instance.new("Frame")
 	errFrame.Size = UDim2.new(0, 300, 0, 80)
 	errFrame.Position = UDim2.new(0.5, -150, 0, 50)
@@ -120,9 +118,7 @@ local function notifyError(errMsg)
 end
 
 function Library:AddTheme(name, themeTable)
-	local success, err = pcall(function()
-		Themes[name] = themeTable
-	end)
+	local success, err = pcall(function() Themes[name] = themeTable end)
 	if not success then
 		notifyError("AddTheme failed: " .. tostring(err))
 	end
@@ -167,16 +163,28 @@ function Library:CreateWindow(config)
 	local tc = createUICorner(0)
 	if tc then tc.Parent = tabHolder end
 
-	local contentHolder = Instance.new("Frame")
+	-- Use ScrollingFrame for the content to allow vertical scrolling
+	local contentHolder = Instance.new("ScrollingFrame")
 	contentHolder.Size = UDim2.new(1, -120, 1, -40)
 	contentHolder.Position = UDim2.new(0, 120, 0, 40)
 	contentHolder.BackgroundColor3 = CurrentTheme.Background
 	contentHolder.BorderSizePixel = 0
+	contentHolder.CanvasSize = UDim2.new(0, 0, 0, 0)
+	contentHolder.ScrollBarThickness = 4
 	contentHolder.Parent = main
+
+	local uiLayout = Instance.new("UIListLayout")
+	uiLayout.Padding = UDim.new(0, 8)
+	uiLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	uiLayout.Parent = contentHolder
+	uiLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		contentHolder.CanvasSize = UDim2.new(0, 0, 0, uiLayout.AbsoluteContentSize.Y)
+	end)
 
 	function self:CreateTab(name)
 		local tab = {}
 		tab.Sections = {}
+
 		local tabBtn = Instance.new("TextButton")
 		tabBtn.Size = UDim2.new(1, 0, 0, 30)
 		tabBtn.BackgroundColor3 = CurrentTheme.Button
@@ -188,16 +196,22 @@ function Library:CreateWindow(config)
 		local tcb = createUICorner(6)
 		if tcb then tcb.Parent = tabBtn end
 
-		local tabPage = Instance.new("Frame")
+		-- Instead of replacing the contentHolder, each tab gets its own scrolling frame
+		local tabPage = Instance.new("ScrollingFrame")
 		tabPage.Size = UDim2.new(1, 0, 1, 0)
 		tabPage.BackgroundTransparency = 1
 		tabPage.Visible = false
+		tabPage.CanvasSize = UDim2.new(0, 0, 0, 0)
+		tabPage.ScrollBarThickness = 4
 		tabPage.Parent = contentHolder
 
 		local layout = Instance.new("UIListLayout")
 		layout.Padding = UDim.new(0, 8)
 		layout.SortOrder = Enum.SortOrder.LayoutOrder
 		layout.Parent = tabPage
+		layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+			tabPage.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y)
+		end)
 
 		tab.Content = tabPage
 
@@ -232,8 +246,10 @@ function Library:CreateWindow(config)
 			sectionLayout.Padding = UDim.new(0, 6)
 			sectionLayout.SortOrder = Enum.SortOrder.LayoutOrder
 			sectionLayout.Parent = container
+			sectionLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+				container.Size = UDim2.new(1, -10, 0, sectionLayout.AbsoluteContentSize.Y + 30)
+			end)
 
-			-- CreateButton
 			function section:CreateButton(text, callback)
 				local btn = Instance.new("TextButton")
 				btn.Size = UDim2.new(1, -10, 0, 30)
@@ -251,7 +267,6 @@ function Library:CreateWindow(config)
 				end)
 			end
 
-			-- CreateToggle
 			function section:CreateToggle(text, default, callback)
 				local toggle = Instance.new("TextButton")
 				toggle.Size = UDim2.new(1, -10, 0, 30)
@@ -272,7 +287,6 @@ function Library:CreateWindow(config)
 				end)
 			end
 
-			-- CreateSlider
 			function section:CreateSlider(text, min, max, default, callback)
 				local sliderLabel = Instance.new("TextLabel")
 				sliderLabel.Size = UDim2.new(1, -10, 0, 20)
@@ -292,7 +306,9 @@ function Library:CreateWindow(config)
 
 				local fill = Instance.new("Frame")
 				fill.BackgroundColor3 = CurrentTheme.Accent
-				fill.Size = UDim2.new((default - min)/(max - min), 0, 1, 0)
+				-- Set fill size based on default value, clamped between min and max
+				local pct = math.clamp((default - min) / (max - min), 0, 1)
+				fill.Size = UDim2.new(pct, 0, 1, 0)
 				fill.Parent = slider
 
 				local dragging = false
@@ -310,7 +326,7 @@ function Library:CreateWindow(config)
 					if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
 						local rel = math.clamp(input.Position.X - slider.AbsolutePosition.X, 0, slider.AbsoluteSize.X)
 						local pct = rel / slider.AbsoluteSize.X
-						TweenService:Create(fill, TweenInfo.new(0.1), {Size = UDim2.new(pct, 0, 1, 0)}):Play()
+						fill.Size = UDim2.new(pct, 0, 1, 0)
 						local val = math.floor(min + (max - min) * pct)
 						sliderLabel.Text = text .. ": " .. tostring(val)
 						local s, e = pcall(function() callback(val) end)
@@ -319,7 +335,6 @@ function Library:CreateWindow(config)
 				end)
 			end
 
-			-- CreateDropdown
 			function section:CreateDropdown(title, list, callback)
 				local drop = Instance.new("TextButton")
 				drop.Size = UDim2.new(1, -10, 0, 30)
@@ -383,7 +398,6 @@ function Library:CreateWindow(config)
 				end)
 			end
 
-			-- CreateTextbox
 			function section:CreateTextbox(labelText, placeholder, callback)
 				local boxLabel = Instance.new("TextLabel")
 				boxLabel.Size = UDim2.new(1, -10, 0, 20)
@@ -413,7 +427,6 @@ function Library:CreateWindow(config)
 				end)
 			end
 
-			-- CreateKeybind
 			function section:CreateKeybind(labelText, defaultKey, callback)
 				local bindLabel = Instance.new("TextLabel")
 				bindLabel.Size = UDim2.new(1, -10, 0, 20)
@@ -441,7 +454,6 @@ function Library:CreateWindow(config)
 				end)
 			end
 
-			-- CreateColorPicker
 			function section:CreateColorPicker(labelText, defaultColor, callback)
 				local pickerLabel = Instance.new("TextLabel")
 				pickerLabel.Size = UDim2.new(1, -10, 0, 20)
@@ -452,6 +464,7 @@ function Library:CreateWindow(config)
 				pickerLabel.TextSize = 14
 				pickerLabel.Parent = container
 
+				-- Create a color button that, when clicked, opens a small palette.
 				local colorBtn = Instance.new("TextButton")
 				colorBtn.Size = UDim2.new(1, -10, 0, 30)
 				colorBtn.BackgroundColor3 = defaultColor
@@ -461,12 +474,46 @@ function Library:CreateWindow(config)
 				if cc then cc.Parent = colorBtn end
 
 				colorBtn.MouseButton1Click:Connect(function()
-					local s, e = pcall(function() callback(colorBtn.BackgroundColor3) end)
-					if not s then notifyError("ColorPicker error: " .. tostring(e)) end
+					-- Create a simple palette for color selection.
+					local palette = Instance.new("Frame")
+					palette.Size = UDim2.new(0, 150, 0, 60)
+					palette.Position = colorBtn.AbsolutePosition + Vector2.new(0, colorBtn.AbsoluteSize.Y)
+					palette.BackgroundColor3 = CurrentTheme.Section
+					palette.Parent = PlayerGui
+					local pcc = createUICorner(6)
+					if pcc then pcc.Parent = palette end
+					
+					-- Preset colors for the palette.
+					local colors = {Color3.fromRGB(255,0,0), Color3.fromRGB(0,255,0), Color3.fromRGB(0,0,255), Color3.fromRGB(255,255,0), Color3.fromRGB(255,0,255), Color3.fromRGB(0,255,255)}
+					local grid = Instance.new("UIGridLayout")
+					grid.CellSize = UDim2.new(0, 48, 0, 48)
+					grid.CellPadding = UDim2.new(0, 2, 0, 2)
+					grid.Parent = palette
+					
+					for _, clr in ipairs(colors) do
+						local clrBtn = Instance.new("TextButton")
+						clrBtn.Size = UDim2.new(0, 48, 0, 48)
+						clrBtn.BackgroundColor3 = clr
+						clrBtn.Text = ""
+						clrBtn.Parent = palette
+						local s, e = pcall(function()
+							local cc = createUICorner(4)
+							if cc then cc.Parent = clrBtn end
+						end)
+						clrBtn.MouseButton1Click:Connect(function()
+							colorBtn.BackgroundColor3 = clr
+							local s, e = pcall(function() callback(clr) end)
+							if not s then notifyError("ColorPicker error: " .. tostring(e)) end
+							palette:Destroy()
+						end)
+					end
+					-- Close the palette if clicking outside.
+					delay(5, function()
+						if palette and palette.Parent then palette:Destroy() end
+					end)
 				end)
 			end
 
-			-- CreateLabel
 			function section:CreateLabel(text)
 				local label = Instance.new("TextLabel")
 				label.Size = UDim2.new(1, -10, 0, 20)
@@ -520,68 +567,6 @@ function Library:CreateWindow(config)
 			TweenService:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1,310,0,100)}):Play()
 			wait(0.6)
 			notif:Destroy()
-		end)
-	end
-
-	-- CreateKeySystem: Protects UI behind a key input.
-	function Library:CreateKeySystem(config)
-		local keyGui = Instance.new("ScreenGui")
-		keyGui.Name = "KeySystem"
-		keyGui.ResetOnSpawn = false
-		keyGui.Parent = PlayerGui
-
-		local mainFrame = Instance.new("Frame")
-		mainFrame.Size = UDim2.new(0,300,0,150)
-		mainFrame.Position = UDim2.new(0.5,-150,0.5,-75)
-		mainFrame.BackgroundColor3 = CurrentTheme.Background
-		mainFrame.Parent = keyGui
-		local mfc = createUICorner(12)
-		if mfc then mfc.Parent = mainFrame end
-
-		local titleLabel = Instance.new("TextLabel")
-		titleLabel.Size = UDim2.new(1,0,0,40)
-		titleLabel.BackgroundTransparency = 1
-		titleLabel.Text = config.Title or "Enter Key"
-		titleLabel.Font = Enum.Font.GothamBold
-		titleLabel.TextSize = 20
-		titleLabel.TextColor3 = CurrentTheme.Text
-		titleLabel.Parent = mainFrame
-
-		local inputBox = Instance.new("TextBox")
-		inputBox.Size = UDim2.new(1,-20,0,40)
-		inputBox.Position = UDim2.new(0,10,0,60)
-		inputBox.BackgroundColor3 = CurrentTheme.Button
-		inputBox.PlaceholderText = config.Placeholder or "Enter key here"
-		inputBox.TextColor3 = CurrentTheme.Text
-		inputBox.Font = Enum.Font.Gotham
-		inputBox.TextSize = 18
-		inputBox.Parent = mainFrame
-		local ibc = createUICorner(6)
-		if ibc then ibc.Parent = inputBox end
-
-		local submitButton = Instance.new("TextButton")
-		submitButton.Size = UDim2.new(1,-20,0,30)
-		submitButton.Position = UDim2.new(0,10,0,110)
-		submitButton.BackgroundColor3 = CurrentTheme.Accent
-		submitButton.Text = "Submit"
-		submitButton.TextColor3 = CurrentTheme.Text
-		submitButton.Font = Enum.Font.GothamBold
-		submitButton.TextSize = 16
-		submitButton.Parent = mainFrame
-		local sbc = createUICorner(6)
-		if sbc then sbc.Parent = submitButton end
-
-		submitButton.MouseButton1Click:Connect(function()
-			if inputBox.Text == config.Key then
-				keyGui:Destroy()
-				if config.Callback then
-					local s, e = pcall(config.Callback)
-					if not s then notifyError("KeySystem callback error: " .. tostring(e)) end
-				end
-			else
-				inputBox.Text = ""
-				inputBox.PlaceholderText = "Incorrect key!"
-			end
 		end)
 	end
 
