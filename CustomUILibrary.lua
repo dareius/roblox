@@ -5,7 +5,7 @@ local LocalPlayer = Players.LocalPlayer local PlayerGui = LocalPlayer:WaitForChi
 
 local Library = {} Library.__index = Library
 
-local Themes = { ["Midnight"] = { Background = Color3.fromRGB(20, 20, 30), Accent = Color3.fromRGB(0, 120, 255), Text = Color3.fromRGB(255, 255, 255), Section = Color3.fromRGB(30, 30, 40), Button = Color3.fromRGB(40, 40, 50), }, }
+local Themes = { ["Midnight"] = { Background = Color3.fromRGB(20, 20, 30), Accent = Color3.fromRGB(0, 120, 255), Text = Color3.fromRGB(255, 255, 255), Section = Color3.fromRGB(30, 30, 40), Button = Color3.fromRGB(40, 40, 50), }, ["Ocean"] = { Background = Color3.fromRGB(10, 25, 35), Accent = Color3.fromRGB(0, 180, 255), Text = Color3.fromRGB(235, 255, 255), Section = Color3.fromRGB(20, 40, 60), Button = Color3.fromRGB(30, 60, 90), }, ["Sunset"] = { Background = Color3.fromRGB(45, 20, 30), Accent = Color3.fromRGB(255, 120, 100), Text = Color3.fromRGB(255, 240, 230), Section = Color3.fromRGB(60, 30, 40), Button = Color3.fromRGB(80, 40, 50), }, ["Cyber"] = { Background = Color3.fromRGB(15, 15, 25), Accent = Color3.fromRGB(255, 0, 255), Text = Color3.fromRGB(200, 200, 255), Section = Color3.fromRGB(30, 30, 50), Button = Color3.fromRGB(50, 30, 70), } }
 
 local CurrentTheme = Themes["Midnight"]
 
@@ -125,11 +125,110 @@ function self:CreateTab(name)
             btn.TextSize = 14
             btn.Parent = container
             createUICorner(6).Parent = btn
-
             btn.MouseButton1Click:Connect(callback)
         end
 
-        -- Other components: sliders, toggles, dropdowns (to be added)
+        function section:CreateToggle(text, default, callback)
+            local toggle = Instance.new("TextButton")
+            toggle.Size = UDim2.new(1, -10, 0, 30)
+            toggle.BackgroundColor3 = CurrentTheme.Button
+            toggle.Text = text .. ": OFF"
+            toggle.TextColor3 = CurrentTheme.Text
+            toggle.Font = Enum.Font.Gotham
+            toggle.TextSize = 14
+            toggle.Parent = container
+            createUICorner(6).Parent = toggle
+            local toggled = default or false
+            toggle.Text = text .. ": " .. (toggled and "ON" or "OFF")
+            toggle.MouseButton1Click:Connect(function()
+                toggled = not toggled
+                toggle.Text = text .. ": " .. (toggled and "ON" or "OFF")
+                callback(toggled)
+            end)
+        end
+
+        function section:CreateSlider(text, min, max, default, callback)
+            local sliderLabel = Instance.new("TextLabel")
+            sliderLabel.Size = UDim2.new(1, -10, 0, 20)
+            sliderLabel.BackgroundTransparency = 1
+            sliderLabel.Text = text .. ": " .. tostring(default)
+            sliderLabel.TextColor3 = CurrentTheme.Text
+            sliderLabel.Font = Enum.Font.Gotham
+            sliderLabel.TextSize = 14
+            sliderLabel.Parent = container
+
+            local slider = Instance.new("TextButton")
+            slider.Size = UDim2.new(1, -10, 0, 20)
+            slider.BackgroundColor3 = CurrentTheme.Button
+            slider.Text = ""
+            slider.Parent = container
+            createUICorner(6).Parent = slider
+
+            local fill = Instance.new("Frame")
+            fill.BackgroundColor3 = CurrentTheme.Accent
+            fill.Size = UDim2.new((default - min)/(max - min), 0, 1, 0)
+            fill.Parent = slider
+
+            local dragging = false
+            slider.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    dragging = true
+                end
+            end)
+            UserInputService.InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    dragging = false
+                end
+            end)
+            UserInputService.InputChanged:Connect(function(input)
+                if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                    local rel = input.Position.X - slider.AbsolutePosition.X
+                    local pct = math.clamp(rel / slider.AbsoluteSize.X, 0, 1)
+                    fill.Size = UDim2.new(pct, 0, 1, 0)
+                    local val = math.floor(min + (max - min) * pct)
+                    sliderLabel.Text = text .. ": " .. val
+                    callback(val)
+                end
+            end)
+        end
+
+        function section:CreateDropdown(title, list, callback)
+            local drop = Instance.new("TextButton")
+            drop.Size = UDim2.new(1, -10, 0, 30)
+            drop.BackgroundColor3 = CurrentTheme.Button
+            drop.Text = title
+            drop.TextColor3 = CurrentTheme.Text
+            drop.Font = Enum.Font.Gotham
+            drop.TextSize = 14
+            drop.Parent = container
+            createUICorner(6).Parent = drop
+
+            local open = false
+            drop.MouseButton1Click:Connect(function()
+                open = not open
+                for _, item in ipairs(list) do
+                    local opt = Instance.new("TextButton")
+                    opt.Size = UDim2.new(1, -10, 0, 30)
+                    opt.BackgroundColor3 = CurrentTheme.Section
+                    opt.Text = tostring(item)
+                    opt.TextColor3 = CurrentTheme.Text
+                    opt.Font = Enum.Font.Gotham
+                    opt.TextSize = 13
+                    opt.Parent = container
+                    createUICorner(6).Parent = opt
+                    opt.MouseButton1Click:Connect(function()
+                        drop.Text = title .. ": " .. tostring(item)
+                        callback(item)
+                        open = false
+                        for _, child in ipairs(container:GetChildren()) do
+                            if child:IsA("TextButton") and child ~= drop then
+                                child:Destroy()
+                            end
+                        end
+                    end)
+                end
+            end)
+        end
 
         table.insert(tab.Sections, section)
         return section
