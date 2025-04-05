@@ -1,5 +1,6 @@
 --// CustomUILibrary.lua
--- Robust Rayfield-style UI Library (Executor-friendly)
+-- Improved UI Library with Expanded Element Support and Robust Error Handling
+
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
@@ -9,6 +10,7 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local Library = {}
 Library.__index = Library
 
+-- Themes definition
 local Themes = {
 	["Midnight"] = {
 		Background = Color3.fromRGB(20,20,30),
@@ -124,6 +126,7 @@ function Library:AddTheme(name, themeTable)
 	end
 end
 
+-- CreateWindow now creates a draggable window with a fixed header, tab holder, and scrolling tab pages.
 function Library:CreateWindow(config)
 	local self = setmetatable({}, Library)
 	self.Tabs = {}
@@ -133,7 +136,7 @@ function Library:CreateWindow(config)
 	gui.Name = "CustomUILibrary"
 	gui.ResetOnSpawn = false
 	gui.Parent = PlayerGui
-
+	
 	local main = Instance.new("Frame")
 	main.Size = UDim2.new(0, 500, 0, 320)
 	main.Position = UDim2.new(0.5, -250, 0.5, -160)
@@ -144,7 +147,7 @@ function Library:CreateWindow(config)
 	main.Draggable = true
 	local corner = createUICorner(12)
 	if corner then corner.Parent = main end
-
+	
 	local title = Instance.new("TextLabel")
 	title.Text = config.Title or "Custom UI"
 	title.Size = UDim2.new(1, 0, 0, 40)
@@ -153,7 +156,7 @@ function Library:CreateWindow(config)
 	title.TextSize = 20
 	title.TextColor3 = CurrentTheme.Text
 	title.Parent = main
-
+	
 	local tabHolder = Instance.new("Frame")
 	tabHolder.Size = UDim2.new(0, 120, 1, -40)
 	tabHolder.Position = UDim2.new(0, 0, 0, 40)
@@ -162,29 +165,19 @@ function Library:CreateWindow(config)
 	tabHolder.Parent = main
 	local tc = createUICorner(0)
 	if tc then tc.Parent = tabHolder end
-
-	-- Use ScrollingFrame for the content to allow vertical scrolling
-	local contentHolder = Instance.new("ScrollingFrame")
+	
+	-- The content area will be a ScrollingFrame so that overflow is handled.
+	local contentHolder = Instance.new("Frame")
 	contentHolder.Size = UDim2.new(1, -120, 1, -40)
 	contentHolder.Position = UDim2.new(0, 120, 0, 40)
 	contentHolder.BackgroundColor3 = CurrentTheme.Background
 	contentHolder.BorderSizePixel = 0
-	contentHolder.CanvasSize = UDim2.new(0, 0, 0, 0)
-	contentHolder.ScrollBarThickness = 4
 	contentHolder.Parent = main
-
-	local uiLayout = Instance.new("UIListLayout")
-	uiLayout.Padding = UDim.new(0, 8)
-	uiLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	uiLayout.Parent = contentHolder
-	uiLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-		contentHolder.CanvasSize = UDim2.new(0, 0, 0, uiLayout.AbsoluteContentSize.Y)
-	end)
-
+	
 	function self:CreateTab(name)
 		local tab = {}
 		tab.Sections = {}
-
+		
 		local tabBtn = Instance.new("TextButton")
 		tabBtn.Size = UDim2.new(1, 0, 0, 30)
 		tabBtn.BackgroundColor3 = CurrentTheme.Button
@@ -195,8 +188,8 @@ function Library:CreateWindow(config)
 		tabBtn.Parent = tabHolder
 		local tcb = createUICorner(6)
 		if tcb then tcb.Parent = tabBtn end
-
-		-- Instead of replacing the contentHolder, each tab gets its own scrolling frame
+		
+		-- Each tab gets its own scrolling frame for content
 		local tabPage = Instance.new("ScrollingFrame")
 		tabPage.Size = UDim2.new(1, 0, 1, 0)
 		tabPage.BackgroundTransparency = 1
@@ -204,7 +197,7 @@ function Library:CreateWindow(config)
 		tabPage.CanvasSize = UDim2.new(0, 0, 0, 0)
 		tabPage.ScrollBarThickness = 4
 		tabPage.Parent = contentHolder
-
+		
 		local layout = Instance.new("UIListLayout")
 		layout.Padding = UDim.new(0, 8)
 		layout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -212,16 +205,17 @@ function Library:CreateWindow(config)
 		layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 			tabPage.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y)
 		end)
-
+		
 		tab.Content = tabPage
-
+		
 		tabBtn.MouseButton1Click:Connect(function()
 			for _, t in pairs(self.Tabs) do
 				t.Content.Visible = false
 			end
 			tabPage.Visible = true
 		end)
-
+		
+		-- CreateSection creates a new section (container) inside the tab.
 		function tab:CreateSection(titleText)
 			local section = {}
 			local container = Instance.new("Frame")
@@ -230,7 +224,7 @@ function Library:CreateWindow(config)
 			container.Parent = tabPage
 			local cc = createUICorner(8)
 			if cc then cc.Parent = container end
-
+			
 			local label = Instance.new("TextLabel")
 			label.Size = UDim2.new(1, -10, 1, 0)
 			label.Position = UDim2.new(0, 5, 0, 0)
@@ -241,7 +235,7 @@ function Library:CreateWindow(config)
 			label.TextSize = 16
 			label.TextXAlignment = Enum.TextXAlignment.Left
 			label.Parent = container
-
+			
 			local sectionLayout = Instance.new("UIListLayout")
 			sectionLayout.Padding = UDim.new(0, 6)
 			sectionLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -249,7 +243,9 @@ function Library:CreateWindow(config)
 			sectionLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 				container.Size = UDim2.new(1, -10, 0, sectionLayout.AbsoluteContentSize.Y + 30)
 			end)
-
+			
+			-- Create various UI elements:
+			
 			function section:CreateButton(text, callback)
 				local btn = Instance.new("TextButton")
 				btn.Size = UDim2.new(1, -10, 0, 30)
@@ -266,7 +262,7 @@ function Library:CreateWindow(config)
 					if not s then notifyError("Button error: " .. tostring(e)) end
 				end)
 			end
-
+			
 			function section:CreateToggle(text, default, callback)
 				local toggle = Instance.new("TextButton")
 				toggle.Size = UDim2.new(1, -10, 0, 30)
@@ -286,7 +282,7 @@ function Library:CreateWindow(config)
 					if not s then notifyError("Toggle error: " .. tostring(e)) end
 				end)
 			end
-
+			
 			function section:CreateSlider(text, min, max, default, callback)
 				local sliderLabel = Instance.new("TextLabel")
 				sliderLabel.Size = UDim2.new(1, -10, 0, 20)
@@ -296,21 +292,20 @@ function Library:CreateWindow(config)
 				sliderLabel.Font = Enum.Font.Gotham
 				sliderLabel.TextSize = 14
 				sliderLabel.Parent = container
-
+				
 				local slider = Instance.new("Frame")
 				slider.Size = UDim2.new(1, -10, 0, 20)
 				slider.BackgroundColor3 = CurrentTheme.Button
 				slider.Parent = container
 				local sc = createUICorner(6)
 				if sc then sc.Parent = slider end
-
+				
 				local fill = Instance.new("Frame")
 				fill.BackgroundColor3 = CurrentTheme.Accent
-				-- Set fill size based on default value, clamped between min and max
 				local pct = math.clamp((default - min) / (max - min), 0, 1)
 				fill.Size = UDim2.new(pct, 0, 1, 0)
 				fill.Parent = slider
-
+				
 				local dragging = false
 				slider.InputBegan:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -334,7 +329,7 @@ function Library:CreateWindow(config)
 					end
 				end)
 			end
-
+			
 			function section:CreateDropdown(title, list, callback)
 				local drop = Instance.new("TextButton")
 				drop.Size = UDim2.new(1, -10, 0, 30)
@@ -346,7 +341,7 @@ function Library:CreateWindow(config)
 				drop.Parent = container
 				local dc = createUICorner(6)
 				if dc then dc.Parent = drop end
-
+				
 				local open = false
 				local dropdownItems = {}
 				local function closeDropdown()
@@ -358,7 +353,7 @@ function Library:CreateWindow(config)
 					end
 					dropdownItems = {}
 				end
-
+				
 				drop.MouseButton1Click:Connect(function()
 					if open then
 						closeDropdown()
@@ -397,7 +392,7 @@ function Library:CreateWindow(config)
 					end
 				end)
 			end
-
+			
 			function section:CreateTextbox(labelText, placeholder, callback)
 				local boxLabel = Instance.new("TextLabel")
 				boxLabel.Size = UDim2.new(1, -10, 0, 20)
@@ -407,18 +402,22 @@ function Library:CreateWindow(config)
 				boxLabel.Font = Enum.Font.Gotham
 				boxLabel.TextSize = 14
 				boxLabel.Parent = container
-
+				
+				-- Multi-line textbox option:
 				local textbox = Instance.new("TextBox")
-				textbox.Size = UDim2.new(1, -10, 0, 30)
+				textbox.Size = UDim2.new(1, -10, 0, 60)
 				textbox.BackgroundColor3 = CurrentTheme.Button
 				textbox.PlaceholderText = placeholder
 				textbox.TextColor3 = CurrentTheme.Text
 				textbox.Font = Enum.Font.Gotham
 				textbox.TextSize = 14
+				textbox.TextWrapped = true
+				textbox.ClearTextOnFocus = false
+				textbox.MultiLine = true
 				textbox.Parent = container
 				local tc = createUICorner(6)
 				if tc then tc.Parent = textbox end
-
+				
 				textbox.FocusLost:Connect(function(enterPressed)
 					if enterPressed then
 						local s, e = pcall(function() callback(textbox.Text) end)
@@ -426,7 +425,7 @@ function Library:CreateWindow(config)
 					end
 				end)
 			end
-
+			
 			function section:CreateKeybind(labelText, defaultKey, callback)
 				local bindLabel = Instance.new("TextLabel")
 				bindLabel.Size = UDim2.new(1, -10, 0, 20)
@@ -436,7 +435,7 @@ function Library:CreateWindow(config)
 				bindLabel.Font = Enum.Font.Gotham
 				bindLabel.TextSize = 14
 				bindLabel.Parent = container
-
+				
 				local currentKey = defaultKey
 				bindLabel.InputBegan:Connect(function(input)
 					if input.KeyCode == Enum.KeyCode.Backspace then
@@ -453,7 +452,7 @@ function Library:CreateWindow(config)
 					end
 				end)
 			end
-
+			
 			function section:CreateColorPicker(labelText, defaultColor, callback)
 				local pickerLabel = Instance.new("TextLabel")
 				pickerLabel.Size = UDim2.new(1, -10, 0, 20)
@@ -463,8 +462,7 @@ function Library:CreateWindow(config)
 				pickerLabel.Font = Enum.Font.Gotham
 				pickerLabel.TextSize = 14
 				pickerLabel.Parent = container
-
-				-- Create a color button that, when clicked, opens a small palette.
+				
 				local colorBtn = Instance.new("TextButton")
 				colorBtn.Size = UDim2.new(1, -10, 0, 30)
 				colorBtn.BackgroundColor3 = defaultColor
@@ -472,9 +470,9 @@ function Library:CreateWindow(config)
 				colorBtn.Parent = container
 				local cc = createUICorner(6)
 				if cc then cc.Parent = colorBtn end
-
+				
 				colorBtn.MouseButton1Click:Connect(function()
-					-- Create a simple palette for color selection.
+					-- Simple palette popup
 					local palette = Instance.new("Frame")
 					palette.Size = UDim2.new(0, 150, 0, 60)
 					palette.Position = colorBtn.AbsolutePosition + Vector2.new(0, colorBtn.AbsoluteSize.Y)
@@ -483,8 +481,16 @@ function Library:CreateWindow(config)
 					local pcc = createUICorner(6)
 					if pcc then pcc.Parent = palette end
 					
-					-- Preset colors for the palette.
-					local colors = {Color3.fromRGB(255,0,0), Color3.fromRGB(0,255,0), Color3.fromRGB(0,0,255), Color3.fromRGB(255,255,0), Color3.fromRGB(255,0,255), Color3.fromRGB(0,255,255)}
+					local colors = {
+						Color3.fromRGB(255,0,0),
+						Color3.fromRGB(0,255,0),
+						Color3.fromRGB(0,0,255),
+						Color3.fromRGB(255,255,0),
+						Color3.fromRGB(255,0,255),
+						Color3.fromRGB(0,255,255),
+						Color3.fromRGB(255,255,255),
+						Color3.fromRGB(0,0,0)
+					}
 					local grid = Instance.new("UIGridLayout")
 					grid.CellSize = UDim2.new(0, 48, 0, 48)
 					grid.CellPadding = UDim2.new(0, 2, 0, 2)
@@ -507,13 +513,12 @@ function Library:CreateWindow(config)
 							palette:Destroy()
 						end)
 					end
-					-- Close the palette if clicking outside.
 					delay(5, function()
 						if palette and palette.Parent then palette:Destroy() end
 					end)
 				end)
 			end
-
+			
 			function section:CreateLabel(text)
 				local label = Instance.new("TextLabel")
 				label.Size = UDim2.new(1, -10, 0, 20)
@@ -524,15 +529,68 @@ function Library:CreateWindow(config)
 				label.TextSize = 14
 				label.Parent = container
 			end
-
+			
+			-- Additional element: Checkbox
+			function section:CreateCheckbox(text, default, callback)
+				local checkbox = Instance.new("TextButton")
+				checkbox.Size = UDim2.new(1, -10, 0, 30)
+				checkbox.BackgroundColor3 = CurrentTheme.Button
+				local state = default or false
+				checkbox.Text = (state and "[X] " or "[ ] ") .. text
+				checkbox.TextColor3 = CurrentTheme.Text
+				checkbox.Font = Enum.Font.Gotham
+				checkbox.TextSize = 14
+				checkbox.Parent = container
+				local cc = createUICorner(6)
+				if cc then cc.Parent = checkbox end
+				checkbox.MouseButton1Click:Connect(function()
+					state = not state
+					checkbox.Text = (state and "[X] " or "[ ] ") .. text
+					local s, e = pcall(function() callback(state) end)
+					if not s then notifyError("Checkbox error: " .. tostring(e)) end
+				end)
+			end
+			
+			-- Additional element: Progress Bar
+			function section:CreateProgressBar(text, default, callback)
+				local label = Instance.new("TextLabel")
+				label.Size = UDim2.new(1, -10, 0, 20)
+				label.BackgroundTransparency = 1
+				label.Text = text .. ": " .. tostring(default) .. "%"
+				label.TextColor3 = CurrentTheme.Text
+				label.Font = Enum.Font.Gotham
+				label.TextSize = 14
+				label.Parent = container
+				
+				local bar = Instance.new("Frame")
+				bar.Size = UDim2.new(1, -10, 0, 20)
+				bar.BackgroundColor3 = CurrentTheme.Button
+				bar.Parent = container
+				local bc = createUICorner(6)
+				if bc then bc.Parent = bar end
+				
+				local fill = Instance.new("Frame")
+				fill.BackgroundColor3 = CurrentTheme.Accent
+				local pct = math.clamp(default/100, 0, 1)
+				fill.Size = UDim2.new(pct, 0, 1, 0)
+				fill.Parent = bar
+				
+				function label:SetProgress(val)
+					local newPct = math.clamp(val/100, 0, 1)
+					fill.Size = UDim2.new(newPct, 0, 1, 0)
+					label.Text = text .. ": " .. tostring(val) .. "%"
+					pcall(function() callback(val) end)
+				end
+			end
+			
 			table.insert(tab.Sections, section)
 			return section
 		end
-
+		
 		table.insert(self.Tabs, tab)
 		return tab
 	end
-
+	
 	-- CreateNotification: Displays a temporary message.
 	function Library:CreateNotification(title, message, duration)
 		local notif = Instance.new("Frame")
@@ -542,7 +600,7 @@ function Library:CreateWindow(config)
 		notif.Parent = PlayerGui
 		local nc = createUICorner(8)
 		if nc then nc.Parent = notif end
-
+		
 		local tLabel = Instance.new("TextLabel")
 		tLabel.Size = UDim2.new(1,0,0,30)
 		tLabel.BackgroundTransparency = 1
@@ -551,7 +609,7 @@ function Library:CreateWindow(config)
 		tLabel.Font = Enum.Font.GothamBold
 		tLabel.TextSize = 16
 		tLabel.Parent = notif
-
+		
 		local mLabel = Instance.new("TextLabel")
 		mLabel.Size = UDim2.new(1,0,0,40)
 		mLabel.Position = UDim2.new(0,0,0,30)
@@ -561,7 +619,7 @@ function Library:CreateWindow(config)
 		mLabel.Font = Enum.Font.Gotham
 		mLabel.TextSize = 14
 		mLabel.Parent = notif
-
+		
 		TweenService:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1,-310,0,100)}):Play()
 		delay(duration, function()
 			TweenService:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1,310,0,100)}):Play()
@@ -569,7 +627,7 @@ function Library:CreateWindow(config)
 			notif:Destroy()
 		end)
 	end
-
+	
 	return self
 end
 
