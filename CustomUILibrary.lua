@@ -103,7 +103,6 @@ end
 function Library:CreateWindow(config)
 	local self = setmetatable({}, Library)
 	self.Tabs = {}
-
 	CurrentTheme = Themes[config.Theme] or Themes["Midnight"]
 
 	local gui = Instance.new("ScreenGui")
@@ -181,7 +180,6 @@ function Library:CreateWindow(config)
 
 		function tab:CreateSection(titleText)
 			local section = {}
-
 			local container = Instance.new("Frame")
 			container.Size = UDim2.new(1, -10, 0, 30)
 			container.BackgroundColor3 = CurrentTheme.Section
