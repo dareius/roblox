@@ -1,3 +1,8 @@
+--[[
+	UILib v2 - Sleek, glowing, animated UI library
+	By ChatGPT for user with perfect visuals in mind
+--]]
+
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
@@ -7,13 +12,6 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 local UILib = {}
 local dragging, dragInput, dragStart, startPos
 
--- Create main screen GUI
-local ScreenGui = Instance.new("ScreenGui", PlayerGui)
-ScreenGui.Name = "SmoothUILib"
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.ResetOnSpawn = false
-
--- Core Functions
 local function makeDraggable(frame)
 	frame.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -43,122 +41,151 @@ local function makeDraggable(frame)
 	end)
 end
 
--- CreateWindow
 function UILib:CreateWindow(titleText)
-	local main = Instance.new("Frame")
-	main.Size = UDim2.new(0, 500, 0, 300)
-	main.Position = UDim2.new(0.5, -250, 0.5, -150)
-	main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-	main.BorderSizePixel = 0
-	main.ClipsDescendants = true
-	main.AnchorPoint = Vector2.new(0.5, 0.5)
-	main.Parent = ScreenGui
-	main.BackgroundTransparency = 1
+	local ScreenGui = Instance.new("ScreenGui", PlayerGui)
+	ScreenGui.Name = "SmoothUILib"
+	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	ScreenGui.ResetOnSpawn = false
 
-	local round = Instance.new("UICorner", main)
-	round.CornerRadius = UDim.new(0, 12)
+	local Main = Instance.new("Frame")
+	Main.Name = "MainWindow"
+	Main.AnchorPoint = Vector2.new(0.5, 0.5)
+	Main.Position = UDim2.new(0.5, 0, 0.5, 0)
+	Main.Size = UDim2.new(0, 550, 0, 350)
+	Main.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+	Main.BackgroundTransparency = 0.1
+	Main.ClipsDescendants = true
+	Main.Parent = ScreenGui
 
-	local shadow = Instance.new("ImageLabel", main)
-	shadow.Image = "rbxassetid://1316045217"
-	shadow.ImageTransparency = 0.4
-	shadow.Size = UDim2.new(1, 60, 1, 60)
-	shadow.Position = UDim2.new(0.5, -30, 0.5, -30)
-	shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-	shadow.BackgroundTransparency = 1
-	shadow.ZIndex = 0
+	local Corner = Instance.new("UICorner", Main)
+	Corner.CornerRadius = UDim.new(0, 12)
 
-	local title = Instance.new("TextLabel", main)
-	title.Text = titleText or "Smooth UI"
-	title.Font = Enum.Font.GothamBold
-	title.TextColor3 = Color3.fromRGB(255, 255, 255)
-	title.TextSize = 20
-	title.BackgroundTransparency = 1
-	title.Position = UDim2.new(0, 10, 0, 10)
-	title.Size = UDim2.new(1, -20, 0, 30)
-	title.TextXAlignment = Enum.TextXAlignment.Left
+	local Shadow = Instance.new("ImageLabel", Main)
+	Shadow.Name = "Shadow"
+	Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+	Shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+	Shadow.Size = UDim2.new(1, 60, 1, 60)
+	Shadow.ZIndex = 0
+	Shadow.Image = "rbxassetid://1316045217"
+	Shadow.ImageTransparency = 0.55
+	Shadow.BackgroundTransparency = 1
 
-	local tabsHolder = Instance.new("Frame", main)
-	tabsHolder.Position = UDim2.new(0, 0, 0, 50)
-	tabsHolder.Size = UDim2.new(0, 130, 1, -50)
-	tabsHolder.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-	Instance.new("UICorner", tabsHolder).CornerRadius = UDim.new(0, 8)
+	local Title = Instance.new("TextLabel", Main)
+	Title.Text = titleText or "Perfect UI"
+	Title.Size = UDim2.new(1, -20, 0, 40)
+	Title.Position = UDim2.new(0, 10, 0, 0)
+	Title.BackgroundTransparency = 1
+	Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Title.TextSize = 20
+	Title.Font = Enum.Font.GothamBold
+	Title.TextXAlignment = Enum.TextXAlignment.Left
 
-	local tabList = Instance.new("UIListLayout", tabsHolder)
-	tabList.Padding = UDim.new(0, 6)
-	tabList.SortOrder = Enum.SortOrder.LayoutOrder
+	local Tabs = Instance.new("Frame", Main)
+	Tabs.Position = UDim2.new(0, 0, 0, 45)
+	Tabs.Size = UDim2.new(0, 140, 1, -45)
+	Tabs.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+	Tabs.BackgroundTransparency = 0.05
+	Instance.new("UICorner", Tabs).CornerRadius = UDim.new(0, 8)
 
-	local contentHolder = Instance.new("Frame", main)
-	contentHolder.Position = UDim2.new(0, 140, 0, 50)
-	contentHolder.Size = UDim2.new(1, -150, 1, -60)
-	contentHolder.BackgroundTransparency = 1
+	local TabList = Instance.new("UIListLayout", Tabs)
+	TabList.SortOrder = Enum.SortOrder.LayoutOrder
+	TabList.Padding = UDim.new(0, 6)
 
-	local function switchToTab(tabFrame)
-		for _, v in ipairs(contentHolder:GetChildren()) do
+	local Content = Instance.new("Frame", Main)
+	Content.Position = UDim2.new(0, 150, 0, 45)
+	Content.Size = UDim2.new(1, -160, 1, -55)
+	Content.BackgroundTransparency = 1
+
+	local function switchTab(toFrame)
+		for _, v in ipairs(Content:GetChildren()) do
 			if v:IsA("Frame") then
 				v.Visible = false
 			end
 		end
-		tabFrame.Visible = true
+		toFrame.Visible = true
 	end
 
 	local windowAPI = {}
 
-	function windowAPI:CreateTab(tabName)
-		local tabButton = Instance.new("TextButton", tabsHolder)
-		tabButton.Text = tabName
-		tabButton.Size = UDim2.new(1, -10, 0, 30)
-		tabButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-		tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-		tabButton.Font = Enum.Font.Gotham
-		tabButton.TextSize = 14
-		tabButton.BorderSizePixel = 0
-		tabButton.AutoButtonColor = false
-		Instance.new("UICorner", tabButton).CornerRadius = UDim.new(0, 6)
+	function windowAPI:CreateTab(name)
+		local tabBtn = Instance.new("TextButton", Tabs)
+		tabBtn.Text = name
+		tabBtn.Size = UDim2.new(1, -10, 0, 30)
+		tabBtn.Position = UDim2.new(0, 5, 0, 0)
+		tabBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+		tabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+		tabBtn.Font = Enum.Font.Gotham
+		tabBtn.TextSize = 14
+		tabBtn.BorderSizePixel = 0
+		tabBtn.AutoButtonColor = false
+		Instance.new("UICorner", tabBtn).CornerRadius = UDim.new(0, 6)
 
-		local tabFrame = Instance.new("Frame", contentHolder)
-		tabFrame.Name = tabName .. "_Content"
+		local tabFrame = Instance.new("Frame", Content)
 		tabFrame.Size = UDim2.new(1, 0, 1, 0)
 		tabFrame.BackgroundTransparency = 1
 		tabFrame.Visible = false
 
-		tabButton.MouseEnter:Connect(function()
-			TweenService:Create(tabButton, TweenInfo.new(0.2), {
-				BackgroundColor3 = Color3.fromRGB(55, 55, 55)
-			}):Play()
+		local tabList = Instance.new("UIListLayout", tabFrame)
+		tabList.Padding = UDim.new(0, 6)
+		tabList.SortOrder = Enum.SortOrder.LayoutOrder
+
+		tabBtn.MouseButton1Click:Connect(function()
+			switchTab(tabFrame)
 		end)
 
-		tabButton.MouseLeave:Connect(function()
-			TweenService:Create(tabButton, TweenInfo.new(0.2), {
-				BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-			}):Play()
-		end)
-
-		tabButton.MouseButton1Click:Connect(function()
-			switchToTab(tabFrame)
-		end)
-
-		if #contentHolder:GetChildren() == 1 then
-			switchToTab(tabFrame)
+		if #Content:GetChildren() == 1 then
+			switchTab(tabFrame)
 		end
 
 		local tabAPI = {}
 
-		function tabAPI:GetFrame()
-			return tabFrame
+		function tabAPI:AddButton(text, callback)
+			local button = Instance.new("TextButton", tabFrame)
+			button.Text = text
+			button.Size = UDim2.new(1, 0, 0, 30)
+			button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+			button.TextColor3 = Color3.fromRGB(255, 255, 255)
+			button.Font = Enum.Font.Gotham
+			button.TextSize = 14
+			button.AutoButtonColor = true
+			Instance.new("UICorner", button).CornerRadius = UDim.new(0, 6)
+
+			button.MouseButton1Click:Connect(function()
+				pcall(callback)
+			end)
+		end
+
+		function tabAPI:AddToggle(text, callback)
+			local toggle = Instance.new("TextButton", tabFrame)
+			toggle.Text = "OFF - " .. text
+			toggle.Size = UDim2.new(1, 0, 0, 30)
+			toggle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+			toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+			toggle.Font = Enum.Font.Gotham
+			toggle.TextSize = 14
+			toggle.AutoButtonColor = false
+			Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 6)
+
+			local state = false
+			toggle.MouseButton1Click:Connect(function()
+				state = not state
+				toggle.Text = (state and "ON" or "OFF") .. " - " .. text
+				pcall(callback, state)
+			end)
 		end
 
 		return tabAPI
 	end
 
 	-- Opening animation
-	main.Position = UDim2.new(0.5, -250, 0.5, -400)
-	main.BackgroundTransparency = 1
-	TweenService:Create(main, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {
-		Position = UDim2.new(0.5, -250, 0.5, -150),
-		BackgroundTransparency = 0
+	Main.Position = UDim2.new(0.5, 0, 0.5, -400)
+	Main.BackgroundTransparency = 1
+	TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {
+		Position = UDim2.new(0.5, 0, 0.5, 0),
+		BackgroundTransparency = 0.1
 	}):Play()
 
-	makeDraggable(main)
+	makeDraggable(Main)
 	return windowAPI
 end
 
