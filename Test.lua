@@ -12,12 +12,12 @@ local OrionLib = {
 	Flags = {},
 	Themes = {
 		Default = {
-			Main = Color3.fromRGB(25, 25, 25),
-			Second = Color3.fromRGB(32, 32, 32),
-			Stroke = Color3.fromRGB(60, 60, 60),
-			Divider = Color3.fromRGB(60, 60, 60),
-			Text = Color3.fromRGB(240, 240, 240),
-			TextDark = Color3.fromRGB(150, 150, 150)
+			Main = Color3.fromRGB(15, 15, 20),
+			Second = Color3.fromRGB(25, 25, 35),
+			Stroke = Color3.fromRGB(70, 70, 90),
+			Divider = Color3.fromRGB(40, 40, 55),
+			Text = Color3.fromRGB(220, 220, 255),
+			TextDark = Color3.fromRGB(140, 140, 180)
 		}
 	},
 	SelectedTheme = "Default",
@@ -25,15 +25,15 @@ local OrionLib = {
 	SaveCfg = false
 }
 
---Feather Icons https://github.com/evoincorp/lucideblox/tree/master/src/modules/util - Created by 7kayoh
+--Lucide Icons https://github.com/lucide-icons/lucide/tree/main/packages/lucide/src/icons
 local Icons = {}
 
 local Success, Response = pcall(function()
-	Icons = HttpService:JSONDecode(game:HttpGetAsync("https://raw.githubusercontent.com/evoincorp/lucideblox/master/src/modules/util/icons.json")).icons
+	Icons = HttpService:JSONDecode(game:HttpGetAsync("https://raw.githubusercontent.com/lucide-icons/lucide/main/packages/lucide/src/icons.json"))
 end)
 
 if not Success then
-	warn("\nOrion Library - Failed to load Feather Icons. Error code: " .. Response .. "\n")
+	warn("\nOrion Library - Failed to load Lucide Icons. Error code: " .. Response .. "\n")
 end	
 
 local function GetIcon(IconName)
@@ -96,33 +96,50 @@ task.spawn(function()
 end)
 
 local function AddDraggingFunctionality(DragPoint, Main)
-	pcall(function()
-		local Dragging, DragInput, MousePos, FramePos = false
-		DragPoint.InputBegan:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-				Dragging = true
-				MousePos = Input.Position
-				FramePos = Main.Position
+    pcall(function()
+        local Dragging, DragInput, MousePos, FramePos = false, nil, nil, nil
+        local originalMouseBehavior = UserInputService.MouseBehavior
 
-				Input.Changed:Connect(function()
-					if Input.UserInputState == Enum.UserInputState.End then
-						Dragging = false
-					end
-				end)
-			end
-		end)
-		DragPoint.InputChanged:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseMovement then
-				DragInput = Input
-			end
-		end)
-		UserInputService.InputChanged:Connect(function(Input)
-			if Input == DragInput and Dragging then
-				local Delta = Input.Position - MousePos
-				TweenService:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
-			end
-		end)
-	end)
+        DragPoint.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                Dragging = true
+                MousePos = input.Position
+                FramePos = Main.Position
+                UserInputService.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition
+
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        Dragging = false
+                        UserInputService.MouseBehavior = originalMouseBehavior
+                    end
+                end)
+            end
+        end)
+
+        DragPoint.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement then
+                DragInput = input
+            end
+        end)
+
+        UserInputService.InputChanged:Connect(function(input)
+            if input == DragInput and Dragging then
+                local delta = input.Position - MousePos
+                TweenService:Create(
+                    Main,
+                    TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    {
+                        Position = UDim2.new(
+                            FramePos.X.Scale,
+                            FramePos.X.Offset + delta.X,
+                            FramePos.Y.Scale,
+                            FramePos.Y.Offset + delta.Y
+                        )
+                    }
+                ):Play()
+            end
+        end)
+    end)
 end   
 
 local function Create(Name, Properties, Children)
