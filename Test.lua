@@ -13,15 +13,15 @@ local OrionLib = {
 	Connections = {},
 	Flags = {},
 	Themes = {
-		Default = {
-			Main = Color3.fromRGB(10, 10, 10),
-			Second = Color3.fromRGB(25, 25, 20),
-			Stroke = Color3.fromRGB(50, 50, 70),
-			Divider = Color3.fromRGB(30, 30, 45),
-			Text = Color3.fromRGB(210, 210, 245),
-			TextDark = Color3.fromRGB(130, 130, 170)
-		}
-	},
+	Default = {
+		Main = Color3.fromRGB(18, 18, 18),         -- Slightly darker than original (25,25,25) for a deeper base
+		Second = Color3.fromRGB(24, 24, 24),       -- Darker secondary, maintains subtle distinction from Main
+		Stroke = Color3.fromRGB(45, 45, 45),       -- Softer, less stark stroke than original (60,60,60)
+		Divider = Color3.fromRGB(38, 38, 38),      -- Darker, more integrated divider
+		Text = Color3.fromRGB(220, 220, 220),      -- Slightly less bright than original (240,240,240) to reduce harshness on dark background
+		TextDark = Color3.fromRGB(130, 130, 130)   -- Darker secondary text, still clearly legible
+	}
+},
 	SelectedTheme = "Default",
 	Folder = nil,
 	SaveCfg = false
