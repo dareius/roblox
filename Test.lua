@@ -165,8 +165,7 @@ end
 
 
 -- Lock/Unlock utility for UI elements
-function CreateLockOverlay(parent)
-    local overlay = Instance.new("TextLabel")
+function    local overlay = Instance.new("TextLabel")
     overlay.Name = "LockedOverlay"
     overlay.Text = "Locked"
     overlay.BackgroundTransparency = 0.3
@@ -183,8 +182,7 @@ function CreateLockOverlay(parent)
     return overlay
 end
 
-function AttachLockFunctions(componentTable, parentUI)
-    componentTable.Lock = function()
+function    componentTable.Lock = function()
         if parentUI:FindFirstChild("LockedOverlay") then
             parentUI.LockedOverlay.Visible = true
             if parentUI:IsA("TextButton") or parentUI:IsA("Frame") then
