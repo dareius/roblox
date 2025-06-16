@@ -1,5 +1,3 @@
-
-
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -14,12 +12,12 @@ local OrionLib = {
 	Flags = {},
 	Themes = {
 		Default = {
-			Main = Color3.fromRGB(15, 15, 20),
-			Second = Color3.fromRGB(25, 25, 35),
-			Stroke = Color3.fromRGB(70, 70, 90),
-			Divider = Color3.fromRGB(40, 40, 55),
-			Text = Color3.fromRGB(220, 220, 255),
-			TextDark = Color3.fromRGB(140, 140, 180)
+			Main = Color3.fromRGB(25, 25, 25),
+			Second = Color3.fromRGB(32, 32, 32),
+			Stroke = Color3.fromRGB(60, 60, 60),
+			Divider = Color3.fromRGB(60, 60, 60),
+			Text = Color3.fromRGB(240, 240, 240),
+			TextDark = Color3.fromRGB(150, 150, 150)
 		}
 	},
 	SelectedTheme = "Default",
@@ -101,7 +99,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 	pcall(function()
 		local Dragging, DragInput, MousePos, FramePos = false
 		DragPoint.InputBegan:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 				Dragging = true
 				MousePos = Input.Position
 				FramePos = Main.Position
@@ -114,7 +112,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 			end
 		end)
 		DragPoint.InputChanged:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseMovement then
+			if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
 				DragInput = Input
 			end
 		end)
@@ -1054,12 +1052,12 @@ function OrionLib:MakeWindow(WindowConfig)
 				}), "Second")
 
 				SliderBar.InputBegan:Connect(function(Input)
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then 
 						Dragging = true 
 					end 
 				end)
 				SliderBar.InputEnded:Connect(function(Input) 
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then 
 						Dragging = false 
 					end 
 				end)
@@ -1291,7 +1289,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				end)
 
 				AddConnection(Click.InputEnded, function(Input)
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 						if Bind.Binding then return end
 						Bind.Binding = true
 						BindBox.Value.Text = ""
