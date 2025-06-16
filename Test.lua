@@ -1,3 +1,5 @@
+
+
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -1789,6 +1791,8 @@ function OrionLib:Destroy()
 	Orion:Destroy()
 end
 
+return OrionLib
+
 
 -- ########## ADDED THEMES AND AUTO TAB ##########
 -- THEMES
@@ -1850,4 +1854,4 @@ OrionLib.Themes["Forest"] = {
 }
 
 
-return OrionLib
+
