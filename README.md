@@ -9,7 +9,6 @@ A modern, mobile-ready Roblox UI library with tabs, animations, full method supp
 
 ### ðŸ”— Load the Library
 
-Use this in a **LocalScript** (e.g. `StarterPlayerScripts`):
 
 ```lua
 local OrionLib = loadstring(game:HttpGet(
