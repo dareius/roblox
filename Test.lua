@@ -14,13 +14,13 @@ local OrionLib = {
 	Flags = {},
 	Themes = {
 		Default = {
-			Main = Color3.fromRGB(10, 10, 15),
-			Second = Color3.fromRGB(18, 18, 28),
-			Stroke = Color3.fromRGB(50, 50, 70),
-			Divider = Color3.fromRGB(30, 30, 40),
-			Text = Color3.fromRGB(200, 200, 240),
-			TextDark = Color3.fromRGB(120, 120, 160)
-		}
+            Main = Color3.fromRGB(5, 5, 8),
+            Second = Color3.fromRGB(12, 12, 20),
+            Stroke = Color3.fromRGB(40, 40, 60),
+            Divider = Color3.fromRGB(18, 18, 28),
+            Text = Color3.fromRGB(210, 210, 235),
+            TextDark = Color3.fromRGB(140, 140, 170)
+        }
 	},
 	SelectedTheme = "Default",
 	Folder = nil,
@@ -645,6 +645,21 @@ function OrionLib:MakeWindow(WindowConfig)
 	end	
 
 	AddDraggingFunctionality(DragPoint, MainWindow)
+-- Shadow
+local Shadow = Create("ImageLabel", {
+    AnchorPoint = Vector2.new(0.5,0.5),
+    Position = UDim2.new(0.5,0,0.5,4),
+    Size = UDim2.new(1,60,1,60),
+    Image = "rbxassetid://1316045217",
+    ImageColor3 = Color3.new(0,0,0),
+    ImageTransparency = 0.7,
+    ScaleType = Enum.ScaleType.Slice,
+    SliceCenter = Rect.new(10,10,118,118),
+    BackgroundTransparency = 1,
+    ZIndex = -1
+})
+Shadow.Parent = Orion
+
 
 	AddConnection(CloseBtn.MouseButton1Up, function()
 		MainWindow.Visible = false
@@ -1241,7 +1256,9 @@ function OrionLib:MakeWindow(WindowConfig)
 				end
 				return Dropdown
 			end
-			function ElementFunction:AddColorpicker(ColorpickerConfig)
+			
+
+function ElementFunction:AddColorpicker(ColorpickerConfig)
     ColorpickerConfig = ColorpickerConfig or {}
     ColorpickerConfig.Name = ColorpickerConfig.Name or "RGB Color"
     ColorpickerConfig.Default = ColorpickerConfig.Default or Color3.fromRGB(255,255,255)
@@ -1249,21 +1266,20 @@ function OrionLib:MakeWindow(WindowConfig)
     ColorpickerConfig.Flag = ColorpickerConfig.Flag or nil
     ColorpickerConfig.Save = ColorpickerConfig.Save or false
 
-    local cp = {Value = ColorpickerConfig.Default, Type = "Colorpicker", Save = ColorpickerConfig.Save}
+    local Colorpicker = {Value = ColorpickerConfig.Default, Type = "Colorpicker", Save = ColorpickerConfig.Save}
 
-    local function clamp(val)
-        val = tonumber(val) or 0
-        if val > 255 then val = 255 elseif val < 0 then val = 0 end
-        return math.floor(val)
+    local function clamp255(v)
+        v = tonumber(v) or 0
+        if v > 255 then v = 255 elseif v < 0 then v = 0 end
+        return math.floor(v)
     end
 
-    local R = clamp(ColorpickerConfig.Default.R*255)
-    local G = clamp(ColorpickerConfig.Default.G*255)
-    local B = clamp(ColorpickerConfig.Default.B*255)
+    local R = math.floor(ColorpickerConfig.Default.R * 255)
+    local G = math.floor(ColorpickerConfig.Default.G * 255)
+    local B = math.floor(ColorpickerConfig.Default.B * 255)
 
-    -- Main frame
-    local Container = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 5), {
-        Size = UDim2.new(1, 0, 0, 90),
+    local Container = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255,255,255), 0, 5), {
+        Size = UDim2.new(1, 0, 0, 100),
         Parent = ItemParent
     }), {
         AddThemeObject(SetProps(MakeElement("Label", ColorpickerConfig.Name, 15), {
@@ -1275,57 +1291,62 @@ function OrionLib:MakeWindow(WindowConfig)
         AddThemeObject(MakeElement("Stroke"), "Stroke")
     }), "Second")
 
-    -- Input boxes
-    local function createInputBox(labelText, defaultVal, color, xPos)
-        local BoxFrame = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255,255,255), 0, 4), {
+    local Preview = AddThemeObject(MakeElement("RoundFrame", Colorpicker.Value, 0, 4), "Second")
+    Preview.Size = UDim2.new(0, 28, 0, 28)
+    Preview.Position = UDim2.new(1, -40, 0, 35)
+    Preview.Parent = Container
+
+    local Inputs = {}
+    local labels = {"R","G","B"}
+    local defaultVals = {R,G,B}
+    local colors = {Color3.fromRGB(255,80,80), Color3.fromRGB(80,255,80), Color3.fromRGB(80,80,255)}
+
+    for i=1,3 do
+        local box = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255,255,255), 0, 4), {
             Size = UDim2.new(0, 60, 0, 24),
-            Position = UDim2.new(0, xPos, 0, 35)
+            Position = UDim2.new(0, 12 + (i-1)*70, 0, 40)
         }), {
             AddThemeObject(MakeElement("Stroke"), "Stroke")
         }), "Main")
 
-        local Input = AddThemeObject(Create("TextBox", {
-            Text = tostring(defaultVal),
-            PlaceholderText = labelText,
-            Size = UDim2.new(1, 0, 1, 0),
+        local input = AddThemeObject(Create("TextBox", {
+            Text = tostring(defaultVals[i]),
+            PlaceholderText = labels[i],
+            Size = UDim2.new(1,0,1,0),
             BackgroundTransparency = 1,
             Font = Enum.Font.GothamSemibold,
             TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Center,
-            TextColor3 = color,
+            TextColor3 = colors[i],
             ClearTextOnFocus = false
         }), "Text")
-        Input.Parent = BoxFrame
-        return Input
+        input.Parent = box
+        table.insert(Inputs, input)
     end
 
-    local InputR = createInputBox("R", R, Color3.fromRGB(255,0,0), 12)
-    local InputG = createInputBox("G", G, Color3.fromRGB(0,255,0), 82)
-    local InputB = createInputBox("B", B, Color3.fromRGB(0,0,255), 152)
-
-    local Preview = AddThemeObject(MakeElement("RoundFrame", cp.Value, 0, 4), "Second")
-    Preview.Size = UDim2.new(0, 24, 0, 24)
-    Preview.Position = UDim2.new(1, -36, 0, 35)
-    Preview.Parent = Container
-
-    local function updateColor()
-        R = clamp(InputR.Text)
-        G = clamp(InputG.Text)
-        B = clamp(InputB.Text)
-        cp.Value = Color3.fromRGB(R, G, B)
-        Preview.BackgroundColor3 = cp.Value
-        ColorpickerConfig.Callback(cp.Value)
+    local function update()
+        R = clamp255(Inputs[1].Text)
+        G = clamp255(Inputs[2].Text)
+        B = clamp255(Inputs[3].Text)
+        Colorpicker.Value = Color3.fromRGB(R,G,B)
+        Preview.BackgroundColor3 = Colorpicker.Value
+        ColorpickerConfig.Callback(Colorpicker.Value)
     end
 
-    InputR.FocusLost:Connect(updateColor)
-    InputG.FocusLost:Connect(updateColor)
-    InputB.FocusLost:Connect(updateColor)
+    for _,inp in ipairs(Inputs) do
+        inp:GetPropertyChangedSignal("Text"):Connect(function()
+            if #inp.Text > 3 then
+                inp.Text = string.sub(inp.Text,1,3)
+            end
+        end)
+        inp.FocusLost:Connect(update)
+    end
 
     if ColorpickerConfig.Flag then
-        OrionLib.Flags[ColorpickerConfig.Flag] = cp
+        OrionLib.Flags[ColorpickerConfig.Flag] = Colorpicker
     end
 
-    return cp
+    return Colorpicker
 end
 
 function ElementFunction:AddBind(BindConfig)
