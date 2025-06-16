@@ -101,7 +101,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 	pcall(function()
 		local Dragging, DragInput, MousePos, FramePos = false
 		DragPoint.InputBegan:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 				Dragging = true
 				MousePos = Input.Position
 				FramePos = Main.Position
@@ -114,7 +114,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 			end
 		end)
 		DragPoint.InputChanged:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseMovement then
+			if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
 				DragInput = Input
 			end
 		end)
@@ -1054,18 +1054,18 @@ function OrionLib:MakeWindow(WindowConfig)
 				}), "Second")
 
 				SliderBar.InputBegan:Connect(function(Input)
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then 
 						Dragging = true 
 					end 
 				end)
 				SliderBar.InputEnded:Connect(function(Input) 
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then 
 						Dragging = false 
 					end 
 				end)
 
 				UserInputService.InputChanged:Connect(function(Input)
-					if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then 
+					if Dragging and (Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch) then 
 						local SizeScale = math.clamp((Input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
 						Slider:Set(SliderConfig.Min + ((SliderConfig.Max - SliderConfig.Min) * SizeScale)) 
 						SaveCfg(game.GameId)
@@ -1241,7 +1241,94 @@ function OrionLib:MakeWindow(WindowConfig)
 				end
 				return Dropdown
 			end
-			function ElementFunction:AddBind(BindConfig)
+			function ElementFunction:AddColorpicker(ColorpickerConfig)
+    ColorpickerConfig = ColorpickerConfig or {}
+    ColorpickerConfig.Name = ColorpickerConfig.Name or "RGB Color"
+    ColorpickerConfig.Default = ColorpickerConfig.Default or Color3.fromRGB(255,255,255)
+    ColorpickerConfig.Callback = ColorpickerConfig.Callback or function() end
+    ColorpickerConfig.Flag = ColorpickerConfig.Flag or nil
+    ColorpickerConfig.Save = ColorpickerConfig.Save or false
+
+    local cp = {Value = ColorpickerConfig.Default, Type = "Colorpicker", Save = ColorpickerConfig.Save}
+
+    local function clamp(val)
+        val = tonumber(val) or 0
+        if val > 255 then val = 255 elseif val < 0 then val = 0 end
+        return math.floor(val)
+    end
+
+    local R = clamp(ColorpickerConfig.Default.R*255)
+    local G = clamp(ColorpickerConfig.Default.G*255)
+    local B = clamp(ColorpickerConfig.Default.B*255)
+
+    -- Main frame
+    local Container = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 5), {
+        Size = UDim2.new(1, 0, 0, 90),
+        Parent = ItemParent
+    }), {
+        AddThemeObject(SetProps(MakeElement("Label", ColorpickerConfig.Name, 15), {
+            Size = UDim2.new(1, -12, 0, 14),
+            Position = UDim2.new(0, 12, 0, 10),
+            Font = Enum.Font.GothamBold,
+            Name = "Content"
+        }), "Text"),
+        AddThemeObject(MakeElement("Stroke"), "Stroke")
+    }), "Second")
+
+    -- Input boxes
+    local function createInputBox(labelText, defaultVal, color, xPos)
+        local BoxFrame = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255,255,255), 0, 4), {
+            Size = UDim2.new(0, 60, 0, 24),
+            Position = UDim2.new(0, xPos, 0, 35)
+        }), {
+            AddThemeObject(MakeElement("Stroke"), "Stroke")
+        }), "Main")
+
+        local Input = AddThemeObject(Create("TextBox", {
+            Text = tostring(defaultVal),
+            PlaceholderText = labelText,
+            Size = UDim2.new(1, 0, 1, 0),
+            BackgroundTransparency = 1,
+            Font = Enum.Font.GothamSemibold,
+            TextSize = 14,
+            TextXAlignment = Enum.TextXAlignment.Center,
+            TextColor3 = color,
+            ClearTextOnFocus = false
+        }), "Text")
+        Input.Parent = BoxFrame
+        return Input
+    end
+
+    local InputR = createInputBox("R", R, Color3.fromRGB(255,0,0), 12)
+    local InputG = createInputBox("G", G, Color3.fromRGB(0,255,0), 82)
+    local InputB = createInputBox("B", B, Color3.fromRGB(0,0,255), 152)
+
+    local Preview = AddThemeObject(MakeElement("RoundFrame", cp.Value, 0, 4), "Second")
+    Preview.Size = UDim2.new(0, 24, 0, 24)
+    Preview.Position = UDim2.new(1, -36, 0, 35)
+    Preview.Parent = Container
+
+    local function updateColor()
+        R = clamp(InputR.Text)
+        G = clamp(InputG.Text)
+        B = clamp(InputB.Text)
+        cp.Value = Color3.fromRGB(R, G, B)
+        Preview.BackgroundColor3 = cp.Value
+        ColorpickerConfig.Callback(cp.Value)
+    end
+
+    InputR.FocusLost:Connect(updateColor)
+    InputG.FocusLost:Connect(updateColor)
+    InputB.FocusLost:Connect(updateColor)
+
+    if ColorpickerConfig.Flag then
+        OrionLib.Flags[ColorpickerConfig.Flag] = cp
+    end
+
+    return cp
+end
+
+function ElementFunction:AddBind(BindConfig)
 				BindConfig.Name = BindConfig.Name or "Bind"
 				BindConfig.Default = BindConfig.Default or Enum.KeyCode.Unknown
 				BindConfig.Hold = BindConfig.Hold or false
@@ -1291,7 +1378,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				end)
 
 				AddConnection(Click.InputEnded, function(Input)
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 						if Bind.Binding then return end
 						Bind.Binding = true
 						BindBox.Value.Text = ""
@@ -1442,7 +1529,7 @@ function OrionLib:MakeWindow(WindowConfig)
 					TweenService:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(OrionLib.Themes[OrionLib.SelectedTheme].Second.R * 255 + 6, OrionLib.Themes[OrionLib.SelectedTheme].Second.G * 255 + 6, OrionLib.Themes[OrionLib.SelectedTheme].Second.B * 255 + 6)}):Play()
 				end)
 			end 
-			function ElementFunction:AddColorpicker(ColorpickerConfig)
+			function ElementFunction:AddColorpickerOld(ColorpickerConfig)
 				ColorpickerConfig = ColorpickerConfig or {}
 				ColorpickerConfig.Name = ColorpickerConfig.Name or "Colorpicker"
 				ColorpickerConfig.Default = ColorpickerConfig.Default or Color3.fromRGB(255,255,255)
