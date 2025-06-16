@@ -14,13 +14,13 @@ local OrionLib = {
 	Flags = {},
 	Themes = {
 		Default = {
-			Main    = Color3.fromRGB(15, 15, 20),
-			Second  = Color3.fromRGB(25, 25, 35),
-			Stroke  = Color3.fromRGB(70, 70, 90),
+			Main = Color3.fromRGB(15, 15, 20),
+			Second = Color3.fromRGB(25, 25, 35),
+			Stroke = Color3.fromRGB(70, 70, 90),
 			Divider = Color3.fromRGB(40, 40, 55),
-			Text    = Color3.fromRGB(220, 220, 255),
-			TextDark= Color3.fromRGB(140, 140, 180)
-		},
+			Text = Color3.fromRGB(220, 220, 255),
+			TextDark = Color3.fromRGB(140, 140, 180)
+		}
 	},
 	SelectedTheme = "Default",
 	Folder = nil,
@@ -472,7 +472,9 @@ function OrionLib:MakeWindow(WindowConfig)
 	WindowConfig = WindowConfig or {}
 	WindowConfig.Name = WindowConfig.Name or "Orion Library"
 	WindowConfig.ConfigFolder = WindowConfig.ConfigFolder or WindowConfig.Name
-	WindowConfig.SaveConfig = WindowConfig.SaveConfig or false	if WindowConfig.IntroEnabled == nil then
+	WindowConfig.SaveConfig = WindowConfig.SaveConfig or false
+	WindowConfig.HidePremium = WindowConfig.HidePremium or false
+	if WindowConfig.IntroEnabled == nil then
 		WindowConfig.IntroEnabled = true
 	end
 	WindowConfig.IntroText = WindowConfig.IntroText or "Orion Library"
@@ -571,6 +573,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				AddThemeObject(MakeElement("Stroke"), "Stroke"),
 				MakeElement("Corner", 1)
 			}),
+			AddThemeObject(SetProps(MakeElement("Label", LocalPlayer.DisplayName, WindowConfig.HidePremium and 14 or 13), {
 				Size = UDim2.new(1, -60, 0, 13),
 				Position = WindowConfig.HidePremium and UDim2.new(0, 50, 0, 19) or UDim2.new(0, 50, 0, 12),
 				Font = Enum.Font.GothamBold,
@@ -579,6 +582,7 @@ function OrionLib:MakeWindow(WindowConfig)
 			AddThemeObject(SetProps(MakeElement("Label", "", 12), {
 				Size = UDim2.new(1, -60, 0, 12),
 				Position = UDim2.new(0, 50, 1, -25),
+				Visible = not WindowConfig.HidePremium
 			}), "TextDark")
 		}),
 	}), "Second")
