@@ -378,7 +378,7 @@ local NotificationHolder = SetProps(SetChildren(MakeElement("TFrame"), {
 		HorizontalAlignment = Enum.HorizontalAlignment.Center,
 		SortOrder = Enum.SortOrder.LayoutOrder,
 		VerticalAlignment = Enum.VerticalAlignment.Bottom,
-		Padding = UDim.new(0, 5)
+		Padding = UDim.new(0, 10)
 	})
 }), {
 	Position = UDim2.new(1, -25, 1, -25),
@@ -644,7 +644,19 @@ function OrionLib:MakeWindow(WindowConfig)
 		WindowIcon.Parent = MainWindow.TopBar
 	end	
 
-	AddDraggingFunctionality(DragPoint, MainWindow)
+	
+AddConnection(MainWindow.InputBegan, function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 and UIHidden then
+        TweenService:Create(MainWindow, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 615, 0, 420),
+            Position = UDim2.new(0.5, -307, 0.5, -210)
+        }):Play()
+        Minimized = false
+        UIHidden = false
+    end
+end)
+
+AddDraggingFunctionality(DragPoint, MainWindow)
 
 	AddConnection(CloseBtn.MouseButton1Up, function()
 		
@@ -653,7 +665,15 @@ TweenService:Create(MainWindow, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.
     Position = UDim2.new(0.5, -70, 0, 10)
 }):Play()
 wait(0.3)
-MainWindow.Visible = false
+if not Minimized then
+    TweenService:Create(MainWindow, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 140, 0, 50),
+        Position = UDim2.new(0.5, -70, 0, 10)
+    }):Play()
+    wait(0.3)
+    Minimized = true
+    UIHidden = true
+end
 
 -- Create a tiny button to reopen the UI
 local ReopenButton = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(35, 35, 35), 0, 6), {
@@ -761,7 +781,7 @@ ReopenButton.Visible = true
 		TabConfig.PremiumOnly = TabConfig.PremiumOnly or false
 
 		local TabFrame = SetChildren(SetProps(MakeElement("Button"), {
-			Size = UDim2.new(1, 0, 0, 30),
+			Size = UDim2.new(1, 0, 0, 38),
 			Parent = TabHolder
 		}), {
 			AddThemeObject(SetProps(MakeElement("Image", TabConfig.Icon), {
@@ -830,7 +850,7 @@ ReopenButton.Visible = true
 			local ElementFunction = {}
 			function ElementFunction:AddLabel(Text)
 				local LabelFrame = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 5), {
-					Size = UDim2.new(1, 0, 0, 30),
+					Size = UDim2.new(1, 0, 0, 38),
 					BackgroundTransparency = 0.7,
 					Parent = ItemParent
 				}), {
@@ -854,7 +874,7 @@ ReopenButton.Visible = true
 				Content = Content or "Content"
 
 				local ParagraphFrame = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 5), {
-					Size = UDim2.new(1, 0, 0, 30),
+					Size = UDim2.new(1, 0, 0, 38),
 					BackgroundTransparency = 0.7,
 					Parent = ItemParent
 				}), {
