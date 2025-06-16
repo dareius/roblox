@@ -1726,3 +1726,92 @@ function OrionLib:Destroy()
 end
 
 return OrionLib
+
+
+-- ########## ADDED THEMES AND AUTO TAB ##########
+-- THEMES
+OrionLib.Themes["Dark"] = {
+    Main = Color3.fromRGB(5,5,5),
+    Second = Color3.fromRGB(11,11,11),
+    Stroke = Color3.fromRGB(22,22,22),
+    Divider = Color3.fromRGB(18,18,18),
+    Text = Color3.fromRGB(195,195,195),
+    TextDark = Color3.fromRGB(95,95,95)
+}
+OrionLib.Themes["Darker"] = {
+    Main = Color3.fromRGB(0,0,0),
+    Second = Color3.fromRGB(6,6,6),
+    Stroke = Color3.fromRGB(15,15,15),
+    Divider = Color3.fromRGB(10,10,10),
+    Text = Color3.fromRGB(200,200,200),
+    TextDark = Color3.fromRGB(120,120,120)
+}
+OrionLib.Themes["Pure Dark"] = {
+    Main = Color3.fromRGB(0,0,0),
+    Second = Color3.fromRGB(0,0,0),
+    Stroke = Color3.fromRGB(40,40,40),
+    Divider = Color3.fromRGB(0,0,0),
+    Text = Color3.fromRGB(255,255,255),
+    TextDark = Color3.fromRGB(140,140,140)
+}
+OrionLib.Themes["Bright v1"] = {
+    Main = Color3.fromRGB(240,240,240),
+    Second = Color3.fromRGB(250,250,250),
+    Stroke = Color3.fromRGB(200,200,200),
+    Divider = Color3.fromRGB(230,230,230),
+    Text = Color3.fromRGB(20,20,20),
+    TextDark = Color3.fromRGB(100,100,100)
+}
+OrionLib.Themes["Bright v2"] = {
+    Main = Color3.fromRGB(255,255,255),
+    Second = Color3.fromRGB(245,245,245),
+    Stroke = Color3.fromRGB(210,210,210),
+    Divider = Color3.fromRGB(235,235,235),
+    Text = Color3.fromRGB(25,25,25),
+    TextDark = Color3.fromRGB(120,120,120)
+}
+OrionLib.Themes["Sun set"] = {
+    Main = Color3.fromRGB(255,120,70),
+    Second = Color3.fromRGB(255,140,90),
+    Stroke = Color3.fromRGB(255,100,50),
+    Divider = Color3.fromRGB(255,130,80),
+    Text = Color3.fromRGB(0,0,0),
+    TextDark = Color3.fromRGB(80,40,40)
+}
+OrionLib.Themes["Forest"] = {
+    Main = Color3.fromRGB(20,50,20),
+    Second = Color3.fromRGB(30,70,30),
+    Stroke = Color3.fromRGB(40,90,40),
+    Divider = Color3.fromRGB(30,80,30),
+    Text = Color3.fromRGB(220,220,220),
+    TextDark = Color3.fromRGB(120,160,120)
+}
+
+-- AUTO TAB WITH THEME DROPDOWN
+task.defer(function()
+    -- Wait until the window is available
+    repeat
+        wait()
+    until Window ~= nil   -- assumes the variable 'Window' is defined after OrionLib:MakeWindow
+
+    local autoTab = Window:MakeTab({
+        Name = "Auto Tab",
+        Icon = "rbxassetid://7072706796",
+        PremiumOnly = false
+    })
+
+    autoTab:AddLabel("This tab is automatically created by the UI, other tabs aren't")
+
+    autoTab:AddDropdown({
+        Name = "Theme",
+        Default = "Dark",
+        Options = {"Dark","Darker","Pure Dark","Bright v1","Bright v2","Sun set","Forest"},
+        Callback = function(selected)
+            if OrionLib.Themes[selected] then
+                OrionLib.SelectedTheme = selected
+                SetTheme() -- instantly apply the chosen theme
+            end
+        end
+    })
+end)
+-- ########## END ADDED THEMES AND AUTO TAB ##########
