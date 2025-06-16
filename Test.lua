@@ -16,8 +16,8 @@ local OrionLib = {
 	Default = {
 		Main = Color3.fromRGB(5, 5, 5),          -- Primary background: Extremely deep, almost pure black
 		Second = Color3.fromRGB(11, 11, 11),     -- Secondary background/panels: Very slightly lighter for subtle layering
-		Stroke = Color3.fromRGB(22, 22, 22),     -- Borders/outlines: Barely perceptible, just enough definition
-		Divider = Color3.fromRGB(18, 18, 18),    -- Dividers: Blends in but marks separation
+		Stroke = Color3.fromRGB(35, 35, 35),     -- Borders/outlines: Barely perceptible, just enough definition
+		Divider = Color3.fromRGB(24, 24, 24),    -- Dividers: Blends in but marks separation
 		Text = Color3.fromRGB(195, 195, 195),    -- Main Text: Crucial for "best lighting" - a soft, desaturated white for optimal readability without glare
 		TextDark = Color3.fromRGB(95, 95, 95)    -- Secondary Text: Readable, subdued gray for less prominent information
 	}
@@ -101,7 +101,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 	pcall(function()
 		local Dragging, DragInput, MousePos, FramePos = false
 		DragPoint.InputBegan:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 				Dragging = true
 				MousePos = Input.Position
 				FramePos = Main.Position
@@ -114,14 +114,14 @@ local function AddDraggingFunctionality(DragPoint, Main)
 			end
 		end)
 		DragPoint.InputChanged:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseMovement then
+			if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
 				DragInput = Input
 			end
 		end)
 		UserInputService.InputChanged:Connect(function(Input)
 			if Input == DragInput and Dragging then
 				local Delta = Input.Position - MousePos
-				TweenService:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
+				TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
 			end
 		end)
 	end)
@@ -400,7 +400,7 @@ function OrionLib:MakeNotification(NotificationConfig)
 			Parent = NotificationHolder
 		})
 
-		local NotificationFrame = SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(25, 25, 25), 0, 10), {
+		local NotificationFrame = SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(25, 25, 25), 0, 12), {
 			Parent = NotificationParent, 
 			Size = UDim2.new(1, 0, 0, 0),
 			Position = UDim2.new(1, -55, 0, 0),
@@ -528,12 +528,12 @@ function OrionLib:MakeWindow(WindowConfig)
 		Size = UDim2.new(1, 0, 0, 50)
 	})
 
-	local WindowStuff = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
+	local WindowStuff = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 12), {
 		Size = UDim2.new(0, 150, 1, -50),
 		Position = UDim2.new(0, 0, 0, 50)
 	}), {
 		AddThemeObject(SetProps(MakeElement("Frame"), {
-			Size = UDim2.new(1, 0, 0, 10),
+			Size = UDim2.new(1, 0, 0, 12),
 			Position = UDim2.new(0, 0, 0, 0)
 		}), "Second"), 
 		AddThemeObject(SetProps(MakeElement("Frame"), {
@@ -599,10 +599,10 @@ function OrionLib:MakeWindow(WindowConfig)
 		Position = UDim2.new(0, 0, 1, -1)
 	}), "Stroke")
 
-	local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
+	local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 12), {
 		Parent = Orion,
 		Position = UDim2.new(0.5, -307, 0.5, -172),
-		Size = UDim2.new(0, 615, 0, 344),
+		Size = UDim2.new(0, 615, 0, 420),
 		ClipsDescendants = true
 	}), {
 		--SetProps(MakeElement("Image", "rbxassetid://3523728077"), {
@@ -620,7 +620,7 @@ function OrionLib:MakeWindow(WindowConfig)
 			WindowTopBarLine,
 			AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 7), {
 				Size = UDim2.new(0, 70, 0, 30),
-				Position = UDim2.new(1, -90, 0, 10)
+				Position = UDim2.new(1, -90, 0, 12)
 			}), {
 				AddThemeObject(MakeElement("Stroke"), "Stroke"),
 				AddThemeObject(SetProps(MakeElement("Frame"), {
@@ -647,7 +647,40 @@ function OrionLib:MakeWindow(WindowConfig)
 	AddDraggingFunctionality(DragPoint, MainWindow)
 
 	AddConnection(CloseBtn.MouseButton1Up, function()
-		MainWindow.Visible = false
+		
+TweenService:Create(MainWindow, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+    Size = UDim2.new(0, 140, 0, 50),
+    Position = UDim2.new(0.5, -70, 0, 10)
+}):Play()
+wait(0.3)
+MainWindow.Visible = false
+
+-- Create a tiny button to reopen the UI
+local ReopenButton = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(35, 35, 35), 0, 6), {
+    Size = UDim2.new(0, 36, 0, 36),
+    Position = UDim2.new(0, 20, 1, -60),
+    AnchorPoint = Vector2.new(0, 1),
+    Visible = true,
+    ZIndex = 5,
+    Parent = Orion
+}), {
+    AddThemeObject(SetProps(MakeElement("Image", "rbxassetid://7072706796"), {
+        Size = UDim2.new(0, 18, 0, 18),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0.5, 0.5, 0.5, 0),
+        ImageColor3 = Color3.fromRGB(240, 240, 240),
+    }), "Text"),
+    MakeElement("Button")
+}), "Second")
+
+AddConnection(ReopenButton.Button.MouseButton1Click, function()
+    MainWindow.Visible = true
+    UIHidden = false
+    ReopenButton.Visible = false
+end)
+
+ReopenButton.Visible = true
+
 		UIHidden = true
 		OrionLib:MakeNotification({
 			Name = "Interface Hidden",
@@ -827,7 +860,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				}), {
 					AddThemeObject(SetProps(MakeElement("Label", Text, 15), {
 						Size = UDim2.new(1, -12, 0, 14),
-						Position = UDim2.new(0, 12, 0, 10),
+						Position = UDim2.new(0, 12, 0, 12),
 						Font = Enum.Font.GothamBold,
 						Name = "Title"
 					}), "Text"),
@@ -918,25 +951,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				ToggleConfig.Flag = ToggleConfig.Flag or nil
 				ToggleConfig.Save = ToggleConfig.Save or false
 
-				local Toggle = {Value = ToggleConfig.Default, Save = ToggleConfig.Save},
-    Set = function(self, value)
-        Toggle:Set(value)
-    end,
-    Get = function(self)
-        return Toggle.Value
-    end,
-    Changed = Instance.new("BindableEvent"),
-    Disable = function(self)
-        if ToggleFrame and ToggleFrame.Parent then
-            ToggleFrame.Active = false
-            ToggleFrame.BackgroundTransparency = 0.6
-        end
-    end,
-    Destroy = function(self)
-        if ToggleFrame and ToggleFrame.Parent then
-            ToggleFrame:Destroy()
-        end
-    end
+				local Toggle = {Value = ToggleConfig.Default, Save = ToggleConfig.Save}
 
 				local Click = SetProps(MakeElement("Button"), {
 					Size = UDim2.new(1, 0, 1, 0)
@@ -1022,25 +1037,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				SliderConfig.Flag = SliderConfig.Flag or nil
 				SliderConfig.Save = SliderConfig.Save or false
 
-				local Slider = {Value = SliderConfig.Default, Save = SliderConfig.Save},
-    Set = function(self, value)
-        self:Set(value)
-    end,
-    Get = function(self)
-        return self.Value
-    end,
-    Changed = Instance.new("BindableEvent"),
-    Disable = function(self)
-        if SliderFrame and SliderFrame.Parent then
-            SliderFrame.Active = false
-            SliderFrame.BackgroundTransparency = 0.6
-        end
-    end,
-    Destroy = function(self)
-        if SliderFrame and SliderFrame.Parent then
-            SliderFrame:Destroy()
-        end
-    end
+				local Slider = {Value = SliderConfig.Default, Save = SliderConfig.Save}
 				local Dragging = false
 
 				local SliderDrag = SetChildren(SetProps(MakeElement("RoundFrame", SliderConfig.Color, 0, 5), {
@@ -1081,7 +1078,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				}), {
 					AddThemeObject(SetProps(MakeElement("Label", SliderConfig.Name, 15), {
 						Size = UDim2.new(1, -12, 0, 14),
-						Position = UDim2.new(0, 12, 0, 10),
+						Position = UDim2.new(0, 12, 0, 12),
 						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
@@ -1090,18 +1087,18 @@ function OrionLib:MakeWindow(WindowConfig)
 				}), "Second")
 
 				SliderBar.InputBegan:Connect(function(Input)
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then 
 						Dragging = true 
 					end 
 				end)
 				SliderBar.InputEnded:Connect(function(Input) 
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then 
 						Dragging = false 
 					end 
 				end)
 
 				UserInputService.InputChanged:Connect(function(Input)
-					if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then 
+					if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then 
 						local SizeScale = math.clamp((Input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
 						Slider:Set(SliderConfig.Min + ((SliderConfig.Max - SliderConfig.Min) * SizeScale)) 
 						SaveCfg(game.GameId)
@@ -1131,25 +1128,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				DropdownConfig.Flag = DropdownConfig.Flag or nil
 				DropdownConfig.Save = DropdownConfig.Save or false
 
-				local Dropdown = {Value = DropdownConfig.Default, Options = DropdownConfig.Options, Buttons = {}, Toggled = false, Type = "Dropdown", Save = DropdownConfig.Save},
-    Set = function(self, value)
-        Dropdown:Set(value)
-    end,
-    Get = function(self)
-        return Dropdown.Value
-    end,
-    Changed = Instance.new("BindableEvent"),
-    Disable = function(self)
-        if DropdownFrame and DropdownFrame.Parent then
-            DropdownFrame.Active = false
-            DropdownFrame.BackgroundTransparency = 0.6
-        end
-    end,
-    Destroy = function(self)
-        if DropdownFrame and DropdownFrame.Parent then
-            DropdownFrame:Destroy()
-        end
-    end
+				local Dropdown = {Value = DropdownConfig.Default, Options = DropdownConfig.Options, Buttons = {}, Toggled = false, Type = "Dropdown", Save = DropdownConfig.Save}
 				local MaxElements = 5
 
 				if not table.find(Dropdown.Options, Dropdown.Value) then
@@ -1345,7 +1324,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				end)
 
 				AddConnection(Click.InputEnded, function(Input)
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 						if Bind.Binding then return end
 						Bind.Binding = true
 						BindBox.Value.Text = ""
@@ -1467,7 +1446,7 @@ function OrionLib:MakeWindow(WindowConfig)
 
 				AddConnection(TextboxActual:GetPropertyChangedSignal("Text"), function()
 					--TextContainer.Size = UDim2.new(0, TextboxActual.TextBounds.X + 16, 0, 24)
-					TweenService:Create(TextContainer, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, TextboxActual.TextBounds.X + 16, 0, 24)}):Play()
+					TweenService:Create(TextContainer, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, TextboxActual.TextBounds.X + 16, 0, 24)}):Play()
 				end)
 
 				AddConnection(TextboxActual.FocusLost, function()
@@ -1780,9 +1759,3 @@ function OrionLib:Destroy()
 end
 
 return OrionLib
-
-
--- ########## ADDED THEMES AND AUTO TAB ##########
--- THEMES
-
-
