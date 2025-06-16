@@ -1,14 +1,15 @@
 
-# 🌌 Orion UI (Enhanced Full Version)
+# ðŸŒŸ OrionLib UI â€“ Full Documentation (Enhanced Version)
 
-A modern, touch-friendly, drag-to-move Roblox UI library.  
-Supports tabs, toggles, sliders, dropdowns, color pickers, and more — with animation, `.Set()`, `.Get()`, `.Changed`, `.Disable()`, `.Enable()`, and `.Destroy()`.
+A modern, mobile-ready Roblox UI library with tabs, animations, full method support, and divider utilities.
 
 ---
 
-## 🛠️ How to Use
+## ðŸš€ How to Get Started
 
-### 1. Load the Library
+### ðŸ”— Load the Library
+
+Use this in a **LocalScript** (e.g. `StarterPlayerScripts`):
 
 ```lua
 local OrionLib = loadstring(game:HttpGet(
@@ -18,93 +19,230 @@ local OrionLib = loadstring(game:HttpGet(
 
 ---
 
-## 🧩 Supported Elements
-
-Each element supports:
-
-- `.Set(value)` – Set the UI value manually
-- `.Get()` – Get the current value
-- `.Changed.Event:Connect(function(val) ... end)` – Run code when value changes
-- `.Disable()` / `.Enable()` – Hide/show the element
-- `.Destroy()` – Remove the element completely
-
----
-
-### 🔘 Toggle
+## ðŸªŸ Create the Main Window
 
 ```lua
-local toggle = tab:AddToggle({ Name = "Enable", Default = false })
-toggle:Set(true)
-print(toggle:Get())
-toggle.Changed.Event:Connect(function(val) print("Toggled:", val) end)
-toggle:Disable()
-toggle:Enable()
-toggle:Destroy()
+Window = OrionLib:MakeWindow({
+    Name = "My Game UI",
+    IntroText = "Welcome!",
+    Icon = "rbxassetid://6034287515",
+    ShowIcon = true
+})
 ```
 
 ---
 
-### 🎚️ Slider
+## ðŸ“‚ Create Tabs
 
 ```lua
-local slider = tab:AddSlider({ Name = "Volume", Min = 0, Max = 100, Default = 50 })
-slider:Set(75)
-print(slider:Get())
-slider.Changed.Event:Connect(function(v) print("Volume:", v) end)
+local Tab = Window:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://6031280882"
+})
+```
+
+You can create as many tabs as you'd like.
+
+---
+
+## ðŸ§± Tab Dividers (Sidebar)
+
+Insert visual breaks between tabs:
+
+```lua
+OrionLib:AddTabDivider()
 ```
 
 ---
 
-### 🔽 Dropdown
+## ðŸ“ Element Dividers (Inside Tabs)
+
+Add a line between UI sections in a tab:
 
 ```lua
-local drop = tab:AddDropdown({ Name = "Pet", Options = {"Cat","Dog"}, Default = "Dog" })
-drop:Set("Cat")
-print(drop:Get())
-drop.Changed.Event:Connect(function(opt) print("Picked:", opt) end)
+Tab:AddDivider()
 ```
 
 ---
 
-### 📝 Textbox
+## ðŸ”˜ Supported UI Elements
+
+Each element supports `.Set(value)`, `.Get()`, `.Changed`, `.Disable()`, `.Enable()`, `.Destroy()`.
+
+---
+
+### Toggle
 
 ```lua
-local tb = tab:AddTextbox({ Name = "Say Something", Default = "" })
-tb:Set("Hello")
-print(tb:Get())
-tb.Changed.Event:Connect(function(txt) print("Typed:", txt) end)
+local t = Tab:AddToggle({
+    Name = "Enable Feature",
+    Default = false,
+    Callback = function(val)
+        print("Toggle:", val)
+    end
+})
+
+t:Set(true)
+print(t:Get())
+
+t.Changed.Event:Connect(function(val) print("Changed:", val) end)
 ```
 
 ---
 
-### 🎨 Colorpicker
+### Slider
 
 ```lua
-local color = tab:AddColorpicker({ Name = "Pick a color", Default = Color3.fromRGB(255, 0, 0) })
-color:Set(Color3.fromRGB(0, 255, 0))
-print(color:Get())
-color.Changed.Event:Connect(function(c) print("Color:", c) end)
+local s = Tab:AddSlider({
+    Name = "Volume",
+    Min = 0,
+    Max = 100,
+    Default = 50,
+    ValueName = "%",
+    Callback = function(v) print("Slider:", v) end
+})
+
+s:Set(75)
+print(s:Get())
+s.Changed.Event:Connect(function(v) print("Changed:", v) end)
 ```
 
 ---
 
-## ✅ Utility Methods (All Elements)
+### Dropdown
 
-- `:Set(value)`
-- `:Get()`
-- `:Disable()`
-- `:Enable()`
-- `:Destroy()`
-- `Changed.Event:Connect(...)`
+```lua
+local d = Tab:AddDropdown({
+    Name = "Choose Option",
+    Options = {"One", "Two", "Three"},
+    Default = "Two",
+    Callback = function(v) print("Dropdown:", v) end
+})
+
+d:Set("One")
+print(d:Get())
+d.Changed.Event:Connect(function(v) print("Changed:", v) end)
+```
 
 ---
 
-📦 Library Features
+### Textbox
 
-- Mobile + PC support
-- Tab system
-- Theme-ready (via library config)
-- Animated drag
-- Floating reopen pill
+```lua
+local txt = Tab:AddTextbox({
+    Name = "Enter Text",
+    Default = "",
+    Callback = function(v) print("Typed:", v) end
+})
+
+txt:Set("Hello")
+print(txt:Get())
+txt.Changed.Event:Connect(function(v) print("Changed:", v) end)
+```
+
+---
+
+### Color Picker
+
+```lua
+local cp = Tab:AddColorpicker({
+    Name = "Pick Color",
+    Default = Color3.fromRGB(255, 0, 0),
+    Callback = function(c) print("Color:", c) end
+})
+
+cp:Set(Color3.fromRGB(0, 255, 0))
+print(cp:Get())
+cp.Changed.Event:Connect(function(c) print("Changed:", c) end)
+```
+
+---
+
+### Bind
+
+```lua
+Tab:AddBind({
+    Name = "Activate",
+    Default = Enum.KeyCode.F,
+    Callback = function()
+        print("F pressed")
+    end
+})
+```
+
+---
+
+### Button
+
+```lua
+Tab:AddButton({
+    Name = "Click Me",
+    Callback = function()
+        print("Button clicked")
+    end
+})
+```
+
+---
+
+### Label
+
+```lua
+local label = Tab:AddLabel("Info Text")
+label:Set("Updated Text")
+```
+
+---
+
+### Paragraph
+
+```lua
+Tab:AddParagraph("Instructions", [[
+This is a longer text block for instructions, notes, or story.
+]])
+```
+
+---
+
+### Notifications
+
+```lua
+OrionLib:MakeNotification({
+    Name = "Notice",
+    Content = "Something happened!",
+    Time = 4
+})
+```
+
+---
+
+## ðŸ§© Utility Methods (All Elements)
+
+| Method        | Description                       |
+|---------------|-----------------------------------|
+| `:Set(value)` | Change the current value          |
+| `:Get()`      | Get the current value             |
+| `:Disable()`  | Hide the element                  |
+| `:Enable()`   | Show the element again            |
+| `:Destroy()`  | Remove the element from the UI    |
+| `Changed.Event` | Signal for when value changes |
+
+---
+
+## ðŸ“¦ UX Features
+
+- Responsive layout for PC + Mobile
+- Animated drag with Touch + Mouse
+- Reopen via pill UI or button
+- Animated transitions
+- Custom theming support (manual)
+
+---
+
+## ðŸ“ Coming Soon
+
+- Config saving
+- Themes UI switcher
+- Dynamic tab ordering
 
 ---
