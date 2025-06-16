@@ -16,8 +16,8 @@ local OrionLib = {
 	Default = {
 		Main = Color3.fromRGB(5, 5, 5),          -- Primary background: Extremely deep, almost pure black
 		Second = Color3.fromRGB(11, 11, 11),     -- Secondary background/panels: Very slightly lighter for subtle layering
-		Stroke = Color3.fromRGB(22, 22, 22),     -- Borders/outlines: Barely perceptible, just enough definition
-		Divider = Color3.fromRGB(18, 18, 18),    -- Dividers: Blends in but marks separation
+		Stroke = Color3.fromRGB(35, 35, 35),     -- Borders/outlines: Barely perceptible, just enough definition
+		Divider = Color3.fromRGB(24, 24, 24),    -- Dividers: Blends in but marks separation
 		Text = Color3.fromRGB(195, 195, 195),    -- Main Text: Crucial for "best lighting" - a soft, desaturated white for optimal readability without glare
 		TextDark = Color3.fromRGB(95, 95, 95)    -- Secondary Text: Readable, subdued gray for less prominent information
 	}
@@ -121,7 +121,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 		UserInputService.InputChanged:Connect(function(Input)
 			if Input == DragInput and Dragging then
 				local Delta = Input.Position - MousePos
-				TweenService:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
+				TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
 			end
 		end)
 	end)
@@ -400,7 +400,7 @@ function OrionLib:MakeNotification(NotificationConfig)
 			Parent = NotificationHolder
 		})
 
-		local NotificationFrame = SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(25, 25, 25), 0, 10), {
+		local NotificationFrame = SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(25, 25, 25), 0, 12), {
 			Parent = NotificationParent, 
 			Size = UDim2.new(1, 0, 0, 0),
 			Position = UDim2.new(1, -55, 0, 0),
@@ -533,7 +533,7 @@ function OrionLib:MakeWindow(WindowConfig)
 		Position = UDim2.new(0, 0, 0, 50)
 	}), {
 		AddThemeObject(SetProps(MakeElement("Frame"), {
-			Size = UDim2.new(1, 0, 0, 10),
+			Size = UDim2.new(1, 0, 0, 12),
 			Position = UDim2.new(0, 0, 0, 0)
 		}), "Second"), 
 		AddThemeObject(SetProps(MakeElement("Frame"), {
@@ -620,7 +620,7 @@ function OrionLib:MakeWindow(WindowConfig)
 			WindowTopBarLine,
 			AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 7), {
 				Size = UDim2.new(0, 70, 0, 30),
-				Position = UDim2.new(1, -90, 0, 10)
+				Position = UDim2.new(1, -90, 0, 12)
 			}), {
 				AddThemeObject(MakeElement("Stroke"), "Stroke"),
 				AddThemeObject(SetProps(MakeElement("Frame"), {
@@ -645,72 +645,6 @@ function OrionLib:MakeWindow(WindowConfig)
 	end	
 
 	AddDraggingFunctionality(DragPoint, MainWindow)
-
--- ########## THEME BUTTON + MENU ##########
-local themeNames = {"Dark","Darker","Pure Dark","Bright v1","Bright v2","Sun set","Forest"}
-
-local ThemeBtn = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 7), {
-   Size = UDim2.new(0, 30, 0, 30),
-   Position = UDim2.new(1, -130, 0, 10)
-}), {
-   AddThemeObject(MakeElement("Stroke"), "Stroke"),
-   AddThemeObject(SetProps(MakeElement("Image", "rbxassetid://7072729018"), {
-        Size = UDim2.new(0, 18, 0, 18),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-   }), "TextDark"),
-   MakeElement("Button")
-}), "Second")
-
-ThemeBtn.Parent = MainWindow.TopBar
-
-local ThemeMenu = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(25,25,25), 0, 6), {
-    Parent = MainWindow,
-    AnchorPoint = Vector2.new(1,0),
-    Position = UDim2.new(1, -20, 0, 55),
-    Size = UDim2.new(0, 140, 0, (#themeNames * 24) + 8),
-    Visible = false
-}), {
-    AddThemeObject(MakeElement("Stroke"), "Stroke"),
-    MakeElement("List", 0, 4),
-    MakeElement("Padding", 4, 4, 4, 4)
-}), "Second")
-ThemeMenu.ZIndex = 20
-
-for _, name in ipairs(themeNames) do
-    local optBtn = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(45,45,45), 0, 5), {
-        Size = UDim2.new(1, 0, 0, 22)
-    }), {
-        AddThemeObject(SetProps(MakeElement("Label", name, 13), {
-            Size = UDim2.new(1, -8, 1, 0),
-            Position = UDim2.new(0, 8, 0, 0),
-            Font = Enum.Font.GothamSemibold,
-            TextXAlignment = Enum.TextXAlignment.Left
-        }), "Text"),
-        MakeElement("Button")
-    }), "Divider")
-    optBtn.Parent = ThemeMenu
-    optBtn.Button.MouseButton1Up:Connect(function()
-        if OrionLib.Themes[name] then
-            OrionLib.SelectedTheme = name
-            SetTheme()
-        end
-        ThemeMenu.Visible = false
-    end)
-end
-
-local menuTweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-ThemeBtn.Button.MouseButton1Up:Connect(function()
-    if ThemeMenu.Visible then
-        TweenService:Create(ThemeMenu, menuTweenInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play()
-        delay(0.25, function() ThemeMenu.Visible = false end)
-    else
-        ThemeMenu.Visible = true
-        ThemeMenu.Size = UDim2.new(0, 0, 0, 0)
-        TweenService:Create(ThemeMenu, menuTweenInfo, {Size = UDim2.new(0, 140, 0, (#themeNames * 24) + 8)}):Play()
-    end
-end)
--- ########## END THEME BUTTON + MENU ##########
 
 	AddConnection(CloseBtn.MouseButton1Up, function()
 		MainWindow.Visible = false
@@ -893,7 +827,7 @@ end)
 				}), {
 					AddThemeObject(SetProps(MakeElement("Label", Text, 15), {
 						Size = UDim2.new(1, -12, 0, 14),
-						Position = UDim2.new(0, 12, 0, 10),
+						Position = UDim2.new(0, 12, 0, 12),
 						Font = Enum.Font.GothamBold,
 						Name = "Title"
 					}), "Text"),
@@ -1111,7 +1045,7 @@ end)
 				}), {
 					AddThemeObject(SetProps(MakeElement("Label", SliderConfig.Name, 15), {
 						Size = UDim2.new(1, -12, 0, 14),
-						Position = UDim2.new(0, 12, 0, 10),
+						Position = UDim2.new(0, 12, 0, 12),
 						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
@@ -1120,18 +1054,18 @@ end)
 				}), "Second")
 
 				SliderBar.InputBegan:Connect(function(Input)
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then 
 						Dragging = true 
 					end 
 				end)
 				SliderBar.InputEnded:Connect(function(Input) 
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then 
 						Dragging = false 
 					end 
 				end)
 
 				UserInputService.InputChanged:Connect(function(Input)
-					if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then 
+					if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then 
 						local SizeScale = math.clamp((Input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
 						Slider:Set(SliderConfig.Min + ((SliderConfig.Max - SliderConfig.Min) * SizeScale)) 
 						SaveCfg(game.GameId)
@@ -1357,7 +1291,7 @@ end)
 				end)
 
 				AddConnection(Click.InputEnded, function(Input)
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 						if Bind.Binding then return end
 						Bind.Binding = true
 						BindBox.Value.Text = ""
@@ -1479,7 +1413,7 @@ end)
 
 				AddConnection(TextboxActual:GetPropertyChangedSignal("Text"), function()
 					--TextContainer.Size = UDim2.new(0, TextboxActual.TextBounds.X + 16, 0, 24)
-					TweenService:Create(TextContainer, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, TextboxActual.TextBounds.X + 16, 0, 24)}):Play()
+					TweenService:Create(TextContainer, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, TextboxActual.TextBounds.X + 16, 0, 24)}):Play()
 				end)
 
 				AddConnection(TextboxActual.FocusLost, function()
@@ -1790,69 +1724,5 @@ end
 function OrionLib:Destroy()
 	Orion:Destroy()
 end
-
-return OrionLib
-
-
--- ########## ADDED THEMES AND AUTO TAB ##########
--- THEMES
-OrionLib.Themes["Dark"] = {
-    Main = Color3.fromRGB(5,5,5),
-    Second = Color3.fromRGB(11,11,11),
-    Stroke = Color3.fromRGB(22,22,22),
-    Divider = Color3.fromRGB(18,18,18),
-    Text = Color3.fromRGB(195,195,195),
-    TextDark = Color3.fromRGB(95,95,95)
-}
-OrionLib.Themes["Darker"] = {
-    Main = Color3.fromRGB(0,0,0),
-    Second = Color3.fromRGB(6,6,6),
-    Stroke = Color3.fromRGB(15,15,15),
-    Divider = Color3.fromRGB(10,10,10),
-    Text = Color3.fromRGB(200,200,200),
-    TextDark = Color3.fromRGB(120,120,120)
-}
-OrionLib.Themes["Pure Dark"] = {
-    Main = Color3.fromRGB(0,0,0),
-    Second = Color3.fromRGB(0,0,0),
-    Stroke = Color3.fromRGB(40,40,40),
-    Divider = Color3.fromRGB(0,0,0),
-    Text = Color3.fromRGB(255,255,255),
-    TextDark = Color3.fromRGB(140,140,140)
-}
-OrionLib.Themes["Bright v1"] = {
-    Main = Color3.fromRGB(240,240,240),
-    Second = Color3.fromRGB(250,250,250),
-    Stroke = Color3.fromRGB(200,200,200),
-    Divider = Color3.fromRGB(230,230,230),
-    Text = Color3.fromRGB(20,20,20),
-    TextDark = Color3.fromRGB(100,100,100)
-}
-OrionLib.Themes["Bright v2"] = {
-    Main = Color3.fromRGB(255,255,255),
-    Second = Color3.fromRGB(245,245,245),
-    Stroke = Color3.fromRGB(210,210,210),
-    Divider = Color3.fromRGB(235,235,235),
-    Text = Color3.fromRGB(25,25,25),
-    TextDark = Color3.fromRGB(120,120,120)
-}
-OrionLib.Themes["Sun set"] = {
-    Main = Color3.fromRGB(255,120,70),
-    Second = Color3.fromRGB(255,140,90),
-    Stroke = Color3.fromRGB(255,100,50),
-    Divider = Color3.fromRGB(255,130,80),
-    Text = Color3.fromRGB(0,0,0),
-    TextDark = Color3.fromRGB(80,40,40)
-}
-OrionLib.Themes["Forest"] = {
-    Main = Color3.fromRGB(20,50,20),
-    Second = Color3.fromRGB(30,70,30),
-    Stroke = Color3.fromRGB(40,90,40),
-    Divider = Color3.fromRGB(30,80,30),
-    Text = Color3.fromRGB(220,220,220),
-    TextDark = Color3.fromRGB(120,160,120)
-}
-
-
 
 return OrionLib
