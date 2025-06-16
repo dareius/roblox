@@ -14,12 +14,12 @@ local OrionLib = {
 	Flags = {},
 	Themes = {
 		Default = {
-			Main = Color3.fromRGB(18, 18, 24),
-			Second = Color3.fromRGB(28, 28, 36),
-			Stroke = Color3.fromRGB(80, 80, 100),
-			Divider = Color3.fromRGB(50, 50, 70),
-			Text = Color3.fromRGB(235, 235, 255),
-			TextDark = Color3.fromRGB(150, 150, 190)
+			Main = Color3.fromRGB(10, 10, 10),
+			Second = Color3.fromRGB(25, 25, 20),
+			Stroke = Color3.fromRGB(50, 50, 70),
+			Divider = Color3.fromRGB(30, 30, 45),
+			Text = Color3.fromRGB(210, 210, 245),
+			TextDark = Color3.fromRGB(130, 130, 170)
 		}
 	},
 	SelectedTheme = "Default",
@@ -796,7 +796,6 @@ function OrionLib:MakeWindow(WindowConfig)
 		local function GetElements(ItemParent)
 			local ElementFunction = {}
 			function ElementFunction:AddLabel(Text)
-	-- TODO: Add `Set()` method to support label text change
 				local LabelFrame = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 5), {
 					Size = UDim2.new(1, 0, 0, 30),
 					BackgroundTransparency = 0.7,
@@ -911,7 +910,6 @@ function OrionLib:MakeWindow(WindowConfig)
 				return Button
 			end    
 			function ElementFunction:AddToggle(ToggleConfig)
-	-- TODO: Add `Set()` method to allow toggling from code
 				ToggleConfig = ToggleConfig or {}
 				ToggleConfig.Name = ToggleConfig.Name or "Toggle"
 				ToggleConfig.Default = ToggleConfig.Default or false
@@ -994,7 +992,6 @@ function OrionLib:MakeWindow(WindowConfig)
 				return Toggle
 			end  
 			function ElementFunction:AddSlider(SliderConfig)
-	-- TODO: Add `Set()` method to change value programmatically
 				SliderConfig = SliderConfig or {}
 				SliderConfig.Name = SliderConfig.Name or "Slider"
 				SliderConfig.Min = SliderConfig.Min or 0
@@ -1090,7 +1087,6 @@ function OrionLib:MakeWindow(WindowConfig)
 				return Slider
 			end  
 			function ElementFunction:AddDropdown(DropdownConfig)
-	-- TODO: Add `Set()` method to update selected option
 				DropdownConfig = DropdownConfig or {}
 				DropdownConfig.Name = DropdownConfig.Name or "Dropdown"
 				DropdownConfig.Options = DropdownConfig.Options or {}
