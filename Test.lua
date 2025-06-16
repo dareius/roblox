@@ -101,7 +101,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 	pcall(function()
 		local Dragging, DragInput, MousePos, FramePos = false
 		DragPoint.InputBegan:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
 				Dragging = true
 				MousePos = Input.Position
 				FramePos = Main.Position
@@ -114,7 +114,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 			end
 		end)
 		DragPoint.InputChanged:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
+			if Input.UserInputType == Enum.UserInputType.MouseMovement then
 				DragInput = Input
 			end
 		end)
@@ -528,7 +528,7 @@ function OrionLib:MakeWindow(WindowConfig)
 		Size = UDim2.new(1, 0, 0, 50)
 	})
 
-	local WindowStuff = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 12), {
+	local WindowStuff = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
 		Size = UDim2.new(0, 150, 1, -50),
 		Position = UDim2.new(0, 0, 0, 50)
 	}), {
@@ -599,7 +599,7 @@ function OrionLib:MakeWindow(WindowConfig)
 		Position = UDim2.new(0, 0, 1, -1)
 	}), "Stroke")
 
-	local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 12), {
+	local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
 		Parent = Orion,
 		Position = UDim2.new(0.5, -307, 0.5, -172),
 		Size = UDim2.new(0, 615, 0, 344),
@@ -645,72 +645,6 @@ function OrionLib:MakeWindow(WindowConfig)
 	end	
 
 	AddDraggingFunctionality(DragPoint, MainWindow)
-
--- ########## THEME BUTTON + MENU ##########
-local themeNames = {"Dark","Darker","Pure Dark","Bright v1","Bright v2","Sun set","Forest"}
-
-local ThemeBtn = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 7), {
-   Size = UDim2.new(0, 30, 0, 30),
-   Position = UDim2.new(1, -130, 0, 10)
-}), {
-   AddThemeObject(MakeElement("Stroke"), "Stroke"),
-   AddThemeObject(SetProps(MakeElement("Image", "rbxassetid://7072729018"), {
-        Size = UDim2.new(0, 18, 0, 18),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-   }), "TextDark"),
-   MakeElement("Button")
-}), "Second")
-
-ThemeBtn.Parent = MainWindow.TopBar
-
-local ThemeMenu = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(25,25,25), 0, 6), {
-    Parent = MainWindow,
-    AnchorPoint = Vector2.new(1,0),
-    Position = UDim2.new(1, -20, 0, 55),
-    Size = UDim2.new(0, 140, 0, (#themeNames * 24) + 8),
-    Visible = false
-}), {
-    AddThemeObject(MakeElement("Stroke"), "Stroke"),
-    MakeElement("List", 0, 4),
-    MakeElement("Padding", 4, 4, 4, 4)
-}), "Second")
-ThemeMenu.ZIndex = 20
-
-for _, name in ipairs(themeNames) do
-    local optBtn = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(45,45,45), 0, 5), {
-        Size = UDim2.new(1, 0, 0, 22)
-    }), {
-        AddThemeObject(SetProps(MakeElement("Label", name, 13), {
-            Size = UDim2.new(1, -8, 1, 0),
-            Position = UDim2.new(0, 8, 0, 0),
-            Font = Enum.Font.GothamSemibold,
-            TextXAlignment = Enum.TextXAlignment.Left
-        }), "Text"),
-        MakeElement("Button")
-    }), "Divider")
-    optBtn.Parent = ThemeMenu
-    optBtn.Button.MouseButton1Up:Connect(function()
-        if OrionLib.Themes[name] then
-            OrionLib.SelectedTheme = name
-            SetTheme()
-        end
-        ThemeMenu.Visible = false
-    end)
-end
-
-local menuTweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-ThemeBtn.Button.MouseButton1Up:Connect(function()
-    if ThemeMenu.Visible then
-        TweenService:Create(ThemeMenu, menuTweenInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play()
-        delay(0.25, function() ThemeMenu.Visible = false end)
-    else
-        ThemeMenu.Visible = true
-        ThemeMenu.Size = UDim2.new(0, 0, 0, 0)
-        TweenService:Create(ThemeMenu, menuTweenInfo, {Size = UDim2.new(0, 140, 0, (#themeNames * 24) + 8)}):Play()
-    end
-end)
--- ########## END THEME BUTTON + MENU ##########
 
 	AddConnection(CloseBtn.MouseButton1Up, function()
 		MainWindow.Visible = false
@@ -984,7 +918,25 @@ end)
 				ToggleConfig.Flag = ToggleConfig.Flag or nil
 				ToggleConfig.Save = ToggleConfig.Save or false
 
-				local Toggle = {Value = ToggleConfig.Default, Save = ToggleConfig.Save}
+				local Toggle = {Value = ToggleConfig.Default, Save = ToggleConfig.Save},
+    Set = function(self, value)
+        Toggle:Set(value)
+    end,
+    Get = function(self)
+        return Toggle.Value
+    end,
+    Changed = Instance.new("BindableEvent"),
+    Disable = function(self)
+        if ToggleFrame and ToggleFrame.Parent then
+            ToggleFrame.Active = false
+            ToggleFrame.BackgroundTransparency = 0.6
+        end
+    end,
+    Destroy = function(self)
+        if ToggleFrame and ToggleFrame.Parent then
+            ToggleFrame:Destroy()
+        end
+    end
 
 				local Click = SetProps(MakeElement("Button"), {
 					Size = UDim2.new(1, 0, 1, 0)
@@ -1070,7 +1022,25 @@ end)
 				SliderConfig.Flag = SliderConfig.Flag or nil
 				SliderConfig.Save = SliderConfig.Save or false
 
-				local Slider = {Value = SliderConfig.Default, Save = SliderConfig.Save}
+				local Slider = {Value = SliderConfig.Default, Save = SliderConfig.Save},
+    Set = function(self, value)
+        self:Set(value)
+    end,
+    Get = function(self)
+        return self.Value
+    end,
+    Changed = Instance.new("BindableEvent"),
+    Disable = function(self)
+        if SliderFrame and SliderFrame.Parent then
+            SliderFrame.Active = false
+            SliderFrame.BackgroundTransparency = 0.6
+        end
+    end,
+    Destroy = function(self)
+        if SliderFrame and SliderFrame.Parent then
+            SliderFrame:Destroy()
+        end
+    end
 				local Dragging = false
 
 				local SliderDrag = SetChildren(SetProps(MakeElement("RoundFrame", SliderConfig.Color, 0, 5), {
@@ -1161,7 +1131,25 @@ end)
 				DropdownConfig.Flag = DropdownConfig.Flag or nil
 				DropdownConfig.Save = DropdownConfig.Save or false
 
-				local Dropdown = {Value = DropdownConfig.Default, Options = DropdownConfig.Options, Buttons = {}, Toggled = false, Type = "Dropdown", Save = DropdownConfig.Save}
+				local Dropdown = {Value = DropdownConfig.Default, Options = DropdownConfig.Options, Buttons = {}, Toggled = false, Type = "Dropdown", Save = DropdownConfig.Save},
+    Set = function(self, value)
+        Dropdown:Set(value)
+    end,
+    Get = function(self)
+        return Dropdown.Value
+    end,
+    Changed = Instance.new("BindableEvent"),
+    Disable = function(self)
+        if DropdownFrame and DropdownFrame.Parent then
+            DropdownFrame.Active = false
+            DropdownFrame.BackgroundTransparency = 0.6
+        end
+    end,
+    Destroy = function(self)
+        if DropdownFrame and DropdownFrame.Parent then
+            DropdownFrame:Destroy()
+        end
+    end
 				local MaxElements = 5
 
 				if not table.find(Dropdown.Options, Dropdown.Value) then
@@ -1796,63 +1784,5 @@ return OrionLib
 
 -- ########## ADDED THEMES AND AUTO TAB ##########
 -- THEMES
-OrionLib.Themes["Dark"] = {
-    Main = Color3.fromRGB(5,5,5),
-    Second = Color3.fromRGB(11,11,11),
-    Stroke = Color3.fromRGB(22,22,22),
-    Divider = Color3.fromRGB(18,18,18),
-    Text = Color3.fromRGB(195,195,195),
-    TextDark = Color3.fromRGB(95,95,95)
-}
-OrionLib.Themes["Darker"] = {
-    Main = Color3.fromRGB(0,0,0),
-    Second = Color3.fromRGB(6,6,6),
-    Stroke = Color3.fromRGB(15,15,15),
-    Divider = Color3.fromRGB(10,10,10),
-    Text = Color3.fromRGB(200,200,200),
-    TextDark = Color3.fromRGB(120,120,120)
-}
-OrionLib.Themes["Pure Dark"] = {
-    Main = Color3.fromRGB(0,0,0),
-    Second = Color3.fromRGB(0,0,0),
-    Stroke = Color3.fromRGB(40,40,40),
-    Divider = Color3.fromRGB(0,0,0),
-    Text = Color3.fromRGB(255,255,255),
-    TextDark = Color3.fromRGB(140,140,140)
-}
-OrionLib.Themes["Bright v1"] = {
-    Main = Color3.fromRGB(240,240,240),
-    Second = Color3.fromRGB(250,250,250),
-    Stroke = Color3.fromRGB(200,200,200),
-    Divider = Color3.fromRGB(230,230,230),
-    Text = Color3.fromRGB(20,20,20),
-    TextDark = Color3.fromRGB(100,100,100)
-}
-OrionLib.Themes["Bright v2"] = {
-    Main = Color3.fromRGB(255,255,255),
-    Second = Color3.fromRGB(245,245,245),
-    Stroke = Color3.fromRGB(210,210,210),
-    Divider = Color3.fromRGB(235,235,235),
-    Text = Color3.fromRGB(25,25,25),
-    TextDark = Color3.fromRGB(120,120,120)
-}
-OrionLib.Themes["Sun set"] = {
-    Main = Color3.fromRGB(255,120,70),
-    Second = Color3.fromRGB(255,140,90),
-    Stroke = Color3.fromRGB(255,100,50),
-    Divider = Color3.fromRGB(255,130,80),
-    Text = Color3.fromRGB(0,0,0),
-    TextDark = Color3.fromRGB(80,40,40)
-}
-OrionLib.Themes["Forest"] = {
-    Main = Color3.fromRGB(20,50,20),
-    Second = Color3.fromRGB(30,70,30),
-    Stroke = Color3.fromRGB(40,90,40),
-    Divider = Color3.fromRGB(30,80,30),
-    Text = Color3.fromRGB(220,220,220),
-    TextDark = Color3.fromRGB(120,160,120)
-}
 
 
-
-return OrionLib
