@@ -14,12 +14,12 @@ local OrionLib = {
 	Flags = {},
 	Themes = {
 	Default = {
-		Main = Color3.fromRGB(12, 12, 12),         -- Very deep charcoal/near-black for the primary background
-		Second = Color3.fromRGB(18, 18, 18),       -- Slightly lighter than Main, for subtle differentiation
-		Stroke = Color3.fromRGB(35, 35, 35),       -- A dark, very subtle outline
-		Divider = Color3.fromRGB(30, 30, 30),      -- A dark, integrated divider line
-		Text = Color3.fromRGB(200, 200, 200),      -- A softer white, to prevent harshness on the very dark background
-		TextDark = Color3.fromRGB(110, 110, 110)   -- Darker secondary text, still offering contrast
+		Main = Color3.fromRGB(5, 5, 5),          -- Primary background: Extremely deep, almost pure black
+		Second = Color3.fromRGB(11, 11, 11),     -- Secondary background/panels: Very slightly lighter for subtle layering
+		Stroke = Color3.fromRGB(22, 22, 22),     -- Borders/outlines: Barely perceptible, just enough definition
+		Divider = Color3.fromRGB(18, 18, 18),    -- Dividers: Blends in but marks separation
+		Text = Color3.fromRGB(195, 195, 195),    -- Main Text: Crucial for "best lighting" - a soft, desaturated white for optimal readability without glare
+		TextDark = Color3.fromRGB(95, 95, 95)    -- Secondary Text: Readable, subdued gray for less prominent information
 	}
 },
 	SelectedTheme = "Default",
