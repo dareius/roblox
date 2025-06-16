@@ -14,12 +14,12 @@ local OrionLib = {
 	Flags = {},
 	Themes = {
 		Default = {
-			Main = Color3.fromRGB(15, 15, 20),
-			Second = Color3.fromRGB(25, 25, 35),
-			Stroke = Color3.fromRGB(70, 70, 90),
-			Divider = Color3.fromRGB(40, 40, 55),
-			Text = Color3.fromRGB(220, 220, 255),
-			TextDark = Color3.fromRGB(140, 140, 180)
+			Main = Color3.fromRGB(18, 18, 24),
+			Second = Color3.fromRGB(28, 28, 36),
+			Stroke = Color3.fromRGB(80, 80, 100),
+			Divider = Color3.fromRGB(50, 50, 70),
+			Text = Color3.fromRGB(235, 235, 255),
+			TextDark = Color3.fromRGB(150, 150, 190)
 		}
 	},
 	SelectedTheme = "Default",
@@ -162,41 +162,6 @@ local function SetChildren(Element, Children)
 	end)
 	return Element
 end
-
-
--- Lock/Unlock utility for UI elements
-function    local overlay = Instance.new("TextLabel")
-    overlay.Name = "LockedOverlay"
-    overlay.Text = "Locked"
-    overlay.BackgroundTransparency = 0.3
-    overlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    overlay.TextColor3 = Color3.fromRGB(255, 255, 255)
-    overlay.Font = Enum.Font.GothamBold
-    overlay.TextSize = 14
-    overlay.AnchorPoint = Vector2.new(0.5, 0.5)
-    overlay.Position = UDim2.new(0.5, 0, 0.5, 0)
-    overlay.Size = UDim2.new(1, 0, 1, 0)
-    overlay.ZIndex = 99
-    overlay.Visible = false
-    overlay.Parent = parent
-    return overlay
-end
-
-function    componentTable.Lock = function()
-        if parentUI:FindFirstChild("LockedOverlay") then
-            parentUI.LockedOverlay.Visible = true
-            if parentUI:IsA("TextButton") or parentUI:IsA("Frame") then
-                parentUI.BackgroundColor3 = parentUI.BackgroundColor3:lerp(Color3.fromRGB(20,20,20), 0.5)
-            end
-        end
-    end
-    componentTable.Unlock = function()
-        if parentUI:FindFirstChild("LockedOverlay") then
-            parentUI.LockedOverlay.Visible = false
-        end
-    end
-end
-
 
 local function Round(Number, Factor)
 	local Result = math.floor(Number/Factor + (math.sign(Number) * 0.5)) * Factor
@@ -831,6 +796,7 @@ function OrionLib:MakeWindow(WindowConfig)
 		local function GetElements(ItemParent)
 			local ElementFunction = {}
 			function ElementFunction:AddLabel(Text)
+	-- TODO: Add `Set()` method to support label text change
 				local LabelFrame = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 5), {
 					Size = UDim2.new(1, 0, 0, 30),
 					BackgroundTransparency = 0.7,
@@ -945,6 +911,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				return Button
 			end    
 			function ElementFunction:AddToggle(ToggleConfig)
+	-- TODO: Add `Set()` method to allow toggling from code
 				ToggleConfig = ToggleConfig or {}
 				ToggleConfig.Name = ToggleConfig.Name or "Toggle"
 				ToggleConfig.Default = ToggleConfig.Default or false
@@ -1027,6 +994,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				return Toggle
 			end  
 			function ElementFunction:AddSlider(SliderConfig)
+	-- TODO: Add `Set()` method to change value programmatically
 				SliderConfig = SliderConfig or {}
 				SliderConfig.Name = SliderConfig.Name or "Slider"
 				SliderConfig.Min = SliderConfig.Min or 0
@@ -1122,6 +1090,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				return Slider
 			end  
 			function ElementFunction:AddDropdown(DropdownConfig)
+	-- TODO: Add `Set()` method to update selected option
 				DropdownConfig = DropdownConfig or {}
 				DropdownConfig.Name = DropdownConfig.Name or "Dropdown"
 				DropdownConfig.Options = DropdownConfig.Options or {}
