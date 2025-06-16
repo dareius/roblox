@@ -648,6 +648,33 @@ function OrionLib:MakeWindow(WindowConfig)
 
 	AddConnection(CloseBtn.MouseButton1Up, function()
 		MainWindow.Visible = false
+
+-- Create a tiny button to reopen the UI
+local ReopenButton = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(35, 35, 35), 0, 6), {
+    Size = UDim2.new(0, 36, 0, 36),
+    Position = UDim2.new(0, 20, 1, -60),
+    AnchorPoint = Vector2.new(0, 1),
+    Visible = true,
+    ZIndex = 5,
+    Parent = Orion
+}), {
+    AddThemeObject(SetProps(MakeElement("Image", "rbxassetid://7072706796"), {
+        Size = UDim2.new(0, 18, 0, 18),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0.5, 0.5, 0.5, 0),
+        ImageColor3 = Color3.fromRGB(240, 240, 240),
+    }), "Text"),
+    MakeElement("Button")
+}), "Second")
+
+AddConnection(ReopenButton.Button.MouseButton1Click, function()
+    MainWindow.Visible = true
+    UIHidden = false
+    ReopenButton.Visible = false
+end)
+
+ReopenButton.Visible = true
+
 		UIHidden = true
 		OrionLib:MakeNotification({
 			Name = "Interface Hidden",
