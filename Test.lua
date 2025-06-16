@@ -25,15 +25,15 @@ local OrionLib = {
 	SaveCfg = false
 }
 
---Lucide Icons https://github.com/lucide-icons/lucide/tree/main/packages/lucide/src/icons
+--Feather Icons https://github.com/evoincorp/lucideblox/tree/master/src/modules/util - Created by 7kayoh
 local Icons = {}
 
 local Success, Response = pcall(function()
-	Icons = HttpService:JSONDecode(game:HttpGetAsync("https://raw.githubusercontent.com/lucide-icons/lucide/main/packages/lucide/src/icons.json"))
+	Icons = HttpService:JSONDecode(game:HttpGetAsync("https://raw.githubusercontent.com/evoincorp/lucideblox/master/src/modules/util/icons.json")).icons
 end)
 
 if not Success then
-	warn("\nOrion Library - Failed to load Lucide Icons. Error code: " .. Response .. "\n")
+	warn("\nOrion Library - Failed to load Feather Icons. Error code: " .. Response .. "\n")
 end	
 
 local function GetIcon(IconName)
@@ -96,50 +96,33 @@ task.spawn(function()
 end)
 
 local function AddDraggingFunctionality(DragPoint, Main)
-    pcall(function()
-        local Dragging, DragInput, MousePos, FramePos = false, nil, nil, nil
-        local originalMouseBehavior = UserInputService.MouseBehavior
+	pcall(function()
+		local Dragging, DragInput, MousePos, FramePos = false
+		DragPoint.InputBegan:Connect(function(Input)
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+				Dragging = true
+				MousePos = Input.Position
+				FramePos = Main.Position
 
-        DragPoint.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                Dragging = true
-                MousePos = input.Position
-                FramePos = Main.Position
-                UserInputService.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition
-
-                input.Changed:Connect(function()
-                    if input.UserInputState == Enum.UserInputState.End then
-                        Dragging = false
-                        UserInputService.MouseBehavior = originalMouseBehavior
-                    end
-                end)
-            end
-        end)
-
-        DragPoint.InputChanged:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement then
-                DragInput = input
-            end
-        end)
-
-        UserInputService.InputChanged:Connect(function(input)
-            if input == DragInput and Dragging then
-                local delta = input.Position - MousePos
-                TweenService:Create(
-                    Main,
-                    TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-                    {
-                        Position = UDim2.new(
-                            FramePos.X.Scale,
-                            FramePos.X.Offset + delta.X,
-                            FramePos.Y.Scale,
-                            FramePos.Y.Offset + delta.Y
-                        )
-                    }
-                ):Play()
-            end
-        end)
-    end)
+				Input.Changed:Connect(function()
+					if Input.UserInputState == Enum.UserInputState.End then
+						Dragging = false
+					end
+				end)
+			end
+		end)
+		DragPoint.InputChanged:Connect(function(Input)
+			if Input.UserInputType == Enum.UserInputType.MouseMovement then
+				DragInput = Input
+			end
+		end)
+		UserInputService.InputChanged:Connect(function(Input)
+			if Input == DragInput and Dragging then
+				local Delta = Input.Position - MousePos
+				TweenService:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
+			end
+		end)
+	end)
 end   
 
 local function Create(Name, Properties, Children)
@@ -177,6 +160,43 @@ local function SetChildren(Element, Children)
 	end)
 	return Element
 end
+
+
+-- Lock/Unlock utility for UI elements
+function CreateLockOverlay(parent)
+    local overlay = Instance.new("TextLabel")
+    overlay.Name = "LockedOverlay"
+    overlay.Text = "Locked"
+    overlay.BackgroundTransparency = 0.3
+    overlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    overlay.TextColor3 = Color3.fromRGB(255, 255, 255)
+    overlay.Font = Enum.Font.GothamBold
+    overlay.TextSize = 14
+    overlay.AnchorPoint = Vector2.new(0.5, 0.5)
+    overlay.Position = UDim2.new(0.5, 0, 0.5, 0)
+    overlay.Size = UDim2.new(1, 0, 1, 0)
+    overlay.ZIndex = 99
+    overlay.Visible = false
+    overlay.Parent = parent
+    return overlay
+end
+
+function AttachLockFunctions(componentTable, parentUI)
+    componentTable.Lock = function()
+        if parentUI:FindFirstChild("LockedOverlay") then
+            parentUI.LockedOverlay.Visible = true
+            if parentUI:IsA("TextButton") or parentUI:IsA("Frame") then
+                parentUI.BackgroundColor3 = parentUI.BackgroundColor3:lerp(Color3.fromRGB(20,20,20), 0.5)
+            end
+        end
+    end
+    componentTable.Unlock = function()
+        if parentUI:FindFirstChild("LockedOverlay") then
+            parentUI.LockedOverlay.Visible = false
+        end
+    end
+end
+
 
 local function Round(Number, Factor)
 	local Result = math.floor(Number/Factor + (math.sign(Number) * 0.5)) * Factor
