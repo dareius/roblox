@@ -1,6 +1,7 @@
 
 
 local UserInputService = game:GetService("UserInputService")
+local IsMobile = UserInputService.TouchEnabled
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -13,15 +14,15 @@ local OrionLib = {
 	Connections = {},
 	Flags = {},
 	Themes = {
-	Default = {
-		Main = Color3.fromRGB(5, 5, 5),          -- Primary background: Extremely deep, almost pure black
-		Second = Color3.fromRGB(11, 11, 11),     -- Secondary background/panels: Very slightly lighter for subtle layering
-		Stroke = Color3.fromRGB(35, 35, 35),     -- Borders/outlines: Barely perceptible, just enough definition
-		Divider = Color3.fromRGB(24, 24, 24),    -- Dividers: Blends in but marks separation
-		Text = Color3.fromRGB(195, 195, 195),    -- Main Text: Crucial for "best lighting" - a soft, desaturated white for optimal readability without glare
-		TextDark = Color3.fromRGB(95, 95, 95)    -- Secondary Text: Readable, subdued gray for less prominent information
-	}
-},
+		Default = {
+			Main = Color3.fromRGB(15, 15, 20),
+			Second = Color3.fromRGB(25, 25, 35),
+			Stroke = Color3.fromRGB(70, 70, 90),
+			Divider = Color3.fromRGB(40, 40, 55),
+			Text = Color3.fromRGB(220, 220, 255),
+			TextDark = Color3.fromRGB(140, 140, 180)
+		}
+	},
 	SelectedTheme = "Default",
 	Folder = nil,
 	SaveCfg = false
@@ -121,7 +122,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 		UserInputService.InputChanged:Connect(function(Input)
 			if Input == DragInput and Dragging then
 				local Delta = Input.Position - MousePos
-				TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
+				TweenService:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
 			end
 		end)
 	end)
@@ -400,7 +401,7 @@ function OrionLib:MakeNotification(NotificationConfig)
 			Parent = NotificationHolder
 		})
 
-		local NotificationFrame = SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(25, 25, 25), 0, 12), {
+		local NotificationFrame = SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(25, 25, 25), 0, 10), {
 			Parent = NotificationParent, 
 			Size = UDim2.new(1, 0, 0, 0),
 			Position = UDim2.new(1, -55, 0, 0),
@@ -528,12 +529,12 @@ function OrionLib:MakeWindow(WindowConfig)
 		Size = UDim2.new(1, 0, 0, 50)
 	})
 
-	local WindowStuff = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 12), {
+	local WindowStuff = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
 		Size = UDim2.new(0, 150, 1, -50),
 		Position = UDim2.new(0, 0, 0, 50)
 	}), {
 		AddThemeObject(SetProps(MakeElement("Frame"), {
-			Size = UDim2.new(1, 0, 0, 12),
+			Size = UDim2.new(1, 0, 0, 10),
 			Position = UDim2.new(0, 0, 0, 0)
 		}), "Second"), 
 		AddThemeObject(SetProps(MakeElement("Frame"), {
@@ -599,10 +600,11 @@ function OrionLib:MakeWindow(WindowConfig)
 		Position = UDim2.new(0, 0, 1, -1)
 	}), "Stroke")
 
-	local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 12), {
+	local DefaultWindowSize = IsMobile and UDim2.new(0.9,0,0.9,0) or UDim2.new(0,615,0,500)
+local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
 		Parent = Orion,
-		Position = UDim2.new(0.5, -307, 0.5, -172),
-		Size = UDim2.new(0, 615, 0, 420),
+		Position = IsMobile and UDim2.new(0.5, 0, 0.5, 0) or UDim2.new(0.5, -307, 0.5, -250),
+		Size = DefaultWindowSize,
 		ClipsDescendants = true
 	}), {
 		--SetProps(MakeElement("Image", "rbxassetid://3523728077"), {
@@ -620,7 +622,7 @@ function OrionLib:MakeWindow(WindowConfig)
 			WindowTopBarLine,
 			AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 7), {
 				Size = UDim2.new(0, 70, 0, 30),
-				Position = UDim2.new(1, -90, 0, 12)
+				Position = UDim2.new(1, -90, 0, 10)
 			}), {
 				AddThemeObject(MakeElement("Stroke"), "Stroke"),
 				AddThemeObject(SetProps(MakeElement("Frame"), {
@@ -645,42 +647,25 @@ function OrionLib:MakeWindow(WindowConfig)
 	end	
 
 	AddDraggingFunctionality(DragPoint, MainWindow)
+		if IsMobile then
+    			local ToggleButton = Instance.new("TextButton")
+    			ToggleButton.Text = "â‰¡"
+    			ToggleButton.TextSize = 24
+    			ToggleButton.Size = UDim2.new(0, 50, 0, 50)
+    			ToggleButton.Position = UDim2.new(0, 10, 0, 10)
+    			ToggleButton.BackgroundTransparency = 0.3
+    			ToggleButton.BackgroundColor3 = Color3.fromRGB(0,0,0)
+    			ToggleButton.TextColor3 = Color3.fromRGB(255,255,255)
+    			ToggleButton.ZIndex = 1000
+    			ToggleButton.Parent = Orion
+    			ToggleButton.MouseButton1Click:Connect(function()
+    				MainWindow.Visible = not MainWindow.Visible
+    			end)
+    		end
+
 
 	AddConnection(CloseBtn.MouseButton1Up, function()
-		
-TweenService:Create(MainWindow, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-    Size = UDim2.new(0, 140, 0, 50),
-    Position = UDim2.new(0.5, -70, 0, 10)
-}):Play()
-wait(0.3)
-MainWindow.Visible = false
-
--- Create a tiny button to reopen the UI
-local ReopenButton = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(35, 35, 35), 0, 6), {
-    Size = UDim2.new(0, 36, 0, 36),
-    Position = UDim2.new(0, 20, 1, -60),
-    AnchorPoint = Vector2.new(0, 1),
-    Visible = true,
-    ZIndex = 5,
-    Parent = Orion
-}), {
-    AddThemeObject(SetProps(MakeElement("Image", "rbxassetid://7072706796"), {
-        Size = UDim2.new(0, 18, 0, 18),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0.5, 0.5, 0),
-        ImageColor3 = Color3.fromRGB(240, 240, 240),
-    }), "Text"),
-    MakeElement("Button")
-}), "Second")
-
-AddConnection(ReopenButton.Button.MouseButton1Click, function()
-    MainWindow.Visible = true
-    UIHidden = false
-    ReopenButton.Visible = false
-end)
-
-ReopenButton.Visible = true
-
+		MainWindow.Visible = false
 		UIHidden = true
 		OrionLib:MakeNotification({
 			Name = "Interface Hidden",
@@ -698,7 +683,7 @@ ReopenButton.Visible = true
 
 	AddConnection(MinimizeBtn.MouseButton1Up, function()
 		if Minimized then
-			TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 615, 0, 344)}):Play()
+			TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = DefaultWindowSize}):Play()
 			MinimizeBtn.Ico.Image = "rbxassetid://7072719338"
 			wait(.02)
 			MainWindow.ClipsDescendants = false
@@ -860,7 +845,7 @@ ReopenButton.Visible = true
 				}), {
 					AddThemeObject(SetProps(MakeElement("Label", Text, 15), {
 						Size = UDim2.new(1, -12, 0, 14),
-						Position = UDim2.new(0, 12, 0, 12),
+						Position = UDim2.new(0, 12, 0, 10),
 						Font = Enum.Font.GothamBold,
 						Name = "Title"
 					}), "Text"),
@@ -1078,7 +1063,7 @@ ReopenButton.Visible = true
 				}), {
 					AddThemeObject(SetProps(MakeElement("Label", SliderConfig.Name, 15), {
 						Size = UDim2.new(1, -12, 0, 14),
-						Position = UDim2.new(0, 12, 0, 12),
+						Position = UDim2.new(0, 12, 0, 10),
 						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
@@ -1098,7 +1083,7 @@ ReopenButton.Visible = true
 				end)
 
 				UserInputService.InputChanged:Connect(function(Input)
-					if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then 
+					if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then 
 						local SizeScale = math.clamp((Input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
 						Slider:Set(SliderConfig.Min + ((SliderConfig.Max - SliderConfig.Min) * SizeScale)) 
 						SaveCfg(game.GameId)
@@ -1446,7 +1431,7 @@ ReopenButton.Visible = true
 
 				AddConnection(TextboxActual:GetPropertyChangedSignal("Text"), function()
 					--TextContainer.Size = UDim2.new(0, TextboxActual.TextBounds.X + 16, 0, 24)
-					TweenService:Create(TextContainer, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, TextboxActual.TextBounds.X + 16, 0, 24)}):Play()
+					TweenService:Create(TextContainer, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, TextboxActual.TextBounds.X + 16, 0, 24)}):Play()
 				end)
 
 				AddConnection(TextboxActual.FocusLost, function()
