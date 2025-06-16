@@ -103,6 +103,16 @@ local function AddDraggingFunctionality(DragPoint, Main)
 		DragPoint.InputBegan:Connect(function(Input)
 			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 				Dragging = true
+local dragInput = Input
+local endConn; endConn = UserInputService.InputEnded:Connect(function(e)
+    if e == dragInput then
+        Dragging = false
+        if endConn then
+            endConn:Disconnect()
+        end
+    end
+end)
+
 				MousePos = Input.Position
 				FramePos = Main.Position
 
@@ -1136,7 +1146,7 @@ ReopenButton.Visible = true
 				end)
 
 				UserInputService.InputChanged:Connect(function(Input)
-					if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then 
+					if Dragging and Container.Visible and MainWindow.Visible and not UIHidden and (Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch) then
 						local SizeScale = math.clamp((Input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
 						Slider:Set(SliderConfig.Min + ((SliderConfig.Max - SliderConfig.Min) * SizeScale)) 
 						SaveCfg(game.GameId)
@@ -1623,6 +1633,7 @@ ReopenButton.Visible = true
 					Color.Visible = Colorpicker.Toggled
 					Hue.Visible = Colorpicker.Toggled
 					ColorpickerFrame.F.Line.Visible = Colorpicker.Toggled
+					if Colorpicker.Toggled then UpdateColorPicker() end
 				end)
 
 				local function UpdateColorPicker()
