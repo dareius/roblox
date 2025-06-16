@@ -1800,7 +1800,6 @@ function OrionLib:Destroy()
 	Orion:Destroy()
 end
 
-return OrionLib
 
 
 -- ########## ADDED THEMES AND AUTO TAB ##########
