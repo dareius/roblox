@@ -1,5 +1,3 @@
-
-
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -101,7 +99,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 	pcall(function()
 		local Dragging, DragInput, MousePos, FramePos = false
 		DragPoint.InputBegan:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 				Dragging = true
 				MousePos = Input.Position
 				FramePos = Main.Position
@@ -114,7 +112,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 			end
 		end)
 		DragPoint.InputChanged:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseMovement then
+			if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
 				DragInput = Input
 			end
 		end)
@@ -528,7 +526,7 @@ function OrionLib:MakeWindow(WindowConfig)
 		Size = UDim2.new(1, 0, 0, 50)
 	})
 
-	local WindowStuff = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
+	local WindowStuff = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 12), {
 		Size = UDim2.new(0, 150, 1, -50),
 		Position = UDim2.new(0, 0, 0, 50)
 	}), {
@@ -599,7 +597,7 @@ function OrionLib:MakeWindow(WindowConfig)
 		Position = UDim2.new(0, 0, 1, -1)
 	}), "Stroke")
 
-	local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
+	local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 12), {
 		Parent = Orion,
 		Position = UDim2.new(0.5, -307, 0.5, -172),
 		Size = UDim2.new(0, 615, 0, 344),
@@ -645,6 +643,72 @@ function OrionLib:MakeWindow(WindowConfig)
 	end	
 
 	AddDraggingFunctionality(DragPoint, MainWindow)
+
+-- ########## THEME BUTTON + MENU ##########
+local themeNames = {"Dark","Darker","Pure Dark","Bright v1","Bright v2","Sun set","Forest"}
+
+local ThemeBtn = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 7), {
+   Size = UDim2.new(0, 30, 0, 30),
+   Position = UDim2.new(1, -130, 0, 10)
+}), {
+   AddThemeObject(MakeElement("Stroke"), "Stroke"),
+   AddThemeObject(SetProps(MakeElement("Image", "rbxassetid://7072729018"), {
+        Size = UDim2.new(0, 18, 0, 18),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+   }), "TextDark"),
+   MakeElement("Button")
+}), "Second")
+
+ThemeBtn.Parent = MainWindow.TopBar
+
+local ThemeMenu = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(25,25,25), 0, 6), {
+    Parent = MainWindow,
+    AnchorPoint = Vector2.new(1,0),
+    Position = UDim2.new(1, -20, 0, 55),
+    Size = UDim2.new(0, 140, 0, (#themeNames * 24) + 8),
+    Visible = false
+}), {
+    AddThemeObject(MakeElement("Stroke"), "Stroke"),
+    MakeElement("List", 0, 4),
+    MakeElement("Padding", 4, 4, 4, 4)
+}), "Second")
+ThemeMenu.ZIndex = 20
+
+for _, name in ipairs(themeNames) do
+    local optBtn = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(45,45,45), 0, 5), {
+        Size = UDim2.new(1, 0, 0, 22)
+    }), {
+        AddThemeObject(SetProps(MakeElement("Label", name, 13), {
+            Size = UDim2.new(1, -8, 1, 0),
+            Position = UDim2.new(0, 8, 0, 0),
+            Font = Enum.Font.GothamSemibold,
+            TextXAlignment = Enum.TextXAlignment.Left
+        }), "Text"),
+        MakeElement("Button")
+    }), "Divider")
+    optBtn.Parent = ThemeMenu
+    optBtn.Button.MouseButton1Up:Connect(function()
+        if OrionLib.Themes[name] then
+            OrionLib.SelectedTheme = name
+            SetTheme()
+        end
+        ThemeMenu.Visible = false
+    end)
+end
+
+local menuTweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+ThemeBtn.Button.MouseButton1Up:Connect(function()
+    if ThemeMenu.Visible then
+        TweenService:Create(ThemeMenu, menuTweenInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play()
+        delay(0.25, function() ThemeMenu.Visible = false end)
+    else
+        ThemeMenu.Visible = true
+        ThemeMenu.Size = UDim2.new(0, 0, 0, 0)
+        TweenService:Create(ThemeMenu, menuTweenInfo, {Size = UDim2.new(0, 140, 0, (#themeNames * 24) + 8)}):Play()
+    end
+end)
+-- ########## END THEME BUTTON + MENU ##########
 
 	AddConnection(CloseBtn.MouseButton1Up, function()
 		MainWindow.Visible = false
@@ -1787,31 +1851,4 @@ OrionLib.Themes["Forest"] = {
     TextDark = Color3.fromRGB(120,160,120)
 }
 
--- AUTO TAB WITH THEME DROPDOWN
-task.defer(function()
-    -- Wait until the window is available
-    repeat
-        wait()
-    until Window ~= nil   -- assumes the variable 'Window' is defined after OrionLib:MakeWindow
 
-    local autoTab = Window:MakeTab({
-        Name = "Auto Tab",
-        Icon = "rbxassetid://7072706796",
-        PremiumOnly = false
-    })
-
-    autoTab:AddLabel("This tab is automatically created by the UI, other tabs aren't")
-
-    autoTab:AddDropdown({
-        Name = "Theme",
-        Default = "Dark",
-        Options = {"Dark","Darker","Pure Dark","Bright v1","Bright v2","Sun set","Forest"},
-        Callback = function(selected)
-            if OrionLib.Themes[selected] then
-                OrionLib.SelectedTheme = selected
-                SetTheme() -- instantly apply the chosen theme
-            end
-        end
-    })
-end)
--- ########## END ADDED THEMES AND AUTO TAB ##########
