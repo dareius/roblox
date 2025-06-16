@@ -1,7 +1,6 @@
 
 
 local UserInputService = game:GetService("UserInputService")
-local IsMobile = UserInputService.TouchEnabled
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -15,12 +14,12 @@ local OrionLib = {
 	Flags = {},
 	Themes = {
 		Default = {
-			Main = Color3.fromRGB(15, 15, 20),
-			Second = Color3.fromRGB(25, 25, 35),
-			Stroke = Color3.fromRGB(70, 70, 90),
-			Divider = Color3.fromRGB(40, 40, 55),
-			Text = Color3.fromRGB(220, 220, 255),
-			TextDark = Color3.fromRGB(140, 140, 180)
+			Main = Color3.fromRGB(10, 10, 15),
+			Second = Color3.fromRGB(18, 18, 28),
+			Stroke = Color3.fromRGB(50, 50, 70),
+			Divider = Color3.fromRGB(30, 30, 40),
+			Text = Color3.fromRGB(200, 200, 240),
+			TextDark = Color3.fromRGB(120, 120, 160)
 		}
 	},
 	SelectedTheme = "Default",
@@ -102,7 +101,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 	pcall(function()
 		local Dragging, DragInput, MousePos, FramePos = false
 		DragPoint.InputBegan:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
 				Dragging = true
 				MousePos = Input.Position
 				FramePos = Main.Position
@@ -115,7 +114,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 			end
 		end)
 		DragPoint.InputChanged:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
+			if Input.UserInputType == Enum.UserInputType.MouseMovement then
 				DragInput = Input
 			end
 		end)
@@ -600,11 +599,10 @@ function OrionLib:MakeWindow(WindowConfig)
 		Position = UDim2.new(0, 0, 1, -1)
 	}), "Stroke")
 
-	local DefaultWindowSize = IsMobile and UDim2.new(0.9,0,0.9,0) or UDim2.new(0,615,0,500)
-local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
+	local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
 		Parent = Orion,
-		Position = IsMobile and UDim2.new(0.5, 0, 0.5, 0) or UDim2.new(0.5, -307, 0.5, -250),
-		Size = DefaultWindowSize,
+		Position = UDim2.new(0.5, -250, 0.5, -160),
+		Size = UDim2.new(0, 500, 0, 320),
 		ClipsDescendants = true
 	}), {
 		--SetProps(MakeElement("Image", "rbxassetid://3523728077"), {
@@ -647,22 +645,6 @@ local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame",
 	end	
 
 	AddDraggingFunctionality(DragPoint, MainWindow)
-		if IsMobile then
-    			local ToggleButton = Instance.new("TextButton")
-    			ToggleButton.Text = "â‰¡"
-    			ToggleButton.TextSize = 24
-    			ToggleButton.Size = UDim2.new(0, 50, 0, 50)
-    			ToggleButton.Position = UDim2.new(0, 10, 0, 10)
-    			ToggleButton.BackgroundTransparency = 0.3
-    			ToggleButton.BackgroundColor3 = Color3.fromRGB(0,0,0)
-    			ToggleButton.TextColor3 = Color3.fromRGB(255,255,255)
-    			ToggleButton.ZIndex = 1000
-    			ToggleButton.Parent = Orion
-    			ToggleButton.MouseButton1Click:Connect(function()
-    				MainWindow.Visible = not MainWindow.Visible
-    			end)
-    		end
-
 
 	AddConnection(CloseBtn.MouseButton1Up, function()
 		MainWindow.Visible = false
@@ -683,7 +665,7 @@ local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame",
 
 	AddConnection(MinimizeBtn.MouseButton1Up, function()
 		if Minimized then
-			TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = DefaultWindowSize}):Play()
+			TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 500, 0, 320)}):Play()
 			MinimizeBtn.Ico.Image = "rbxassetid://7072719338"
 			wait(.02)
 			MainWindow.ClipsDescendants = false
@@ -1072,12 +1054,12 @@ local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame",
 				}), "Second")
 
 				SliderBar.InputBegan:Connect(function(Input)
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then 
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
 						Dragging = true 
 					end 
 				end)
 				SliderBar.InputEnded:Connect(function(Input) 
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then 
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
 						Dragging = false 
 					end 
 				end)
@@ -1309,7 +1291,7 @@ local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame",
 				end)
 
 				AddConnection(Click.InputEnded, function(Input)
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 then
 						if Bind.Binding then return end
 						Bind.Binding = true
 						BindBox.Value.Text = ""
