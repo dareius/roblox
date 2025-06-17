@@ -1,247 +1,156 @@
+# ðŸŒ‘ DarknessLib UI Documentation
 
-# ðŸŒŸ OrionLib UI â€“ Full Documentation (Enhanced Version)
-
-A modern, mobile-ready Roblox UI library with tabs, animations, full method support, and divider utilities.
+DarknessLib is a modern, minimal, and mobile-friendly Roblox UI library. Rebranded and redesigned from the ground up for clarity and elegance.
 
 ---
 
-## ðŸš€ How to Get Started
+## ðŸ“¦ Getting Started
 
-### ðŸ”— Load the Library
-
-
+Place the script in your executor or require it as a ModuleScript:
 ```lua
-local OrionLib = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/dareius/roblox/refs/heads/main/Test.lua"
-))()
+local DarknessLib = loadstring(game:HttpGet("https://your-cdn-link/darkness_lib.lua"))()
 ```
 
 ---
 
-## ðŸªŸ Create the Main Window
+## ðŸªŸ Create a Window
 
 ```lua
-Window = OrionLib:MakeWindow({
-    Name = "My Game UI",
+local Window = DarknessLib:MakeWindow({
+    Name = "My Darkness UI",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "DarknessSettings",
     IntroText = "Welcome!",
-    Icon = "rbxassetid://6034287515",
-    ShowIcon = true
+    IntroIcon = "rbxassetid://0",
+    ShowIcon = true,
+    Icon = "rbxassetid://0"
 })
 ```
 
 ---
 
-## ðŸ“‚ Create Tabs
+## ðŸ“ Tabs
 
 ```lua
 local Tab = Window:MakeTab({
     Name = "Main",
-    Icon = "rbxassetid://6031280882"
+    Icon = "Home", -- Use Feather icons
+    PremiumOnly = false
 })
 ```
 
-You can create as many tabs as you'd like.
-
 ---
 
-## ðŸ§± Tab Dividers (Sidebar)
+## ðŸ§© Elements
 
-Insert visual breaks between tabs:
-
+### ðŸ”˜ Toggle
 ```lua
-OrionLib:AddTabDivider()
-```
-
----
-
-## ðŸ“ Element Dividers (Inside Tabs)
-
-Add a line between UI sections in a tab:
-
-```lua
-Tab:AddDivider()
-```
-
----
-
-## ðŸ”˜ Supported UI Elements
-
-Each element supports `.Set(value)`, `.Get()`, `.Changed`, `.Disable()`, `.Enable()`, `.Destroy()`.
-
----
-
-### Toggle
-
-```lua
-local t = Tab:AddToggle({
+Tab:AddToggle({
     Name = "Enable Feature",
     Default = false,
-    Callback = function(val)
-        print("Toggle:", val)
-    end
-})
-
-t:Set(true)
-print(t:Get())
-
-t.Changed.Event:Connect(function(val) print("Changed:", val) end)
-```
-
----
-
-### Slider
-
-```lua
-local s = Tab:AddSlider({
-    Name = "Volume",
-    Min = 0,
-    Max = 100,
-    Default = 50,
-    ValueName = "%",
-    Callback = function(v) print("Slider:", v) end
-})
-
-s:Set(75)
-print(s:Get())
-s.Changed.Event:Connect(function(v) print("Changed:", v) end)
-```
-
----
-
-### Dropdown
-
-```lua
-local d = Tab:AddDropdown({
-    Name = "Choose Option",
-    Options = {"One", "Two", "Three"},
-    Default = "Two",
-    Callback = function(v) print("Dropdown:", v) end
-})
-
-d:Set("One")
-print(d:Get())
-d.Changed.Event:Connect(function(v) print("Changed:", v) end)
-```
-
----
-
-### Textbox
-
-```lua
-local txt = Tab:AddTextbox({
-    Name = "Enter Text",
-    Default = "",
-    Callback = function(v) print("Typed:", v) end
-})
-
-txt:Set("Hello")
-print(txt:Get())
-txt.Changed.Event:Connect(function(v) print("Changed:", v) end)
-```
-
----
-
-### Color Picker
-
-```lua
-local cp = Tab:AddColorpicker({
-    Name = "Pick Color",
-    Default = Color3.fromRGB(255, 0, 0),
-    Callback = function(c) print("Color:", c) end
-})
-
-cp:Set(Color3.fromRGB(0, 255, 0))
-print(cp:Get())
-cp.Changed.Event:Connect(function(c) print("Changed:", c) end)
-```
-
----
-
-### Bind
-
-```lua
-Tab:AddBind({
-    Name = "Activate",
-    Default = Enum.KeyCode.F,
-    Callback = function()
-        print("F pressed")
+    Callback = function(state)
+        print("Toggle:", state)
     end
 })
 ```
 
----
-
-### Button
-
+### ðŸ”² Button
 ```lua
 Tab:AddButton({
     Name = "Click Me",
     Callback = function()
-        print("Button clicked")
+        print("Button clicked!")
+    end
+})
+```
+
+### ðŸ“‰ Slider
+```lua
+Tab:AddSlider({
+    Name = "Adjust Value",
+    Min = 0,
+    Max = 100,
+    Increment = 5,
+    Default = 50,
+    ValueName = "%",
+    Callback = function(val)
+        print("Slider value:", val)
+    end
+})
+```
+
+### ðŸ“‚ Dropdown
+```lua
+Tab:AddDropdown({
+    Name = "Choose Option",
+    Default = "Option 1",
+    Options = {"Option 1", "Option 2", "Option 3"},
+    Callback = function(opt)
+        print("Selected:", opt)
+    end
+})
+```
+
+### âŒ¨ï¸ Textbox
+```lua
+Tab:AddTextbox({
+    Name = "Input Something",
+    Default = "",
+    TextDisappear = false,
+    Callback = function(text)
+        print("Input:", text)
+    end
+})
+```
+
+### ðŸ•¹ï¸ Keybind
+```lua
+Tab:AddBind({
+    Name = "Hotkey",
+    Default = Enum.KeyCode.RightShift,
+    Hold = false,
+    Callback = function()
+        print("Hotkey triggered")
     end
 })
 ```
 
 ---
 
-### Label
+## ðŸ”” Notifications
 
 ```lua
-local label = Tab:AddLabel("Info Text")
-label:Set("Updated Text")
-```
-
----
-
-### Paragraph
-
-```lua
-Tab:AddParagraph("Instructions", [[
-This is a longer text block for instructions, notes, or story.
-]])
-```
-
----
-
-### Notifications
-
-```lua
-OrionLib:MakeNotification({
-    Name = "Notice",
-    Content = "Something happened!",
-    Time = 4
+DarknessLib:MakeNotification({
+    Name = "Alert!",
+    Content = "Something happened.",
+    Time = 3
 })
 ```
 
 ---
 
-## ðŸ§© Utility Methods (All Elements)
+## ðŸ’¾ Saving Configs
 
-| Method        | Description                       |
-|---------------|-----------------------------------|
-| `:Set(value)` | Change the current value          |
-| `:Get()`      | Get the current value             |
-| `:Disable()`  | Hide the element                  |
-| `:Enable()`   | Show the element again            |
-| `:Destroy()`  | Remove the element from the UI    |
-| `Changed.Event` | Signal for when value changes |
+If `SaveConfig = true` and a `ConfigFolder` name is provided in `MakeWindow`, toggles and values will be remembered across sessions.
 
 ---
 
-## ðŸ“¦ UX Features
+## ðŸ“± Mobile Support
 
-- Responsive layout for PC + Mobile
-- Animated drag with Touch + Mouse
-- Reopen via pill UI or button
-- Animated transitions
-- Custom theming support (manual)
+Touch input is supported for:
+- Dragging the window
+- Using sliders and buttons
+- Tapping dropdowns
+
+---
+
+## â“ Tips
+
+- Use `rbxassetid://` icons for `IntroIcon` and `Icon`
+- Feather icon names work for tabs (e.g. `"Home"`, `"Settings"`, `"Terminal"`)
+- Keep element names short and readable
 
 ---
 
-## ðŸ“ Coming Soon
-
-- Config saving
-- Themes UI switcher
-- Dynamic tab ordering
-
----
+Created with ðŸ’€??? by DarknessLib Team - voided4356
