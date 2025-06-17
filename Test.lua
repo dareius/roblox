@@ -1,3 +1,4 @@
+
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -12,10 +13,10 @@ local DarknessLib = {
 	Flags = {},
 	Themes = {
 		Default = {
-            Main = Color3.fromRGB(5, 5, 8),
-            Second = Color3.fromRGB(12, 12, 20),
-            Stroke = Color3.fromRGB(40, 40, 60),
-            Divider = Color3.fromRGB(18, 18, 28),
+            Main = Color3.fromRGB(12, 10, 16),
+            Second = Color3.fromRGB(18, 16, 26),
+            Stroke = Color3.fromRGB(60, 30, 90),
+            Divider = Color3.fromRGB(45, 30, 65),
             Text = Color3.fromRGB(180, 180, 240),
             TextDark = Color3.fromRGB(140, 140, 170)
         }
@@ -415,13 +416,13 @@ function DarknessLib:MakeNotification(NotificationConfig)
 			SetProps(MakeElement("Label", NotificationConfig.Name, 15), {
 				Size = UDim2.new(1, -30, 0, 20),
 				Position = UDim2.new(0, 30, 0, 0),
-				Font = Enum.Font.SourceSansSemibold,
+				Font = Enum.Font.GothamSemibold,
 				Name = "Title"
 			}),
 			SetProps(MakeElement("Label", NotificationConfig.Content, 14), {
 				Size = UDim2.new(1, 0, 0, 0),
 				Position = UDim2.new(0, 0, 0, 25),
-				Font = Enum.Font.SourceSans,
+				Font = Enum.Font.Gotham,
 				Name = "Content",
 				AutomaticSize = Enum.AutomaticSize.Y,
 				TextColor3 = Color3.fromRGB(200, 200, 200),
@@ -574,7 +575,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 			AddThemeObject(SetProps(MakeElement("Label", LocalPlayer.DisplayName, WindowConfig.HidePremium and 14 or 13), {
 				Size = UDim2.new(1, -60, 0, 13),
 				Position = WindowConfig.HidePremium and UDim2.new(0, 50, 0, 19) or UDim2.new(0, 50, 0, 12),
-				Font = Enum.Font.SourceSansSemibold,
+				Font = Enum.Font.GothamSemibold,
 				ClipsDescendants = true
 			}), "Text"),
 			AddThemeObject(SetProps(MakeElement("Label", "", 12), {
@@ -698,7 +699,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			Position = UDim2.new(0.5, 19, 0.5, 0),
 			TextXAlignment = Enum.TextXAlignment.Center,
-			Font = Enum.Font.SourceSansSemibold,
+			Font = Enum.Font.GothamSemibold,
 			TextTransparency = 1
 		})
 
@@ -739,7 +740,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 			AddThemeObject(SetProps(MakeElement("Label", TabConfig.Name, 14), {
 				Size = UDim2.new(1, -35, 1, 0),
 				Position = UDim2.new(0, 35, 0, 0),
-				Font = Enum.Font.SourceSans,
+				Font = Enum.Font.Gotham,
 				TextTransparency = 0.4,
 				Name = "Title"
 			}), "Text")
@@ -775,7 +776,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 		AddConnection(TabFrame.MouseButton1Click, function()
 			for _, Tab in next, TabHolder:GetChildren() do
 				if Tab:IsA("TextButton") then
-					Tab.Title.Font = Enum.Font.SourceSans
+					Tab.Title.Font = Enum.Font.Gotham
 					TweenService:Create(Tab.Ico, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 0.4}):Play()
 					TweenService:Create(Tab.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 0.4}):Play()
 				end    
@@ -802,7 +803,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", Text, 15), {
 						Size = UDim2.new(1, -12, 1, 0),
 						Position = UDim2.new(0, 12, 0, 0),
-						Font = Enum.Font.SourceSansSemibold,
+						Font = Enum.Font.GothamSemibold,
 						Name = "Content"
 					}), "Text"),
 					AddThemeObject(MakeElement("Stroke"), "Stroke")
@@ -826,13 +827,13 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", Text, 15), {
 						Size = UDim2.new(1, -12, 0, 14),
 						Position = UDim2.new(0, 12, 0, 10),
-						Font = Enum.Font.SourceSansSemibold,
+						Font = Enum.Font.GothamSemibold,
 						Name = "Title"
 					}), "Text"),
 					AddThemeObject(SetProps(MakeElement("Label", "", 13), {
 						Size = UDim2.new(1, -24, 0, 0),
 						Position = UDim2.new(0, 12, 0, 26),
-						Font = Enum.Font.SourceSans,
+						Font = Enum.Font.Gotham,
 						Name = "Content",
 						TextWrapped = true
 					}), "TextDark"),
@@ -871,7 +872,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", ButtonConfig.Name, 15), {
 						Size = UDim2.new(1, -12, 1, 0),
 						Position = UDim2.new(0, 12, 0, 0),
-						Font = Enum.Font.SourceSansSemibold,
+						Font = Enum.Font.GothamSemibold,
 						Name = "Content"
 					}), "Text"),
 					AddThemeObject(SetProps(MakeElement("Image", ButtonConfig.Icon), {
@@ -948,7 +949,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", ToggleConfig.Name, 15), {
 						Size = UDim2.new(1, -12, 1, 0),
 						Position = UDim2.new(0, 12, 0, 0),
-						Font = Enum.Font.SourceSansSemibold,
+						Font = Enum.Font.GothamSemibold,
 						Name = "Content"
 					}), "Text"),
 					AddThemeObject(MakeElement("Stroke"), "Stroke"),
@@ -1013,7 +1014,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", "value", 13), {
 						Size = UDim2.new(1, -12, 0, 14),
 						Position = UDim2.new(0, 12, 0, 6),
-						Font = Enum.Font.SourceSansSemibold,
+						Font = Enum.Font.GothamSemibold,
 						Name = "Value",
 						TextTransparency = 0
 					}), "Text")
@@ -1030,7 +1031,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", "value", 13), {
 						Size = UDim2.new(1, -12, 0, 14),
 						Position = UDim2.new(0, 12, 0, 6),
-						Font = Enum.Font.SourceSansSemibold,
+						Font = Enum.Font.GothamSemibold,
 						Name = "Value",
 						TextTransparency = 0.8
 					}), "Text"),
@@ -1044,7 +1045,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", SliderConfig.Name, 15), {
 						Size = UDim2.new(1, -12, 0, 14),
 						Position = UDim2.new(0, 12, 0, 10),
-						Font = Enum.Font.SourceSansSemibold,
+						Font = Enum.Font.GothamSemibold,
 						Name = "Content"
 					}), "Text"),
 					AddThemeObject(MakeElement("Stroke"), "Stroke"),
@@ -1125,7 +1126,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 						AddThemeObject(SetProps(MakeElement("Label", DropdownConfig.Name, 15), {
 							Size = UDim2.new(1, -12, 1, 0),
 							Position = UDim2.new(0, 12, 0, 0),
-							Font = Enum.Font.SourceSansSemibold,
+							Font = Enum.Font.GothamSemibold,
 							Name = "Content"
 						}), "Text"),
 						AddThemeObject(SetProps(MakeElement("Image", "rbxassetid://7072706796"), {
@@ -1268,7 +1269,7 @@ function ElementFunction:AddColorpicker(ColorpickerConfig)
         AddThemeObject(SetProps(MakeElement("Label", ColorpickerConfig.Name, 15), {
             Size = UDim2.new(1, -12, 0, 14),
             Position = UDim2.new(0, 12, 0, 10),
-            Font = Enum.Font.SourceSansSemibold,
+            Font = Enum.Font.GothamSemibold,
             Name = "Content"
         }), "Text"),
         AddThemeObject(MakeElement("Stroke"), "Stroke")
@@ -1297,7 +1298,7 @@ function ElementFunction:AddColorpicker(ColorpickerConfig)
             PlaceholderText = labels[i],
             Size = UDim2.new(1,0,1,0),
             BackgroundTransparency = 1,
-            Font = Enum.Font.SourceSans,
+            Font = Enum.Font.Gotham,
             TextSize = 13,
             TextXAlignment = Enum.TextXAlignment.Center,
             TextColor3 = colors[i],
@@ -1355,7 +1356,7 @@ function ElementFunction:AddBind(BindConfig)
 					AddThemeObject(MakeElement("Stroke"), "Stroke"),
 					AddThemeObject(SetProps(MakeElement("Label", BindConfig.Name, 14), {
 						Size = UDim2.new(1, 0, 1, 0),
-						Font = Enum.Font.SourceSansSemibold,
+						Font = Enum.Font.GothamSemibold,
 						TextXAlignment = Enum.TextXAlignment.Center,
 						Name = "Value"
 					}), "Text")
@@ -1368,7 +1369,7 @@ function ElementFunction:AddBind(BindConfig)
 					AddThemeObject(SetProps(MakeElement("Label", BindConfig.Name, 15), {
 						Size = UDim2.new(1, -12, 1, 0),
 						Position = UDim2.new(0, 12, 0, 0),
-						Font = Enum.Font.SourceSansSemibold,
+						Font = Enum.Font.GothamSemibold,
 						Name = "Content"
 					}), "Text"),
 					AddThemeObject(MakeElement("Stroke"), "Stroke"),
@@ -1471,7 +1472,7 @@ function ElementFunction:AddBind(BindConfig)
 					TextColor3 = Color3.fromRGB(255, 255, 255),
 					PlaceholderColor3 = Color3.fromRGB(210,210,210),
 					PlaceholderText = "Input",
-					Font = Enum.Font.SourceSans,
+					Font = Enum.Font.Gotham,
 					TextXAlignment = Enum.TextXAlignment.Center,
 					TextSize = 13,
 					ClearTextOnFocus = false
@@ -1494,7 +1495,7 @@ function ElementFunction:AddBind(BindConfig)
 					AddThemeObject(SetProps(MakeElement("Label", TextboxConfig.Name, 15), {
 						Size = UDim2.new(1, -12, 1, 0),
 						Position = UDim2.new(0, 12, 0, 0),
-						Font = Enum.Font.SourceSansSemibold,
+						Font = Enum.Font.GothamSemibold,
 						Name = "Content"
 					}), "Text"),
 					AddThemeObject(MakeElement("Stroke"), "Stroke"),
@@ -1567,7 +1568,7 @@ function ElementFunction:AddBind(BindConfig)
 					Visible = false,
 					Image = "rbxassetid://4155801252"
 				}, {
-					Create("UICorner", {CornerRadius = UDim.new(0, 5)}),
+					Create("UICorner", {CornerRadius = UDim.new(0, 2)}),
 					ColorSelection
 				})
 
@@ -1577,7 +1578,7 @@ function ElementFunction:AddBind(BindConfig)
 					Visible = false
 				}, {
 					Create("UIGradient", {Rotation = 270, Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 4)), ColorSequenceKeypoint.new(0.20, Color3.fromRGB(234, 255, 0)), ColorSequenceKeypoint.new(0.40, Color3.fromRGB(21, 255, 0)), ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(0.80, Color3.fromRGB(0, 17, 255)), ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 251)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 4))},}),
-					Create("UICorner", {CornerRadius = UDim.new(0, 5)}),
+					Create("UICorner", {CornerRadius = UDim.new(0, 2)}),
 					HueSelection
 				})
 
@@ -1617,7 +1618,7 @@ function ElementFunction:AddBind(BindConfig)
 						AddThemeObject(SetProps(MakeElement("Label", ColorpickerConfig.Name, 15), {
 							Size = UDim2.new(1, -12, 1, 0),
 							Position = UDim2.new(0, 12, 0, 0),
-							Font = Enum.Font.SourceSansSemibold,
+							Font = Enum.Font.GothamSemibold,
 							Name = "Content"
 						}), "Text"),
 						ColorpickerBox,
@@ -1733,7 +1734,7 @@ function ElementFunction:AddBind(BindConfig)
 				AddThemeObject(SetProps(MakeElement("Label", SectionConfig.Name, 14), {
 					Size = UDim2.new(1, -12, 0, 16),
 					Position = UDim2.new(0, 0, 0, 3),
-					Font = Enum.Font.SourceSans
+					Font = Enum.Font.Gotham
 				}), "TextDark"),
 				SetChildren(SetProps(MakeElement("TFrame"), {
 					AnchorPoint = Vector2.new(0, 0),
@@ -1788,7 +1789,7 @@ function ElementFunction:AddBind(BindConfig)
 				AddThemeObject(SetProps(MakeElement("Label", "Premium Features", 14), {
 					Size = UDim2.new(1, -150, 0, 14),
 					Position = UDim2.new(0, 150, 0, 112),
-					Font = Enum.Font.SourceSansSemibold
+					Font = Enum.Font.GothamSemibold
 				}), "Text"),
 				AddThemeObject(SetProps(MakeElement("Label", "This part of the script is locked to Sirius Premium users. Purchase Premium in the Discord server (discord.gg/sirius)", 12), {
 					Size = UDim2.new(1, -200, 0, 14),
