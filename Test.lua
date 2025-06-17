@@ -1803,9 +1803,9 @@ function ElementFunction:AddBind(BindConfig)
 	end  
 	
 	DarknessLib:MakeNotification({
-		Name = "UI Library Upgrade",
-		Content = "New UI Library Available at sirius.menu/discord and sirius.menu/rayfield",
-		Time = 5
+		Name = "UI Library",
+		Content = "This is a good lib right?",
+		Time = 4
 	})
 	
 
