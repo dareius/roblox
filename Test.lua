@@ -1,9 +1,9 @@
-local userinputservice = game:GetService("userinputservice")
-local tweenservice = game:GetService("tweenservice")
-local runservice = game:GetService("runservice")
+local userinputservice = game:GetService("UserInputService")
+local tweenservice = game:GetService("TweenService")
+local runservice = game:GetService("RunService")
 local localplayer = game:GetService("Players").localplayer
 local mouse = localplayer:GetMouse()
-local httpservice = game:GetService("httpservice")
+local httpservice = game:GetService("HttpService")
 
 local DarknessLib = {
 	Elements = {},
