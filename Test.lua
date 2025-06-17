@@ -14,8 +14,8 @@ local DarknessLib = {
 		Default = {
             Main = Color3.fromRGB(12, 10, 16),
             Second = Color3.fromRGB(18, 16, 26),
-            Stroke = Color3.fromRGB(60, 30, 90),
-            Divider = Color3.fromRGB(45, 30, 65),
+            Stroke = Color3.fromRGB(100, 40, 120),
+            Divider = Color3.fromRGB(80, 60, 100),
             Text = Color3.fromRGB(180, 180, 240),
             TextDark = Color3.fromRGB(140, 140, 170)
         }
@@ -600,7 +600,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 	local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
 		Parent = Darkness,
 		Position = UDim2.new(0.5, -230, 0.5, -140),
-		Size = UDim2.new(0, 460, 0, 360),
+		Size = UDim2.new(0, 480, 0, 400),
 		ClipsDescendants = true
 	}), {
 		--SetProps(MakeElement("Image", "rbxassetid://3523728077"), {
@@ -663,7 +663,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 
 	AddConnection(MinimizeBtn.MouseButton1Up, function()
 		if Minimized then
-			TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 460, 0, 360)}):Play()
+			TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 480, 0, 400)}):Play()
 			MinimizeBtn.Ico.Image = "rbxassetid://7072719338"
 			wait(.02)
 			MainWindow.ClipsDescendants = false
@@ -1567,7 +1567,7 @@ function ElementFunction:AddBind(BindConfig)
 					Visible = false,
 					Image = "rbxassetid://4155801252"
 				}, {
-					Create("UICorner", {CornerRadius = UDim.new(0, 2)}),
+					Create("UICorner", {CornerRadius = UDim.new(0, 6)}),
 					ColorSelection
 				})
 
@@ -1577,7 +1577,7 @@ function ElementFunction:AddBind(BindConfig)
 					Visible = false
 				}, {
 					Create("UIGradient", {Rotation = 270, Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 4)), ColorSequenceKeypoint.new(0.20, Color3.fromRGB(234, 255, 0)), ColorSequenceKeypoint.new(0.40, Color3.fromRGB(21, 255, 0)), ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(0.80, Color3.fromRGB(0, 17, 255)), ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 251)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 4))},}),
-					Create("UICorner", {CornerRadius = UDim.new(0, 2)}),
+					Create("UICorner", {CornerRadius = UDim.new(0, 6)}),
 					HueSelection
 				})
 
@@ -1816,27 +1816,4 @@ function DarknessLib:Destroy()
 	Darkness:Destroy()
 end
 
-            local ThemeButton = Make("TextButton", {
-                Name = "ThemeToggle",
-                Text = "â–¡",
-                TextSize = 16,
-                Font = Enum.Font.GothamBold,
-                TextColor3 = Color3.fromRGB(200, 200, 255),
-                Size = UDim2.new(0, 26, 0, 22),
-                Position = UDim2.new(1, -90, 0, 5),
-                BackgroundTransparency = 0.4,
-                BackgroundColor3 = Color3.fromRGB(30, 30, 45),
-                BorderSizePixel = 0,
-                Parent = TopBar
-            })
-            AddThemeObject(ThemeButton, "Second")
-
-            ThemeButton.MouseButton1Click:Connect(function()
-                Theme.Main = Color3.fromRGB(4, 4, 6)
-                Theme.Second = Color3.fromRGB(10, 10, 15)
-                Theme.Stroke = Color3.fromRGB(80, 40, 110)
-                Theme.Divider = Color3.fromRGB(20, 10, 30)
-                Theme.Text = Color3.fromRGB(180, 180, 240)
-            end)
-
-return DarknessLib
+            return DarknessLib
