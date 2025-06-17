@@ -1813,5 +1813,4 @@ end
 function DarknessLib:Destroy()
 	Darkness:Destroy()
 end
-
-            return DarknessLib
+return DarknessLib
