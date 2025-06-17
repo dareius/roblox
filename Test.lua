@@ -1,5 +1,3 @@
-
-
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -14,10 +12,10 @@ local OrionLib = {
 	Flags = {},
 	Themes = {
 		Default = {
-            Main = Color3.fromRGB(2, 2, 4),
-            Second = Color3.fromRGB(6, 6, 12),
-            Stroke = Color3.fromRGB(20, 20, 35),
-            Divider = Color3.fromRGB(8, 8, 14),
+            Main = Color3.fromRGB(5, 5, 8),
+            Second = Color3.fromRGB(12, 12, 20),
+            Stroke = Color3.fromRGB(40, 40, 60),
+            Divider = Color3.fromRGB(18, 18, 28),
             Text = Color3.fromRGB(210, 210, 235),
             TextDark = Color3.fromRGB(140, 140, 170)
         }
@@ -610,7 +608,7 @@ function OrionLib:MakeWindow(WindowConfig)
 		--	Position = UDim2.new(0.5, 0, 0.5, 0),
 		--	Size = UDim2.new(1, 80, 1, 320),
 		--	ImageColor3 = Color3.fromRGB(33, 33, 33),
-		--	ImageTransparency = 0.85
+		--	ImageTransparency = 0.7
 		--}),
 		SetChildren(SetProps(MakeElement("TFrame"), {
 			Size = UDim2.new(1, 0, 0, 50),
@@ -645,21 +643,6 @@ function OrionLib:MakeWindow(WindowConfig)
 	end	
 
 	AddDraggingFunctionality(DragPoint, MainWindow)
--- Shadow
-local Shadow = Create("ImageLabel", {
-    AnchorPoint = Vector2.new(0.5,0.5),
-    Position = UDim2.new(0.5,0,0.5,4),
-    Size = UDim2.new(1,20,1,20),
-    Image = "rbxassetid://1316045217",
-    ImageColor3 = Color3.new(0,0,0),
-    ImageTransparency = 0.85,
-    ScaleType = Enum.ScaleType.Slice,
-    SliceCenter = Rect.new(10,10,118,118),
-    BackgroundTransparency = 1,
-    ZIndex = -1
-})
-Shadow.Parent = Orion
-
 
 	AddConnection(CloseBtn.MouseButton1Up, function()
 		MainWindow.Visible = false
@@ -1291,7 +1274,7 @@ function ElementFunction:AddColorpicker(ColorpickerConfig)
         AddThemeObject(MakeElement("Stroke"), "Stroke")
     }), "Second")
 
-    local Preview = AddThemeObject(MakeElement("RoundFrame", Color3.fromRGB(R,G,B), 0, 4), "Second")
+    local Preview = AddThemeObject(MakeElement("RoundFrame", Colorpicker.Value, 0, 4), "Second")
     Preview.Size = UDim2.new(0, 28, 0, 28)
     Preview.Position = UDim2.new(1, -40, 0, 35)
     Preview.Parent = Container
