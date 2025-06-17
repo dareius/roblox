@@ -1,3 +1,6 @@
+
+
+
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -1790,7 +1793,6 @@ function ElementFunction:AddBind(BindConfig)
 					Position = UDim2.new(0, 150, 0, 112),
 					Font = Enum.Font.GothamSemibold
 				}), "Text"),
-				AddThemeObject(SetProps(MakeElement("Label", "This part of the script is locked to Sirius Premium users. Purchase Premium in the Discord server (discord.gg/sirius)", 12), {
 					Size = UDim2.new(1, -200, 0, 14),
 					Position = UDim2.new(0, 150, 0, 138),
 					TextWrapped = true,
@@ -1803,7 +1805,6 @@ function ElementFunction:AddBind(BindConfig)
 	
 	DarknessLib:MakeNotification({
 		Name = "UI Library Upgrade",
-		Content = "New UI Library Available at sirius.menu/discord and sirius.menu/rayfield",
 		Time = 5
 	})
 	
