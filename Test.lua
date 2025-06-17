@@ -1,4 +1,3 @@
-
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -17,7 +16,7 @@ local DarknessLib = {
             Second = Color3.fromRGB(12, 12, 20),
             Stroke = Color3.fromRGB(40, 40, 60),
             Divider = Color3.fromRGB(18, 18, 28),
-            Text = Color3.fromRGB(210, 210, 235),
+            Text = Color3.fromRGB(180, 180, 240),
             TextDark = Color3.fromRGB(140, 140, 170)
         }
 	},
@@ -422,7 +421,7 @@ function DarknessLib:MakeNotification(NotificationConfig)
 			SetProps(MakeElement("Label", NotificationConfig.Content, 14), {
 				Size = UDim2.new(1, 0, 0, 0),
 				Position = UDim2.new(0, 0, 0, 25),
-				Font = Enum.Font.GothamSemibold,
+				Font = Enum.Font.SourceSans,
 				Name = "Content",
 				AutomaticSize = Enum.AutomaticSize.Y,
 				TextColor3 = Color3.fromRGB(200, 200, 200),
@@ -600,8 +599,8 @@ function DarknessLib:MakeWindow(WindowConfig)
 
 	local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
 		Parent = Darkness,
-		Position = UDim2.new(0.5, -250, 0.5, -160),
-		Size = UDim2.new(0, 480, 0, 300),
+		Position = UDim2.new(0.5, -230, 0.5, -140),
+		Size = UDim2.new(0, 460, 0, 280),
 		ClipsDescendants = true
 	}), {
 		--SetProps(MakeElement("Image", "rbxassetid://3523728077"), {
@@ -664,7 +663,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 
 	AddConnection(MinimizeBtn.MouseButton1Up, function()
 		if Minimized then
-			TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 480, 0, 300)}):Play()
+			TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 460, 0, 280)}):Play()
 			MinimizeBtn.Ico.Image = "rbxassetid://7072719338"
 			wait(.02)
 			MainWindow.ClipsDescendants = false
@@ -740,7 +739,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 			AddThemeObject(SetProps(MakeElement("Label", TabConfig.Name, 14), {
 				Size = UDim2.new(1, -35, 1, 0),
 				Position = UDim2.new(0, 35, 0, 0),
-				Font = Enum.Font.GothamSemibold,
+				Font = Enum.Font.SourceSans,
 				TextTransparency = 0.4,
 				Name = "Title"
 			}), "Text")
@@ -776,7 +775,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 		AddConnection(TabFrame.MouseButton1Click, function()
 			for _, Tab in next, TabHolder:GetChildren() do
 				if Tab:IsA("TextButton") then
-					Tab.Title.Font = Enum.Font.GothamSemibold
+					Tab.Title.Font = Enum.Font.SourceSans
 					TweenService:Create(Tab.Ico, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 0.4}):Play()
 					TweenService:Create(Tab.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 0.4}):Play()
 				end    
@@ -833,7 +832,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", "", 13), {
 						Size = UDim2.new(1, -24, 0, 0),
 						Position = UDim2.new(0, 12, 0, 26),
-						Font = Enum.Font.GothamSemibold,
+						Font = Enum.Font.SourceSans,
 						Name = "Content",
 						TextWrapped = true
 					}), "TextDark"),
@@ -1298,8 +1297,8 @@ function ElementFunction:AddColorpicker(ColorpickerConfig)
             PlaceholderText = labels[i],
             Size = UDim2.new(1,0,1,0),
             BackgroundTransparency = 1,
-            Font = Enum.Font.GothamSemibold,
-            TextSize = 14,
+            Font = Enum.Font.SourceSans,
+            TextSize = 13,
             TextXAlignment = Enum.TextXAlignment.Center,
             TextColor3 = colors[i],
             ClearTextOnFocus = false
@@ -1472,9 +1471,9 @@ function ElementFunction:AddBind(BindConfig)
 					TextColor3 = Color3.fromRGB(255, 255, 255),
 					PlaceholderColor3 = Color3.fromRGB(210,210,210),
 					PlaceholderText = "Input",
-					Font = Enum.Font.GothamSemibold,
+					Font = Enum.Font.SourceSans,
 					TextXAlignment = Enum.TextXAlignment.Center,
-					TextSize = 14,
+					TextSize = 13,
 					ClearTextOnFocus = false
 				}), "Text")
 
@@ -1734,7 +1733,7 @@ function ElementFunction:AddBind(BindConfig)
 				AddThemeObject(SetProps(MakeElement("Label", SectionConfig.Name, 14), {
 					Size = UDim2.new(1, -12, 0, 16),
 					Position = UDim2.new(0, 0, 0, 3),
-					Font = Enum.Font.GothamSemibold
+					Font = Enum.Font.SourceSans
 				}), "TextDark"),
 				SetChildren(SetProps(MakeElement("TFrame"), {
 					AnchorPoint = Vector2.new(0, 0),
@@ -1803,9 +1802,9 @@ function ElementFunction:AddBind(BindConfig)
 	end  
 	
 	DarknessLib:MakeNotification({
-		Name = "UI Library",
-		Content = "This is a good lib right?",
-		Time = 4
+		Name = "UI Library Upgrade",
+		Content = "New UI Library Available at sirius.menu/discord and sirius.menu/rayfield",
+		Time = 5
 	})
 	
 
