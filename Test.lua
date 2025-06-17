@@ -1,4 +1,3 @@
-
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -601,7 +600,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 	local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
 		Parent = Darkness,
 		Position = UDim2.new(0.5, -230, 0.5, -140),
-		Size = UDim2.new(0, 460, 0, 280),
+		Size = UDim2.new(0, 460, 0, 360),
 		ClipsDescendants = true
 	}), {
 		--SetProps(MakeElement("Image", "rbxassetid://3523728077"), {
@@ -664,7 +663,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 
 	AddConnection(MinimizeBtn.MouseButton1Up, function()
 		if Minimized then
-			TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 460, 0, 280)}):Play()
+			TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 460, 0, 360)}):Play()
 			MinimizeBtn.Ico.Image = "rbxassetid://7072719338"
 			wait(.02)
 			MainWindow.ClipsDescendants = false
@@ -1816,5 +1815,28 @@ end
 function DarknessLib:Destroy()
 	Darkness:Destroy()
 end
+
+            local ThemeButton = Make("TextButton", {
+                Name = "ThemeToggle",
+                Text = "â–¡",
+                TextSize = 16,
+                Font = Enum.Font.GothamBold,
+                TextColor3 = Color3.fromRGB(200, 200, 255),
+                Size = UDim2.new(0, 26, 0, 22),
+                Position = UDim2.new(1, -90, 0, 5),
+                BackgroundTransparency = 0.4,
+                BackgroundColor3 = Color3.fromRGB(30, 30, 45),
+                BorderSizePixel = 0,
+                Parent = TopBar
+            })
+            AddThemeObject(ThemeButton, "Second")
+
+            ThemeButton.MouseButton1Click:Connect(function()
+                Theme.Main = Color3.fromRGB(4, 4, 6)
+                Theme.Second = Color3.fromRGB(10, 10, 15)
+                Theme.Stroke = Color3.fromRGB(80, 40, 110)
+                Theme.Divider = Color3.fromRGB(20, 10, 30)
+                Theme.Text = Color3.fromRGB(180, 180, 240)
+            end)
 
 return DarknessLib
