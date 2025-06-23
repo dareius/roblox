@@ -1,24 +1,25 @@
-local userinputservice = game:GetService("UserInputService")
-local tweenservice = game:GetService("TweenService")
-local runservice = game:GetService("RunService")
-local localplayer = game:GetService("Players").localplayer
-local mouse = localplayer:GetMouse()
-local httpservice = game:GetService("HttpService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local LocalPlayer = game:GetService("Players").LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local HttpService = game:GetService("HttpService")
 
-local DarknessLib = {
+local voideduiLib = {
 	Elements = {},
 	ThemeObjects = {},
 	Connections = {},
 	Flags = {},
 	Themes = {
 		Default = {
-            Main = Color3.fromRGB(12, 10, 16),
-            Second = Color3.fromRGB(18, 16, 26),
-            Stroke = Color3.fromRGB(100, 40, 120),
-            Divider = Color3.fromRGB(80, 60, 100),
-            Text = Color3.fromRGB(180, 180, 240),
-            TextDark = Color3.fromRGB(140, 140, 170)
-        }
+			Main = Color3.fromRGB(15, 15, 15),
+Second = Color3.fromRGB(25, 25, 25),
+Stroke = Color3.fromRGB(45, 45, 45),
+Divider = Color3.fromRGB(50, 50, 50),
+Text = Color3.fromRGB(235, 235, 235),
+TextDark = Color3.fromRGB(160, 160, 160)
+
+		}
 	},
 	SelectedTheme = "Default",
 	Folder = nil,
@@ -29,11 +30,11 @@ local DarknessLib = {
 local Icons = {}
 
 local Success, Response = pcall(function()
-	Icons = httpservice:JSONDecode(game:HttpGetAsync("https://raw.githubusercontent.com/evoincorp/lucideblox/master/src/modules/util/icons.json")).icons
+	Icons = HttpService:JSONDecode(game:HttpGetAsync("https://raw.githubusercontent.com/evoincorp/lucideblox/master/src/modules/util/icons.json")).icons
 end)
 
 if not Success then
-	warn("\nDarkness Library - Failed to load Feather Icons. Error code: " .. Response .. "\n")
+	warn("\nOrion Library - Failed to load Feather Icons. Error code: " .. Response .. "\n")
 end	
 
 local function GetIcon(IconName)
@@ -44,53 +45,53 @@ local function GetIcon(IconName)
 	end
 end   
 
-local Darkness = Instance.new("ScreenGui")
-Darkness.Name = "Darkness"
+local voidedui = Instance.new("ScreenGui")
+voidedui.Name = "voidedui"
 if syn then
-	syn.protect_gui(Darkness)
-	Darkness.Parent = game.CoreGui
+	syn.protect_gui(voidedui)
+	voidedui.Parent = game.CoreGui
 else
-	Darkness.Parent = gethui() or game.CoreGui
+	voidedui.Parent = gethui() or game.CoreGui
 end
 
 if gethui then
 	for _, Interface in ipairs(gethui():GetChildren()) do
-		if Interface.Name == Darkness.Name and Interface ~= Darkness then
+		if Interface.Name == voidedui.Name and Interface ~= voidedui then
 			Interface:Destroy()
 		end
 	end
 else
 	for _, Interface in ipairs(game.CoreGui:GetChildren()) do
-		if Interface.Name == Darkness.Name and Interface ~= Darkness then
+		if Interface.Name == voidedui.Name and Interface ~= voidedui then
 			Interface:Destroy()
 		end
 	end
 end
 
-function DarknessLib:IsRunning()
+function voideduiLib:IsRunning()
 	if gethui then
-		return Darkness.Parent == gethui()
+		return voidedui.Parent == gethui()
 	else
-		return Darkness.Parent == game:GetService("CoreGui")
+		return voidedui.Parent == game:GetService("CoreGui")
 	end
 
 end
 
 local function AddConnection(Signal, Function)
-	if (not DarknessLib:IsRunning()) then
+	if (not voideduiLib:IsRunning()) then
 		return
 	end
 	local SignalConnect = Signal:Connect(Function)
-	table.insert(DarknessLib.Connections, SignalConnect)
+	table.insert(voideduiLib.Connections, SignalConnect)
 	return SignalConnect
 end
 
 task.spawn(function()
-	while (DarknessLib:IsRunning()) do
+	while (voideduiLib:IsRunning()) do
 		wait()
 	end
 
-	for _, Connection in next, DarknessLib.Connections do
+	for _, Connection in next, voideduiLib.Connections do
 		Connection:Disconnect()
 	end
 end)
@@ -99,7 +100,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 	pcall(function()
 		local Dragging, DragInput, MousePos, FramePos = false
 		DragPoint.InputBegan:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
 				Dragging = true
 				MousePos = Input.Position
 				FramePos = Main.Position
@@ -112,14 +113,14 @@ local function AddDraggingFunctionality(DragPoint, Main)
 			end
 		end)
 		DragPoint.InputChanged:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
+			if Input.UserInputType == Enum.UserInputType.MouseMovement then
 				DragInput = Input
 			end
 		end)
-		userinputservice.InputChanged:Connect(function(Input)
+		UserInputService.InputChanged:Connect(function(Input)
 			if Input == DragInput and Dragging then
 				local Delta = Input.Position - MousePos
-				tweenservice:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
+				TweenService:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
 			end
 		end)
 	end)
@@ -137,13 +138,13 @@ local function Create(Name, Properties, Children)
 end
 
 local function CreateElement(ElementName, ElementFunction)
-	DarknessLib.Elements[ElementName] = function(...)
+	voideduiLib.Elements[ElementName] = function(...)
 		return ElementFunction(...)
 	end
 end
 
 local function MakeElement(ElementName, ...)
-	local NewElement = DarknessLib.Elements[ElementName](...)
+	local NewElement = voideduiLib.Elements[ElementName](...)
 	return NewElement
 end
 
@@ -186,18 +187,18 @@ local function ReturnProperty(Object)
 end
 
 local function AddThemeObject(Object, Type)
-	if not DarknessLib.ThemeObjects[Type] then
-		DarknessLib.ThemeObjects[Type] = {}
+	if not voideduiLib.ThemeObjects[Type] then
+		voideduiLib.ThemeObjects[Type] = {}
 	end    
-	table.insert(DarknessLib.ThemeObjects[Type], Object)
-	Object[ReturnProperty(Object)] = DarknessLib.Themes[DarknessLib.SelectedTheme][Type]
+	table.insert(voideduiLib.ThemeObjects[Type], Object)
+	Object[ReturnProperty(Object)] = voideduiLib.Themes[voideduiLib.SelectedTheme][Type]
 	return Object
 end    
 
 local function SetTheme()
-	for Name, Type in pairs(DarknessLib.ThemeObjects) do
+	for Name, Type in pairs(voideduiLib.ThemeObjects) do
 		for _, Object in pairs(Type) do
-			Object[ReturnProperty(Object)] = DarknessLib.Themes[DarknessLib.SelectedTheme][Name]
+			Object[ReturnProperty(Object)] = voideduiLib.Themes[voideduiLib.SelectedTheme][Name]
 		end    
 	end    
 end
@@ -211,25 +212,25 @@ local function UnpackColor(Color)
 end
 
 local function LoadCfg(Config)
-	local Data = httpservice:JSONDecode(Config)
+	local Data = HttpService:JSONDecode(Config)
 	table.foreach(Data, function(a,b)
-		if DarknessLib.Flags[a] then
+		if voideduiLib.Flags[a] then
 			spawn(function() 
-				if DarknessLib.Flags[a].Type == "Colorpicker" then
-					DarknessLib.Flags[a]:Set(UnpackColor(b))
+				if voideduiLib.Flags[a].Type == "Colorpicker" then
+					voideduiLib.Flags[a]:Set(UnpackColor(b))
 				else
-					DarknessLib.Flags[a]:Set(b)
+					voideduiLib.Flags[a]:Set(b)
 				end    
 			end)
 		else
-			warn("Darkness Library Config Loader - Could not find ", a ,b)
+			warn("voidedui Library Config Loader - Could not find ", a ,b)
 		end
 	end)
 end
 
 local function SaveCfg(Name)
 	local Data = {}
-	for i,v in pairs(DarknessLib.Flags) do
+	for i,v in pairs(voideduiLib.Flags) do
 		if v.Save then
 			if v.Type == "Colorpicker" then
 				Data[i] = PackColor(v.Value)
@@ -238,7 +239,7 @@ local function SaveCfg(Name)
 			end
 		end	
 	end
-	writefile(DarknessLib.Folder .. "/" .. Name .. ".txt", tostring(httpservice:JSONEncode(Data)))
+	writefile(voideduiLib.Folder .. "/" .. Name .. ".txt", tostring(HttpService:JSONEncode(Data)))
 end
 
 local WhitelistedMouse = {Enum.UserInputType.MouseButton1, Enum.UserInputType.MouseButton2,Enum.UserInputType.MouseButton3}
@@ -382,10 +383,10 @@ local NotificationHolder = SetProps(SetChildren(MakeElement("TFrame"), {
 	Position = UDim2.new(1, -25, 1, -25),
 	Size = UDim2.new(0, 300, 1, -25),
 	AnchorPoint = Vector2.new(1, 1),
-	Parent = Darkness
+	Parent = voidedui
 })
 
-function DarknessLib:MakeNotification(NotificationConfig)
+function voideduiLib:MakeNotification(NotificationConfig)
 	spawn(function()
 		NotificationConfig.Name = NotificationConfig.Name or "Notification"
 		NotificationConfig.Content = NotificationConfig.Content or "Test"
@@ -415,13 +416,13 @@ function DarknessLib:MakeNotification(NotificationConfig)
 			SetProps(MakeElement("Label", NotificationConfig.Name, 15), {
 				Size = UDim2.new(1, -30, 0, 20),
 				Position = UDim2.new(0, 30, 0, 0),
-				Font = Enum.Font.GothamSemibold,
+				Font = Enum.Font.GothamBold,
 				Name = "Title"
 			}),
 			SetProps(MakeElement("Label", NotificationConfig.Content, 14), {
 				Size = UDim2.new(1, 0, 0, 0),
 				Position = UDim2.new(0, 0, 0, 25),
-				Font = Enum.Font.Gotham,
+				Font = Enum.Font.GothamSemibold,
 				Name = "Content",
 				AutomaticSize = Enum.AutomaticSize.Y,
 				TextColor3 = Color3.fromRGB(200, 200, 200),
@@ -429,15 +430,15 @@ function DarknessLib:MakeNotification(NotificationConfig)
 			})
 		})
 
-		tweenservice:Create(NotificationFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 0, 0, 0)}):Play()
+		TweenService:Create(NotificationFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 0, 0, 0)}):Play()
 
 		wait(NotificationConfig.Time - 0.88)
-		tweenservice:Create(NotificationFrame.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-		tweenservice:Create(NotificationFrame, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.6}):Play()
+		TweenService:Create(NotificationFrame.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+		TweenService:Create(NotificationFrame, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.6}):Play()
 		wait(0.3)
-		tweenservice:Create(NotificationFrame.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0.9}):Play()
-		tweenservice:Create(NotificationFrame.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.4}):Play()
-		tweenservice:Create(NotificationFrame.Content, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.5}):Play()
+		TweenService:Create(NotificationFrame.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0.9}):Play()
+		TweenService:Create(NotificationFrame.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.4}):Play()
+		TweenService:Create(NotificationFrame.Content, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.5}):Play()
 		wait(0.05)
 
 		NotificationFrame:TweenPosition(UDim2.new(1, 20, 0, 0),'In','Quint',0.8,true)
@@ -446,12 +447,12 @@ function DarknessLib:MakeNotification(NotificationConfig)
 	end)
 end    
 
-function DarknessLib:Init()
-	if DarknessLib.SaveCfg then	
+function voideduiLib:Init()
+	if voideduiLib.SaveCfg then	
 		pcall(function()
-			if isfile(DarknessLib.Folder .. "/" .. game.GameId .. ".txt") then
-				LoadCfg(readfile(DarknessLib.Folder .. "/" .. game.GameId .. ".txt"))
-				DarknessLib:MakeNotification({
+			if isfile(voideduiLib.Folder .. "/" .. game.GameId .. ".txt") then
+				LoadCfg(readfile(voideduiLib.Folder .. "/" .. game.GameId .. ".txt"))
+				voideduiLib:MakeNotification({
 					Name = "Configuration",
 					Content = "Auto-loaded configuration for the game " .. game.GameId .. ".",
 					Time = 5
@@ -461,27 +462,26 @@ function DarknessLib:Init()
 	end	
 end	
 
-function DarknessLib:MakeWindow(WindowConfig)
+function voideduiLib:MakeWindow(WindowConfig)
 	local FirstTab = true
 	local Minimized = false
 	local Loaded = false
 	local UIHidden = false
 
 	WindowConfig = WindowConfig or {}
-	WindowConfig.Name = WindowConfig.Name or "Darkness Library"
+	WindowConfig.Name = WindowConfig.Name or "voidedui Library"
 	WindowConfig.ConfigFolder = WindowConfig.ConfigFolder or WindowConfig.Name
 	WindowConfig.SaveConfig = WindowConfig.SaveConfig or false
-	WindowConfig.HidePremium = WindowConfig.HidePremium or false
 	if WindowConfig.IntroEnabled == nil then
 		WindowConfig.IntroEnabled = true
 	end
-	WindowConfig.IntroText = WindowConfig.IntroText or "Darkness Library"
+	WindowConfig.IntroText = WindowConfig.IntroText or "voidedui Library"
 	WindowConfig.CloseCallback = WindowConfig.CloseCallback or function() end
 	WindowConfig.ShowIcon = WindowConfig.ShowIcon or false
 	WindowConfig.Icon = WindowConfig.Icon or "rbxassetid://8834748103"
 	WindowConfig.IntroIcon = WindowConfig.IntroIcon or "rbxassetid://8834748103"
-	DarknessLib.Folder = WindowConfig.ConfigFolder
-	DarknessLib.SaveCfg = WindowConfig.SaveConfig
+	voideduiLib.Folder = WindowConfig.ConfigFolder
+	voideduiLib.SaveCfg = WindowConfig.SaveConfig
 
 	if WindowConfig.SaveConfig then
 		if not isfolder(WindowConfig.ConfigFolder) then
@@ -555,7 +555,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 				Size = UDim2.new(0, 32, 0, 32),
 				Position = UDim2.new(0, 10, 0.5, 0)
 			}), {
-				SetProps(MakeElement("Image", "https://www.roblox.com/headshot-thumbnail/image?userId=".. localplayer.UserId .."&width=420&height=420&format=png"), {
+				SetProps(MakeElement("Image", "https://www.roblox.com/headshot-thumbnail/image?userId=".. LocalPlayer.UserId .."&width=420&height=420&format=png"), {
 					Size = UDim2.new(1, 0, 1, 0)
 				}),
 				AddThemeObject(SetProps(MakeElement("Image", "rbxassetid://4031889928"), {
@@ -571,16 +571,13 @@ function DarknessLib:MakeWindow(WindowConfig)
 				AddThemeObject(MakeElement("Stroke"), "Stroke"),
 				MakeElement("Corner", 1)
 			}),
-			AddThemeObject(SetProps(MakeElement("Label", localplayer.DisplayName, WindowConfig.HidePremium and 14 or 13), {
 				Size = UDim2.new(1, -60, 0, 13),
-				Position = WindowConfig.HidePremium and UDim2.new(0, 50, 0, 19) or UDim2.new(0, 50, 0, 12),
-				Font = Enum.Font.GothamSemibold,
+				Font = Enum.Font.GothamBold,
 				ClipsDescendants = true
 			}), "Text"),
 			AddThemeObject(SetProps(MakeElement("Label", "", 12), {
 				Size = UDim2.new(1, -60, 0, 12),
 				Position = UDim2.new(0, 50, 1, -25),
-				Visible = not WindowConfig.HidePremium
 			}), "TextDark")
 		}),
 	}), "Second")
@@ -598,9 +595,9 @@ function DarknessLib:MakeWindow(WindowConfig)
 	}), "Stroke")
 
 	local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
-		Parent = Darkness,
-		Position = UDim2.new(0.5, -230, 0.5, -140),
-		Size = UDim2.new(0, 480, 0, 400),
+		Parent = voidedui,
+		Position = UDim2.new(0.5, -307, 0.5, -172),
+		Size = UDim2.new(0, 615, 0, 344),
 		ClipsDescendants = true
 	}), {
 		--SetProps(MakeElement("Image", "rbxassetid://3523728077"), {
@@ -647,7 +644,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 	AddConnection(CloseBtn.MouseButton1Up, function()
 		MainWindow.Visible = false
 		UIHidden = true
-		DarknessLib:MakeNotification({
+		voideduiLib:MakeNotification({
 			Name = "Interface Hidden",
 			Content = "Tap RightShift to reopen the interface",
 			Time = 5
@@ -655,7 +652,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 		WindowConfig.CloseCallback()
 	end)
 
-	AddConnection(userinputservice.InputBegan, function(Input)
+	AddConnection(UserInputService.InputBegan, function(Input)
 		if Input.KeyCode == Enum.KeyCode.RightShift and UIHidden then
 			MainWindow.Visible = true
 		end
@@ -663,7 +660,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 
 	AddConnection(MinimizeBtn.MouseButton1Up, function()
 		if Minimized then
-			tweenservice:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 480, 0, 400)}):Play()
+			TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 615, 0, 344)}):Play()
 			MinimizeBtn.Ico.Image = "rbxassetid://7072719338"
 			wait(.02)
 			MainWindow.ClipsDescendants = false
@@ -674,7 +671,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 			WindowTopBarLine.Visible = false
 			MinimizeBtn.Ico.Image = "rbxassetid://7072720870"
 
-			tweenservice:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, WindowName.TextBounds.X + 140, 0, 50)}):Play()
+			TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, WindowName.TextBounds.X + 140, 0, 50)}):Play()
 			wait(0.1)
 			WindowStuff.Visible = false	
 		end
@@ -684,7 +681,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 	local function LoadSequence()
 		MainWindow.Visible = false
 		local LoadSequenceLogo = SetProps(MakeElement("Image", WindowConfig.IntroIcon), {
-			Parent = Darkness,
+			Parent = voidedui,
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			Position = UDim2.new(0.5, 0, 0.4, 0),
 			Size = UDim2.new(0, 28, 0, 28),
@@ -693,22 +690,22 @@ function DarknessLib:MakeWindow(WindowConfig)
 		})
 
 		local LoadSequenceText = SetProps(MakeElement("Label", WindowConfig.IntroText, 14), {
-			Parent = Darkness,
+			Parent = voidedui,
 			Size = UDim2.new(1, 0, 1, 0),
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			Position = UDim2.new(0.5, 19, 0.5, 0),
 			TextXAlignment = Enum.TextXAlignment.Center,
-			Font = Enum.Font.GothamSemibold,
+			Font = Enum.Font.GothamBold,
 			TextTransparency = 1
 		})
 
-		tweenservice:Create(LoadSequenceLogo, TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageTransparency = 0, Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
+		TweenService:Create(LoadSequenceLogo, TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageTransparency = 0, Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
 		wait(0.8)
-		tweenservice:Create(LoadSequenceLogo, TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -(LoadSequenceText.TextBounds.X/2), 0.5, 0)}):Play()
+		TweenService:Create(LoadSequenceLogo, TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -(LoadSequenceText.TextBounds.X/2), 0.5, 0)}):Play()
 		wait(0.3)
-		tweenservice:Create(LoadSequenceText, TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
+		TweenService:Create(LoadSequenceText, TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 		wait(2)
-		tweenservice:Create(LoadSequenceText, TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
+		TweenService:Create(LoadSequenceText, TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
 		MainWindow.Visible = true
 		LoadSequenceLogo:Destroy()
 		LoadSequenceText:Destroy()
@@ -723,7 +720,6 @@ function DarknessLib:MakeWindow(WindowConfig)
 		TabConfig = TabConfig or {}
 		TabConfig.Name = TabConfig.Name or "Tab"
 		TabConfig.Icon = TabConfig.Icon or ""
-		TabConfig.PremiumOnly = TabConfig.PremiumOnly or false
 
 		local TabFrame = SetChildren(SetProps(MakeElement("Button"), {
 			Size = UDim2.new(1, 0, 0, 30),
@@ -739,7 +735,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 			AddThemeObject(SetProps(MakeElement("Label", TabConfig.Name, 14), {
 				Size = UDim2.new(1, -35, 1, 0),
 				Position = UDim2.new(0, 35, 0, 0),
-				Font = Enum.Font.Gotham,
+				Font = Enum.Font.GothamSemibold,
 				TextTransparency = 0.4,
 				Name = "Title"
 			}), "Text")
@@ -775,9 +771,9 @@ function DarknessLib:MakeWindow(WindowConfig)
 		AddConnection(TabFrame.MouseButton1Click, function()
 			for _, Tab in next, TabHolder:GetChildren() do
 				if Tab:IsA("TextButton") then
-					Tab.Title.Font = Enum.Font.Gotham
-					tweenservice:Create(Tab.Ico, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 0.4}):Play()
-					tweenservice:Create(Tab.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 0.4}):Play()
+					Tab.Title.Font = Enum.Font.GothamSemibold
+					TweenService:Create(Tab.Ico, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 0.4}):Play()
+					TweenService:Create(Tab.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 0.4}):Play()
 				end    
 			end
 			for _, ItemContainer in next, MainWindow:GetChildren() do
@@ -785,8 +781,8 @@ function DarknessLib:MakeWindow(WindowConfig)
 					ItemContainer.Visible = false
 				end    
 			end  
-			tweenservice:Create(TabFrame.Ico, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 0}):Play()
-			tweenservice:Create(TabFrame.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
+			TweenService:Create(TabFrame.Ico, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = 0}):Play()
+			TweenService:Create(TabFrame.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 			TabFrame.Title.Font = Enum.Font.GothamBlack
 			Container.Visible = true   
 		end)
@@ -802,7 +798,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", Text, 15), {
 						Size = UDim2.new(1, -12, 1, 0),
 						Position = UDim2.new(0, 12, 0, 0),
-						Font = Enum.Font.GothamSemibold,
+						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
 					AddThemeObject(MakeElement("Stroke"), "Stroke")
@@ -826,13 +822,13 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", Text, 15), {
 						Size = UDim2.new(1, -12, 0, 14),
 						Position = UDim2.new(0, 12, 0, 10),
-						Font = Enum.Font.GothamSemibold,
+						Font = Enum.Font.GothamBold,
 						Name = "Title"
 					}), "Text"),
 					AddThemeObject(SetProps(MakeElement("Label", "", 13), {
 						Size = UDim2.new(1, -24, 0, 0),
 						Position = UDim2.new(0, 12, 0, 26),
-						Font = Enum.Font.Gotham,
+						Font = Enum.Font.GothamSemibold,
 						Name = "Content",
 						TextWrapped = true
 					}), "TextDark"),
@@ -871,7 +867,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", ButtonConfig.Name, 15), {
 						Size = UDim2.new(1, -12, 1, 0),
 						Position = UDim2.new(0, 12, 0, 0),
-						Font = Enum.Font.GothamSemibold,
+						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
 					AddThemeObject(SetProps(MakeElement("Image", ButtonConfig.Icon), {
@@ -883,22 +879,22 @@ function DarknessLib:MakeWindow(WindowConfig)
 				}), "Second")
 
 				AddConnection(Click.MouseEnter, function()
-					tweenservice:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(DarknessLib.Themes[DarknessLib.SelectedTheme].Second.R * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.G * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(voideduiLib.Themes[voideduiLib.SelectedTheme].Second.R * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.G * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.B * 255 + 3)}):Play()
 				end)
 
 				AddConnection(Click.MouseLeave, function()
-					tweenservice:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = DarknessLib.Themes[DarknessLib.SelectedTheme].Second}):Play()
+					TweenService:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = voideduiLib.Themes[voideduiLib.SelectedTheme].Second}):Play()
 				end)
 
 				AddConnection(Click.MouseButton1Up, function()
-					tweenservice:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(DarknessLib.Themes[DarknessLib.SelectedTheme].Second.R * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.G * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(voideduiLib.Themes[voideduiLib.SelectedTheme].Second.R * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.G * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.B * 255 + 3)}):Play()
 					spawn(function()
 						ButtonConfig.Callback()
 					end)
 				end)
 
 				AddConnection(Click.MouseButton1Down, function()
-					tweenservice:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(DarknessLib.Themes[DarknessLib.SelectedTheme].Second.R * 255 + 6, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.G * 255 + 6, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.B * 255 + 6)}):Play()
+					TweenService:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(voideduiLib.Themes[voideduiLib.SelectedTheme].Second.R * 255 + 6, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.G * 255 + 6, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.B * 255 + 6)}):Play()
 				end)
 
 				function Button:Set(ButtonText)
@@ -948,7 +944,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", ToggleConfig.Name, 15), {
 						Size = UDim2.new(1, -12, 1, 0),
 						Position = UDim2.new(0, 12, 0, 0),
-						Font = Enum.Font.GothamSemibold,
+						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
 					AddThemeObject(MakeElement("Stroke"), "Stroke"),
@@ -958,34 +954,34 @@ function DarknessLib:MakeWindow(WindowConfig)
 
 				function Toggle:Set(Value)
 					Toggle.Value = Value
-					tweenservice:Create(ToggleBox, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Toggle.Value and ToggleConfig.Color or DarknessLib.Themes.Default.Divider}):Play()
-					tweenservice:Create(ToggleBox.Stroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = Toggle.Value and ToggleConfig.Color or DarknessLib.Themes.Default.Stroke}):Play()
-					tweenservice:Create(ToggleBox.Ico, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = Toggle.Value and 0 or 1, Size = Toggle.Value and UDim2.new(0, 20, 0, 20) or UDim2.new(0, 8, 0, 8)}):Play()
+					TweenService:Create(ToggleBox, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Toggle.Value and ToggleConfig.Color or voideduiLib.Themes.Default.Divider}):Play()
+					TweenService:Create(ToggleBox.Stroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = Toggle.Value and ToggleConfig.Color or voideduiLib.Themes.Default.Stroke}):Play()
+					TweenService:Create(ToggleBox.Ico, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = Toggle.Value and 0 or 1, Size = Toggle.Value and UDim2.new(0, 20, 0, 20) or UDim2.new(0, 8, 0, 8)}):Play()
 					ToggleConfig.Callback(Toggle.Value)
 				end    
 
 				Toggle:Set(Toggle.Value)
 
 				AddConnection(Click.MouseEnter, function()
-					tweenservice:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(DarknessLib.Themes[DarknessLib.SelectedTheme].Second.R * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.G * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(voideduiLib.Themes[voideduiLib.SelectedTheme].Second.R * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.G * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.B * 255 + 3)}):Play()
 				end)
 
 				AddConnection(Click.MouseLeave, function()
-					tweenservice:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = DarknessLib.Themes[DarknessLib.SelectedTheme].Second}):Play()
+					TweenService:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = voideduiLib.Themes[voideduiLib.SelectedTheme].Second}):Play()
 				end)
 
 				AddConnection(Click.MouseButton1Up, function()
-					tweenservice:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(DarknessLib.Themes[DarknessLib.SelectedTheme].Second.R * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.G * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(voideduiLib.Themes[voideduiLib.SelectedTheme].Second.R * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.G * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.B * 255 + 3)}):Play()
 					SaveCfg(game.GameId)
 					Toggle:Set(not Toggle.Value)
 				end)
 
 				AddConnection(Click.MouseButton1Down, function()
-					tweenservice:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(DarknessLib.Themes[DarknessLib.SelectedTheme].Second.R * 255 + 6, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.G * 255 + 6, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.B * 255 + 6)}):Play()
+					TweenService:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(voideduiLib.Themes[voideduiLib.SelectedTheme].Second.R * 255 + 6, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.G * 255 + 6, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.B * 255 + 6)}):Play()
 				end)
 
 				if ToggleConfig.Flag then
-					DarknessLib.Flags[ToggleConfig.Flag] = Toggle
+					voideduiLib.Flags[ToggleConfig.Flag] = Toggle
 				end	
 				return Toggle
 			end  
@@ -1013,7 +1009,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", "value", 13), {
 						Size = UDim2.new(1, -12, 0, 14),
 						Position = UDim2.new(0, 12, 0, 6),
-						Font = Enum.Font.GothamSemibold,
+						Font = Enum.Font.GothamBold,
 						Name = "Value",
 						TextTransparency = 0
 					}), "Text")
@@ -1030,7 +1026,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", "value", 13), {
 						Size = UDim2.new(1, -12, 0, 14),
 						Position = UDim2.new(0, 12, 0, 6),
-						Font = Enum.Font.GothamSemibold,
+						Font = Enum.Font.GothamBold,
 						Name = "Value",
 						TextTransparency = 0.8
 					}), "Text"),
@@ -1044,7 +1040,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 					AddThemeObject(SetProps(MakeElement("Label", SliderConfig.Name, 15), {
 						Size = UDim2.new(1, -12, 0, 14),
 						Position = UDim2.new(0, 12, 0, 10),
-						Font = Enum.Font.GothamSemibold,
+						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
 					AddThemeObject(MakeElement("Stroke"), "Stroke"),
@@ -1052,18 +1048,18 @@ function DarknessLib:MakeWindow(WindowConfig)
 				}), "Second")
 
 				SliderBar.InputBegan:Connect(function(Input)
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then 
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
 						Dragging = true 
 					end 
 				end)
 				SliderBar.InputEnded:Connect(function(Input) 
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then 
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
 						Dragging = false 
 					end 
 				end)
 
-				userinputservice.InputChanged:Connect(function(Input)
-					if Dragging and (Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch) then 
+				UserInputService.InputChanged:Connect(function(Input)
+					if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then 
 						local SizeScale = math.clamp((Input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
 						Slider:Set(SliderConfig.Min + ((SliderConfig.Max - SliderConfig.Min) * SizeScale)) 
 						SaveCfg(game.GameId)
@@ -1072,7 +1068,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 
 				function Slider:Set(Value)
 					self.Value = math.clamp(Round(Value, SliderConfig.Increment), SliderConfig.Min, SliderConfig.Max)
-					tweenservice:Create(SliderDrag,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Size = UDim2.fromScale((self.Value - SliderConfig.Min) / (SliderConfig.Max - SliderConfig.Min), 1)}):Play()
+					TweenService:Create(SliderDrag,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Size = UDim2.fromScale((self.Value - SliderConfig.Min) / (SliderConfig.Max - SliderConfig.Min), 1)}):Play()
 					SliderBar.Value.Text = tostring(self.Value) .. " " .. SliderConfig.ValueName
 					SliderDrag.Value.Text = tostring(self.Value) .. " " .. SliderConfig.ValueName
 					SliderConfig.Callback(self.Value)
@@ -1080,7 +1076,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 
 				Slider:Set(Slider.Value)
 				if SliderConfig.Flag then				
-					DarknessLib.Flags[SliderConfig.Flag] = Slider
+					voideduiLib.Flags[SliderConfig.Flag] = Slider
 				end
 				return Slider
 			end  
@@ -1125,7 +1121,7 @@ function DarknessLib:MakeWindow(WindowConfig)
 						AddThemeObject(SetProps(MakeElement("Label", DropdownConfig.Name, 15), {
 							Size = UDim2.new(1, -12, 1, 0),
 							Position = UDim2.new(0, 12, 0, 0),
-							Font = Enum.Font.GothamSemibold,
+							Font = Enum.Font.GothamBold,
 							Name = "Content"
 						}), "Text"),
 						AddThemeObject(SetProps(MakeElement("Image", "rbxassetid://7072706796"), {
@@ -1203,8 +1199,8 @@ function DarknessLib:MakeWindow(WindowConfig)
 						Dropdown.Value = "..."
 						DropdownFrame.F.Selected.Text = Dropdown.Value
 						for _, v in pairs(Dropdown.Buttons) do
-							tweenservice:Create(v,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-							tweenservice:Create(v.Title,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{TextTransparency = 0.4}):Play()
+							TweenService:Create(v,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
+							TweenService:Create(v.Title,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{TextTransparency = 0.4}):Play()
 						end	
 						return
 					end
@@ -1213,126 +1209,33 @@ function DarknessLib:MakeWindow(WindowConfig)
 					DropdownFrame.F.Selected.Text = Dropdown.Value
 
 					for _, v in pairs(Dropdown.Buttons) do
-						tweenservice:Create(v,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-						tweenservice:Create(v.Title,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{TextTransparency = 0.4}):Play()
+						TweenService:Create(v,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
+						TweenService:Create(v.Title,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{TextTransparency = 0.4}):Play()
 					end	
-					tweenservice:Create(Dropdown.Buttons[Value],TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
-					tweenservice:Create(Dropdown.Buttons[Value].Title,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
+					TweenService:Create(Dropdown.Buttons[Value],TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
+					TweenService:Create(Dropdown.Buttons[Value].Title,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
 					return DropdownConfig.Callback(Dropdown.Value)
 				end
 
 				AddConnection(Click.MouseButton1Click, function()
 					Dropdown.Toggled = not Dropdown.Toggled
 					DropdownFrame.F.Line.Visible = Dropdown.Toggled
-					tweenservice:Create(DropdownFrame.F.Ico,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Rotation = Dropdown.Toggled and 180 or 0}):Play()
+					TweenService:Create(DropdownFrame.F.Ico,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Rotation = Dropdown.Toggled and 180 or 0}):Play()
 					if #Dropdown.Options > MaxElements then
-						tweenservice:Create(DropdownFrame,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Size = Dropdown.Toggled and UDim2.new(1, 0, 0, 38 + (MaxElements * 28)) or UDim2.new(1, 0, 0, 38)}):Play()
+						TweenService:Create(DropdownFrame,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Size = Dropdown.Toggled and UDim2.new(1, 0, 0, 38 + (MaxElements * 28)) or UDim2.new(1, 0, 0, 38)}):Play()
 					else
-						tweenservice:Create(DropdownFrame,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Size = Dropdown.Toggled and UDim2.new(1, 0, 0, DropdownList.AbsoluteContentSize.Y + 38) or UDim2.new(1, 0, 0, 38)}):Play()
+						TweenService:Create(DropdownFrame,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Size = Dropdown.Toggled and UDim2.new(1, 0, 0, DropdownList.AbsoluteContentSize.Y + 38) or UDim2.new(1, 0, 0, 38)}):Play()
 					end
 				end)
 
 				Dropdown:Refresh(Dropdown.Options, false)
 				Dropdown:Set(Dropdown.Value)
 				if DropdownConfig.Flag then				
-					DarknessLib.Flags[DropdownConfig.Flag] = Dropdown
+					voideduiLib.Flags[DropdownConfig.Flag] = Dropdown
 				end
 				return Dropdown
 			end
-			
-
-function ElementFunction:AddColorpicker(ColorpickerConfig)
-    ColorpickerConfig = ColorpickerConfig or {}
-    ColorpickerConfig.Name = ColorpickerConfig.Name or "RGB Color"
-    ColorpickerConfig.Default = ColorpickerConfig.Default or Color3.fromRGB(255,255,255)
-    ColorpickerConfig.Callback = ColorpickerConfig.Callback or function() end
-    ColorpickerConfig.Flag = ColorpickerConfig.Flag or nil
-    ColorpickerConfig.Save = ColorpickerConfig.Save or false
-
-    local Colorpicker = {Value = ColorpickerConfig.Default, Type = "Colorpicker", Save = ColorpickerConfig.Save}
-
-    local function clamp255(v)
-        v = tonumber(v) or 0
-        if v > 255 then v = 255 elseif v < 0 then v = 0 end
-        return math.floor(v)
-    end
-
-    local R = math.floor(ColorpickerConfig.Default.R * 255)
-    local G = math.floor(ColorpickerConfig.Default.G * 255)
-    local B = math.floor(ColorpickerConfig.Default.B * 255)
-
-    local Container = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255,255,255), 0, 5), {
-        Size = UDim2.new(1, 0, 0, 100),
-        Parent = ItemParent
-    }), {
-        AddThemeObject(SetProps(MakeElement("Label", ColorpickerConfig.Name, 15), {
-            Size = UDim2.new(1, -12, 0, 14),
-            Position = UDim2.new(0, 12, 0, 10),
-            Font = Enum.Font.GothamSemibold,
-            Name = "Content"
-        }), "Text"),
-        AddThemeObject(MakeElement("Stroke"), "Stroke")
-    }), "Second")
-
-    local Preview = AddThemeObject(MakeElement("RoundFrame", Colorpicker.Value, 0, 4), "Second")
-    Preview.Size = UDim2.new(0, 28, 0, 28)
-    Preview.Position = UDim2.new(1, -40, 0, 35)
-    Preview.Parent = Container
-
-    local Inputs = {}
-    local labels = {"R","G","B"}
-    local defaultVals = {R,G,B}
-    local colors = {Color3.fromRGB(255,80,80), Color3.fromRGB(80,255,80), Color3.fromRGB(80,80,255)}
-
-    for i=1,3 do
-        local box = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255,255,255), 0, 4), {
-            Size = UDim2.new(0, 60, 0, 24),
-            Position = UDim2.new(0, 12 + (i-1)*70, 0, 40)
-        }), {
-            AddThemeObject(MakeElement("Stroke"), "Stroke")
-        }), "Main")
-
-        local input = AddThemeObject(Create("TextBox", {
-            Text = tostring(defaultVals[i]),
-            PlaceholderText = labels[i],
-            Size = UDim2.new(1,0,1,0),
-            BackgroundTransparency = 1,
-            Font = Enum.Font.Gotham,
-            TextSize = 13,
-            TextXAlignment = Enum.TextXAlignment.Center,
-            TextColor3 = colors[i],
-            ClearTextOnFocus = false
-        }), "Text")
-        input.Parent = box
-        table.insert(Inputs, input)
-    end
-
-    local function update()
-        R = clamp255(Inputs[1].Text)
-        G = clamp255(Inputs[2].Text)
-        B = clamp255(Inputs[3].Text)
-        Colorpicker.Value = Color3.fromRGB(R,G,B)
-        Preview.BackgroundColor3 = Colorpicker.Value
-        ColorpickerConfig.Callback(Colorpicker.Value)
-    end
-
-    for _,inp in ipairs(Inputs) do
-        inp:GetPropertyChangedSignal("Text"):Connect(function()
-            if #inp.Text > 3 then
-                inp.Text = string.sub(inp.Text,1,3)
-            end
-        end)
-        inp.FocusLost:Connect(update)
-    end
-
-    if ColorpickerConfig.Flag then
-        DarknessLib.Flags[ColorpickerConfig.Flag] = Colorpicker
-    end
-
-    return Colorpicker
-end
-
-function ElementFunction:AddBind(BindConfig)
+			function ElementFunction:AddBind(BindConfig)
 				BindConfig.Name = BindConfig.Name or "Bind"
 				BindConfig.Default = BindConfig.Default or Enum.KeyCode.Unknown
 				BindConfig.Hold = BindConfig.Hold or false
@@ -1355,7 +1258,7 @@ function ElementFunction:AddBind(BindConfig)
 					AddThemeObject(MakeElement("Stroke"), "Stroke"),
 					AddThemeObject(SetProps(MakeElement("Label", BindConfig.Name, 14), {
 						Size = UDim2.new(1, 0, 1, 0),
-						Font = Enum.Font.GothamSemibold,
+						Font = Enum.Font.GothamBold,
 						TextXAlignment = Enum.TextXAlignment.Center,
 						Name = "Value"
 					}), "Text")
@@ -1368,7 +1271,7 @@ function ElementFunction:AddBind(BindConfig)
 					AddThemeObject(SetProps(MakeElement("Label", BindConfig.Name, 15), {
 						Size = UDim2.new(1, -12, 1, 0),
 						Position = UDim2.new(0, 12, 0, 0),
-						Font = Enum.Font.GothamSemibold,
+						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
 					AddThemeObject(MakeElement("Stroke"), "Stroke"),
@@ -1378,19 +1281,19 @@ function ElementFunction:AddBind(BindConfig)
 
 				AddConnection(BindBox.Value:GetPropertyChangedSignal("Text"), function()
 					--BindBox.Size = UDim2.new(0, BindBox.Value.TextBounds.X + 16, 0, 24)
-					tweenservice:Create(BindBox, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, BindBox.Value.TextBounds.X + 16, 0, 24)}):Play()
+					TweenService:Create(BindBox, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, BindBox.Value.TextBounds.X + 16, 0, 24)}):Play()
 				end)
 
 				AddConnection(Click.InputEnded, function(Input)
-					if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+					if Input.UserInputType == Enum.UserInputType.MouseButton1 then
 						if Bind.Binding then return end
 						Bind.Binding = true
 						BindBox.Value.Text = ""
 					end
 				end)
 
-				AddConnection(userinputservice.InputBegan, function(Input)
-					if userinputservice:GetFocusedTextBox() then return end
+				AddConnection(UserInputService.InputBegan, function(Input)
+					if UserInputService:GetFocusedTextBox() then return end
 					if (Input.KeyCode.Name == Bind.Value or Input.UserInputType.Name == Bind.Value) and not Bind.Binding then
 						if BindConfig.Hold then
 							Holding = true
@@ -1416,7 +1319,7 @@ function ElementFunction:AddBind(BindConfig)
 					end
 				end)
 
-				AddConnection(userinputservice.InputEnded, function(Input)
+				AddConnection(UserInputService.InputEnded, function(Input)
 					if Input.KeyCode.Name == Bind.Value or Input.UserInputType.Name == Bind.Value then
 						if BindConfig.Hold and Holding then
 							Holding = false
@@ -1426,19 +1329,19 @@ function ElementFunction:AddBind(BindConfig)
 				end)
 
 				AddConnection(Click.MouseEnter, function()
-					tweenservice:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(DarknessLib.Themes[DarknessLib.SelectedTheme].Second.R * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.G * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(voideduiLib.Themes[voideduiLib.SelectedTheme].Second.R * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.G * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.B * 255 + 3)}):Play()
 				end)
 
 				AddConnection(Click.MouseLeave, function()
-					tweenservice:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = DarknessLib.Themes[DarknessLib.SelectedTheme].Second}):Play()
+					TweenService:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = voideduiLib.Themes[voideduiLib.SelectedTheme].Second}):Play()
 				end)
 
 				AddConnection(Click.MouseButton1Up, function()
-					tweenservice:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(DarknessLib.Themes[DarknessLib.SelectedTheme].Second.R * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.G * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(voideduiLib.Themes[voideduiLib.SelectedTheme].Second.R * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.G * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.B * 255 + 3)}):Play()
 				end)
 
 				AddConnection(Click.MouseButton1Down, function()
-					tweenservice:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(DarknessLib.Themes[DarknessLib.SelectedTheme].Second.R * 255 + 6, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.G * 255 + 6, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.B * 255 + 6)}):Play()
+					TweenService:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(voideduiLib.Themes[voideduiLib.SelectedTheme].Second.R * 255 + 6, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.G * 255 + 6, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.B * 255 + 6)}):Play()
 				end)
 
 				function Bind:Set(Key)
@@ -1450,7 +1353,7 @@ function ElementFunction:AddBind(BindConfig)
 
 				Bind:Set(BindConfig.Default)
 				if BindConfig.Flag then				
-					DarknessLib.Flags[BindConfig.Flag] = Bind
+					voideduiLib.Flags[BindConfig.Flag] = Bind
 				end
 				return Bind
 			end  
@@ -1471,9 +1374,9 @@ function ElementFunction:AddBind(BindConfig)
 					TextColor3 = Color3.fromRGB(255, 255, 255),
 					PlaceholderColor3 = Color3.fromRGB(210,210,210),
 					PlaceholderText = "Input",
-					Font = Enum.Font.Gotham,
+					Font = Enum.Font.GothamSemibold,
 					TextXAlignment = Enum.TextXAlignment.Center,
-					TextSize = 13,
+					TextSize = 14,
 					ClearTextOnFocus = false
 				}), "Text")
 
@@ -1494,7 +1397,7 @@ function ElementFunction:AddBind(BindConfig)
 					AddThemeObject(SetProps(MakeElement("Label", TextboxConfig.Name, 15), {
 						Size = UDim2.new(1, -12, 1, 0),
 						Position = UDim2.new(0, 12, 0, 0),
-						Font = Enum.Font.GothamSemibold,
+						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
 					AddThemeObject(MakeElement("Stroke"), "Stroke"),
@@ -1504,7 +1407,7 @@ function ElementFunction:AddBind(BindConfig)
 
 				AddConnection(TextboxActual:GetPropertyChangedSignal("Text"), function()
 					--TextContainer.Size = UDim2.new(0, TextboxActual.TextBounds.X + 16, 0, 24)
-					tweenservice:Create(TextContainer, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, TextboxActual.TextBounds.X + 16, 0, 24)}):Play()
+					TweenService:Create(TextContainer, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, TextboxActual.TextBounds.X + 16, 0, 24)}):Play()
 				end)
 
 				AddConnection(TextboxActual.FocusLost, function()
@@ -1517,23 +1420,23 @@ function ElementFunction:AddBind(BindConfig)
 				TextboxActual.Text = TextboxConfig.Default
 
 				AddConnection(Click.MouseEnter, function()
-					tweenservice:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(DarknessLib.Themes[DarknessLib.SelectedTheme].Second.R * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.G * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(voideduiLib.Themes[voideduiLib.SelectedTheme].Second.R * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.G * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.B * 255 + 3)}):Play()
 				end)
 
 				AddConnection(Click.MouseLeave, function()
-					tweenservice:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = DarknessLib.Themes[DarknessLib.SelectedTheme].Second}):Play()
+					TweenService:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = voideduiLib.Themes[voideduiLib.SelectedTheme].Second}):Play()
 				end)
 
 				AddConnection(Click.MouseButton1Up, function()
-					tweenservice:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(DarknessLib.Themes[DarknessLib.SelectedTheme].Second.R * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.G * 255 + 3, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(voideduiLib.Themes[voideduiLib.SelectedTheme].Second.R * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.G * 255 + 3, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.B * 255 + 3)}):Play()
 					TextboxActual:CaptureFocus()
 				end)
 
 				AddConnection(Click.MouseButton1Down, function()
-					tweenservice:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(DarknessLib.Themes[DarknessLib.SelectedTheme].Second.R * 255 + 6, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.G * 255 + 6, DarknessLib.Themes[DarknessLib.SelectedTheme].Second.B * 255 + 6)}):Play()
+					TweenService:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(voideduiLib.Themes[voideduiLib.SelectedTheme].Second.R * 255 + 6, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.G * 255 + 6, voideduiLib.Themes[voideduiLib.SelectedTheme].Second.B * 255 + 6)}):Play()
 				end)
 			end 
-			function ElementFunction:AddColorpickerOld(ColorpickerConfig)
+			function ElementFunction:AddColorpicker(ColorpickerConfig)
 				ColorpickerConfig = ColorpickerConfig or {}
 				ColorpickerConfig.Name = ColorpickerConfig.Name or "Colorpicker"
 				ColorpickerConfig.Default = ColorpickerConfig.Default or Color3.fromRGB(255,255,255)
@@ -1567,7 +1470,7 @@ function ElementFunction:AddBind(BindConfig)
 					Visible = false,
 					Image = "rbxassetid://4155801252"
 				}, {
-					Create("UICorner", {CornerRadius = UDim.new(0, 6)}),
+					Create("UICorner", {CornerRadius = UDim.new(0, 5)}),
 					ColorSelection
 				})
 
@@ -1577,7 +1480,7 @@ function ElementFunction:AddBind(BindConfig)
 					Visible = false
 				}, {
 					Create("UIGradient", {Rotation = 270, Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 4)), ColorSequenceKeypoint.new(0.20, Color3.fromRGB(234, 255, 0)), ColorSequenceKeypoint.new(0.40, Color3.fromRGB(21, 255, 0)), ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(0.80, Color3.fromRGB(0, 17, 255)), ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 251)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 4))},}),
-					Create("UICorner", {CornerRadius = UDim.new(0, 6)}),
+					Create("UICorner", {CornerRadius = UDim.new(0, 5)}),
 					HueSelection
 				})
 
@@ -1617,7 +1520,7 @@ function ElementFunction:AddBind(BindConfig)
 						AddThemeObject(SetProps(MakeElement("Label", ColorpickerConfig.Name, 15), {
 							Size = UDim2.new(1, -12, 1, 0),
 							Position = UDim2.new(0, 12, 0, 0),
-							Font = Enum.Font.GothamSemibold,
+							Font = Enum.Font.GothamBold,
 							Name = "Content"
 						}), "Text"),
 						ColorpickerBox,
@@ -1639,7 +1542,7 @@ function ElementFunction:AddBind(BindConfig)
 
 				AddConnection(Click.MouseButton1Click, function()
 					Colorpicker.Toggled = not Colorpicker.Toggled
-					tweenservice:Create(ColorpickerFrame,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Size = Colorpicker.Toggled and UDim2.new(1, 0, 0, 148) or UDim2.new(1, 0, 0, 38)}):Play()
+					TweenService:Create(ColorpickerFrame,TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Size = Colorpicker.Toggled and UDim2.new(1, 0, 0, 148) or UDim2.new(1, 0, 0, 38)}):Play()
 					Color.Visible = Colorpicker.Toggled
 					Hue.Visible = Colorpicker.Toggled
 					ColorpickerFrame.F.Line.Visible = Colorpicker.Toggled
@@ -1662,7 +1565,7 @@ function ElementFunction:AddBind(BindConfig)
 						if ColorInput then
 							ColorInput:Disconnect()
 						end
-						ColorInput = AddConnection(runservice.RenderStepped, function()
+						ColorInput = AddConnection(RunService.RenderStepped, function()
 							local ColorX = (math.clamp(Mouse.X - Color.AbsolutePosition.X, 0, Color.AbsoluteSize.X) / Color.AbsoluteSize.X)
 							local ColorY = (math.clamp(Mouse.Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) / Color.AbsoluteSize.Y)
 							ColorSelection.Position = UDim2.new(ColorX, 0, ColorY, 0)
@@ -1687,7 +1590,7 @@ function ElementFunction:AddBind(BindConfig)
 							HueInput:Disconnect()
 						end;
 
-						HueInput = AddConnection(runservice.RenderStepped, function()
+						HueInput = AddConnection(RunService.RenderStepped, function()
 							local HueY = (math.clamp(Mouse.Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) / Hue.AbsoluteSize.Y)
 
 							HueSelection.Position = UDim2.new(0.5, 0, HueY, 0)
@@ -1714,7 +1617,7 @@ function ElementFunction:AddBind(BindConfig)
 
 				Colorpicker:Set(Colorpicker.Value)
 				if ColorpickerConfig.Flag then				
-					DarknessLib.Flags[ColorpickerConfig.Flag] = Colorpicker
+					voideduiLib.Flags[ColorpickerConfig.Flag] = Colorpicker
 				end
 				return Colorpicker
 			end  
@@ -1733,7 +1636,7 @@ function ElementFunction:AddBind(BindConfig)
 				AddThemeObject(SetProps(MakeElement("Label", SectionConfig.Name, 14), {
 					Size = UDim2.new(1, -12, 0, 16),
 					Position = UDim2.new(0, 0, 0, 3),
-					Font = Enum.Font.Gotham
+					Font = Enum.Font.GothamSemibold
 				}), "TextDark"),
 				SetChildren(SetProps(MakeElement("TFrame"), {
 					AnchorPoint = Vector2.new(0, 0),
@@ -1761,7 +1664,6 @@ function ElementFunction:AddBind(BindConfig)
 			ElementFunction[i] = v 
 		end
 
-		if TabConfig.PremiumOnly then
 			for i, v in next, ElementFunction do
 				ElementFunction[i] = function() end
 			end    
@@ -1785,10 +1687,9 @@ function ElementFunction:AddBind(BindConfig)
 					Size = UDim2.new(0, 56, 0, 56),
 					Position = UDim2.new(0, 84, 0, 110),
 				}), "Text"),
-				AddThemeObject(SetProps(MakeElement("Label", "Premium Features", 14), {
 					Size = UDim2.new(1, -150, 0, 14),
 					Position = UDim2.new(0, 150, 0, 112),
-					Font = Enum.Font.GothamSemibold
+					Font = Enum.Font.GothamBold
 				}), "Text"),
 					Size = UDim2.new(1, -200, 0, 14),
 					Position = UDim2.new(0, 150, 0, 138),
@@ -1800,7 +1701,7 @@ function ElementFunction:AddBind(BindConfig)
 		return ElementFunction   
 	end  
 	
-	DarknessLib:MakeNotification({
+	voideduiLib:MakeNotification({
 		Name = "UI Library Upgrade",
 		Time = 5
 	})
@@ -1810,7 +1711,8 @@ function ElementFunction:AddBind(BindConfig)
 	return TabFunction
 end   
 
-function DarknessLib:Destroy()
-	Darkness:Destroy()
+function voideduiLib:Destroy()
+	voidedui:Destroy()
 end
-return DarknessLib
+
+return voideduiLib
