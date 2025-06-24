@@ -1590,8 +1590,8 @@ function VoidLib:MakeWindow(WindowConfig)
 	end  
 	
 	VoidLib:MakeNotification({
-		Name = "UI Library Upgrade",
-		Content = "New UI Library Available at sirius.menu/discord and sirius.menu/rayfield",
+		Name = "UI",
+		Content = "ty for usingthis uilib :)",
 		Time = 5
 	})
 	
