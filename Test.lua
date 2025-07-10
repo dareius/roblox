@@ -19,39 +19,50 @@ local Theme = {
     GlowTransparency = 0.6,
 }
 
---// Drag Function
-local function makeDraggable(dragHandle, object)
-    local dragging, dragStart, startPos
+--// Drag Function (Mobile + PC)
+local function makeDraggable(dragHandle, frame)
+    local dragging = false
+    local dragStart, startPos
+
+    local function startDrag(input)
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+    end
+
+    local function endDrag()
+        dragging = false
+    end
+
+    local function update(input)
+        if dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end
 
     dragHandle.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = object.Position
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            startDrag(input)
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
+                    endDrag()
                 end
             end)
         end
     end)
 
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local delta = input.Position - dragStart
-            object.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        end
-    end)
+    UserInputService.InputChanged:Connect(update)
 end
 
---// Main Window Creator
+--// Create Window
 function NeonUILib:CreateWindow(config)
     config = config or {}
-    local titleText = config.Title or "Untitled"
-    local versionText = config.Version
     local screenSize = workspace.CurrentCamera.ViewportSize
 
-    -- Auto size
+    local titleText = config.Title or "Untitled"
+    local versionText = config.Version
+
     local width = (config.Width == "auto" or not config.Width) and math.floor(screenSize.X * 0.6) or config.Width
     local height = (config.Height == "auto" or not config.Height) and math.floor(screenSize.Y * 0.6) or config.Height
 
@@ -60,24 +71,21 @@ function NeonUILib:CreateWindow(config)
     local gui = Instance.new("ScreenGui")
     gui.Name = "NeonUI_" .. titleText:gsub("%s+", "")
     gui.ResetOnSpawn = false
-    gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
     gui.IgnoreGuiInset = true
-    gui.Parent = (pcall(function() return game:GetService("CoreGui") end) and game.CoreGui) or player:WaitForChild("PlayerGui")
+    gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+    gui.Parent = pcall(function() return game:GetService("CoreGui") end) and game.CoreGui or player:WaitForChild("PlayerGui")
 
-    -- Main Frame
-    local main = Instance.new("Frame")
+    -- Main Window
+    local main = Instance.new("Frame", gui)
     main.Name = "MainFrame"
     main.Size = UDim2.new(0, width, 0, height)
     main.Position = UDim2.new(0.5, -width / 2, 0.5, -height / 2)
     main.BackgroundColor3 = Theme.Background
     main.BorderSizePixel = 0
-    main.Parent = gui
-
     Instance.new("UICorner", main).CornerRadius = Theme.CornerRadius
 
     -- Glow
     local glow = Instance.new("ImageLabel", main)
-    glow.Name = "Glow"
     glow.Size = UDim2.new(1, 60, 1, 60)
     glow.Position = UDim2.new(0, -30, 0, -30)
     glow.BackgroundTransparency = 1
@@ -102,7 +110,6 @@ function NeonUILib:CreateWindow(config)
     -- Version (optional)
     if versionText then
         local version = Instance.new("TextLabel", main)
-        version.Name = "Version"
         version.Size = UDim2.new(1, -20, 0, 18)
         version.Position = UDim2.new(0, 10, 0, 44)
         version.Text = tostring(versionText)
@@ -114,29 +121,31 @@ function NeonUILib:CreateWindow(config)
         version.ZIndex = 2
     end
 
-    -- Tab bar
+    -- Tabs Holder
     local tabHolder = Instance.new("Frame", main)
     tabHolder.Name = "TabHolder"
-    tabHolder.Size = UDim2.new(0, width, 0, 30)
-    tabHolder.Position = UDim2.new(0, 0, 0, 70)
-    tabHolder.BackgroundColor3 = Theme.Background
-    tabHolder.BorderSizePixel = 0
+    tabHolder.Size = UDim2.new(1, -20, 0, 36)
+    tabHolder.Position = UDim2.new(0, 10, 0, 70)
+    tabHolder.BackgroundTransparency = 1
 
     local tabLayout = Instance.new("UIListLayout", tabHolder)
     tabLayout.FillDirection = Enum.FillDirection.Horizontal
     tabLayout.Padding = UDim.new(0, 6)
     tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
-    -- Content container
-    local contentContainer = Instance.new("Frame", main)
-    contentContainer.Name = "Content"
-    contentContainer.BackgroundTransparency = 1
-    contentContainer.Size = UDim2.new(1, -20, 1, -110)
-    contentContainer.Position = UDim2.new(0, 10, 0, 105)
+    -- Content Area
+    local content = Instance.new("Frame", main)
+    content.Name = "Content"
+    content.Size = UDim2.new(1, -20, 1, -116)
+    content.Position = UDim2.new(0, 10, 0, 110)
+    content.BackgroundTransparency = 1
+
+    -- Drag
+    makeDraggable(title, main)
 
     -- Tabs API
     local tabs = {}
-    local currentTab = nil
+    local currentTab
 
     local function createTab(name)
         local tabButton = Instance.new("TextButton", tabHolder)
@@ -147,14 +156,14 @@ function NeonUILib:CreateWindow(config)
         tabButton.Font = Theme.Font
         tabButton.TextSize = 16
         tabButton.AutoButtonColor = false
+        tabButton.Name = name
 
-        local corner = Instance.new("UICorner", tabButton)
-        corner.CornerRadius = Theme.CornerRadius
+        Instance.new("UICorner", tabButton).CornerRadius = Theme.CornerRadius
 
-        local tabFrame = Instance.new("Frame", contentContainer)
+        local tabFrame = Instance.new("Frame", content)
         tabFrame.Name = name .. "_Content"
-        tabFrame.BackgroundTransparency = 1
         tabFrame.Size = UDim2.new(1, 0, 1, 0)
+        tabFrame.BackgroundTransparency = 1
         tabFrame.Visible = false
 
         tabs[name] = {
@@ -172,16 +181,13 @@ function NeonUILib:CreateWindow(config)
             currentTab = name
         end)
 
-        -- Auto-select first tab
         if not currentTab then
+            tabButton:MouseButton1Click:Wait()
             tabButton:Activate()
         end
 
         return tabFrame
     end
-
-    -- Enable dragging
-    makeDraggable(title, main)
 
     return {
         Gui = gui,
