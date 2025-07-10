@@ -2,11 +2,9 @@
 
 local NeonUILib = {}
 
---// Services
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
---// Theme
 local Theme = {
     Background = Color3.fromRGB(10, 10, 10),
     WindowOutline = Color3.fromRGB(0, 255, 150),
@@ -19,43 +17,30 @@ local Theme = {
     GlowTransparency = 0.6,
 }
 
---// Drag Function (Mobile + PC)
 local function makeDraggable(dragHandle, frame)
-    local dragging = false
-    local dragStart, startPos
-
-    local function startDrag(input)
-        dragging = true
-        dragStart = input.Position
-        startPos = frame.Position
-    end
-
-    local function endDrag()
-        dragging = false
-    end
-
-    local function update(input)
-        if dragging then
-            local delta = input.Position - dragStart
-            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        end
-    end
+    local dragging, dragStart, startPos
 
     dragHandle.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            startDrag(input)
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
-                    endDrag()
+                    dragging = false
                 end
             end)
         end
     end)
 
-    UserInputService.InputChanged:Connect(update)
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
 end
 
---// Create Window
 function NeonUILib:CreateWindow(config)
     config = config or {}
     local screenSize = workspace.CurrentCamera.ViewportSize
@@ -66,16 +51,14 @@ function NeonUILib:CreateWindow(config)
     local width = (config.Width == "auto" or not config.Width) and math.floor(screenSize.X * 0.6) or config.Width
     local height = (config.Height == "auto" or not config.Height) and math.floor(screenSize.Y * 0.6) or config.Height
 
-    -- Gui
     local player = Players.LocalPlayer
     local gui = Instance.new("ScreenGui")
     gui.Name = "NeonUI_" .. titleText:gsub("%s+", "")
     gui.ResetOnSpawn = false
     gui.IgnoreGuiInset = true
     gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-    gui.Parent = pcall(function() return game:GetService("CoreGui") end) and game.CoreGui or player:WaitForChild("PlayerGui")
+    gui.Parent = game:GetService("CoreGui")
 
-    -- Main Window
     local main = Instance.new("Frame", gui)
     main.Name = "MainFrame"
     main.Size = UDim2.new(0, width, 0, height)
@@ -84,7 +67,6 @@ function NeonUILib:CreateWindow(config)
     main.BorderSizePixel = 0
     Instance.new("UICorner", main).CornerRadius = Theme.CornerRadius
 
-    -- Glow
     local glow = Instance.new("ImageLabel", main)
     glow.Size = UDim2.new(1, 60, 1, 60)
     glow.Position = UDim2.new(0, -30, 0, -30)
@@ -94,7 +76,6 @@ function NeonUILib:CreateWindow(config)
     glow.ImageTransparency = Theme.GlowTransparency
     glow.ZIndex = 0
 
-    -- Title
     local title = Instance.new("TextLabel", main)
     title.Name = "Title"
     title.Size = UDim2.new(1, -20, 0, 40)
@@ -107,7 +88,6 @@ function NeonUILib:CreateWindow(config)
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.ZIndex = 2
 
-    -- Version (optional)
     if versionText then
         local version = Instance.new("TextLabel", main)
         version.Size = UDim2.new(1, -20, 0, 18)
@@ -121,7 +101,6 @@ function NeonUILib:CreateWindow(config)
         version.ZIndex = 2
     end
 
-    -- Tabs Holder
     local tabHolder = Instance.new("Frame", main)
     tabHolder.Name = "TabHolder"
     tabHolder.Size = UDim2.new(1, -20, 0, 36)
@@ -133,31 +112,37 @@ function NeonUILib:CreateWindow(config)
     tabLayout.Padding = UDim.new(0, 6)
     tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
-    -- Content Area
     local content = Instance.new("Frame", main)
     content.Name = "Content"
     content.Size = UDim2.new(1, -20, 1, -116)
     content.Position = UDim2.new(0, 10, 0, 110)
     content.BackgroundTransparency = 1
 
-    -- Drag
     makeDraggable(title, main)
 
-    -- Tabs API
     local tabs = {}
     local currentTab
+
+    local function switchTab(name)
+        for tabName, tabData in pairs(tabs) do
+            tabData.Frame.Visible = false
+            tabData.Button.BackgroundColor3 = Theme.TabColor
+        end
+        tabs[name].Frame.Visible = true
+        tabs[name].Button.BackgroundColor3 = Theme.SelectedTabColor
+        currentTab = name
+    end
 
     local function createTab(name)
         local tabButton = Instance.new("TextButton", tabHolder)
         tabButton.Size = UDim2.new(0, 100, 1, 0)
         tabButton.Text = name
+        tabButton.Name = name
         tabButton.BackgroundColor3 = Theme.TabColor
         tabButton.TextColor3 = Theme.TitleColor
         tabButton.Font = Theme.Font
         tabButton.TextSize = 16
         tabButton.AutoButtonColor = false
-        tabButton.Name = name
-
         Instance.new("UICorner", tabButton).CornerRadius = Theme.CornerRadius
 
         local tabFrame = Instance.new("Frame", content)
@@ -166,27 +151,33 @@ function NeonUILib:CreateWindow(config)
         tabFrame.BackgroundTransparency = 1
         tabFrame.Visible = false
 
-        tabs[name] = {
-            Button = tabButton,
-            Frame = tabFrame
-        }
-
         tabButton.MouseButton1Click:Connect(function()
-            if currentTab then
-                tabs[currentTab].Frame.Visible = false
-                tabs[currentTab].Button.BackgroundColor3 = Theme.TabColor
-            end
-            tabFrame.Visible = true
-            tabButton.BackgroundColor3 = Theme.SelectedTabColor
-            currentTab = name
+            switchTab(name)
         end)
 
+        tabs[name] = {
+            Button = tabButton,
+            Frame = tabFrame,
+            CreateLabel = function(_, text)
+                local label = Instance.new("TextLabel", tabFrame)
+                label.Size = UDim2.new(1, -20, 0, 30)
+                label.Position = UDim2.new(0, 10, 0, #tabFrame:GetChildren() * 35)
+                label.Text = text
+                label.TextColor3 = Theme.TitleColor
+                label.Font = Theme.Font
+                label.TextSize = 16
+                label.BackgroundTransparency = 1
+                label.TextXAlignment = Enum.TextXAlignment.Left
+                return label
+            end,
+        }
+
+        -- Auto select first tab
         if not currentTab then
-            tabButton:MouseButton1Click:Wait()
-            tabButton:Activate()
+            switchTab(name)
         end
 
-        return tabFrame
+        return tabs[name]
     end
 
     return {
@@ -194,7 +185,7 @@ function NeonUILib:CreateWindow(config)
         Frame = main,
         CreateTab = createTab,
         Tabs = tabs,
-        Theme = Theme
+        Theme = Theme,
     }
 end
 
