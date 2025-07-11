@@ -100,7 +100,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 	pcall(function()
 		local Dragging, DragInput, MousePos, FramePos = false
 		DragPoint.InputBegan:Connect(function(Input)
-			if Input.UserInputType == Enum.Enum.Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch or Enum.UserInputType.Touch then
+			if Input.UserInputType == Enum.Enum.Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch or Enum.UserInputType.Touch then
 				Dragging = true
 				MousePos = Input.Position
 				FramePos = Main.Position
@@ -113,7 +113,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
 			end
 		end)
 		DragPoint.InputChanged:Connect(function(Input)
-			if Input.UserInputType == Enum.Enum.Enum.UserInputType.MouseMovement or Enum.UserInputType.Touch or Enum.UserInputType.Touch then
+			if Input.UserInputType == Enum.Enum.Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch or Enum.UserInputType.Touch then
 				DragInput = Input
 			end
 		end)
@@ -242,7 +242,7 @@ local function SaveCfg(Name)
 	writefile(VoidLib.Folder .. "/" .. Name .. ".txt", tostring(HttpService:JSONEncode(Data)))
 end
 
-local WhitelistedMouse = {Enum.Enum.Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch or Enum.UserInputType.Touch, Enum.UserInputType.MouseButton2,Enum.UserInputType.MouseButton3}
+local WhitelistedMouse = {Enum.Enum.Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch or Enum.UserInputType.Touch, Enum.UserInputType.MouseButton2,Enum.UserInputType.MouseButton3}
 local BlacklistedKeys = {Enum.KeyCode.Unknown,Enum.KeyCode.W,Enum.KeyCode.A,Enum.KeyCode.S,Enum.KeyCode.D,Enum.KeyCode.Up,Enum.KeyCode.Left,Enum.KeyCode.Down,Enum.KeyCode.Right,Enum.KeyCode.Slash,Enum.KeyCode.Tab,Enum.KeyCode.Backspace,Enum.KeyCode.Escape}
 
 local function CheckKey(Table, Key)
@@ -1053,18 +1053,18 @@ function VoidLib:MakeWindow(WindowConfig)
 				}), "Second")
 
 				SliderBar.InputBegan:Connect(function(Input)
-					if Input.UserInputType == Enum.Enum.Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch or Enum.UserInputType.Touch then 
+					if Input.UserInputType == Enum.Enum.Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch or Enum.UserInputType.Touch then 
 						Dragging = true 
 					end 
 				end)
 				SliderBar.InputEnded:Connect(function(Input) 
-					if Input.UserInputType == Enum.Enum.Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch or Enum.UserInputType.Touch then 
+					if Input.UserInputType == Enum.Enum.Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch or Enum.UserInputType.Touch then 
 						Dragging = false 
 					end 
 				end)
 
 				UserInputService.InputChanged:Connect(function(Input)
-					if Dragging and Input.UserInputType == Enum.Enum.Enum.UserInputType.MouseMovement or Enum.UserInputType.Touch or Enum.UserInputType.Touch then 
+					if Dragging and Input.UserInputType == Enum.Enum.Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch or Enum.UserInputType.Touch then 
 						local SizeScale = math.clamp((Input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
 						Slider:Set(SliderConfig.Min + ((SliderConfig.Max - SliderConfig.Min) * SizeScale)) 
 						SaveCfg(game.GameId)
@@ -1290,7 +1290,7 @@ function VoidLib:MakeWindow(WindowConfig)
 				end)
 
 				AddConnection(Click.InputEnded, function(Input)
-					if Input.UserInputType == Enum.Enum.Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch or Enum.UserInputType.Touch then
+					if Input.UserInputType == Enum.Enum.Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch or Enum.UserInputType.Touch then
 						if Bind.Binding then return end
 						Bind.Binding = true
 						BindBox.Value.Text = ""
@@ -1566,7 +1566,7 @@ function VoidLib:MakeWindow(WindowConfig)
 				ColorV = 1 - (math.clamp(ColorSelection.AbsolutePosition.Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) / Color.AbsoluteSize.Y)
 
 				AddConnection(Color.InputBegan, function(input)
-					if input.UserInputType == Enum.Enum.Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch or Enum.UserInputType.Touch then
+					if input.UserInputType == Enum.Enum.Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch or Enum.UserInputType.Touch then
 						if ColorInput then
 							ColorInput:Disconnect()
 						end
@@ -1582,7 +1582,7 @@ function VoidLib:MakeWindow(WindowConfig)
 				end)
 
 				AddConnection(Color.InputEnded, function(input)
-					if input.UserInputType == Enum.Enum.Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch or Enum.UserInputType.Touch then
+					if input.UserInputType == Enum.Enum.Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch or Enum.UserInputType.Touch then
 						if ColorInput then
 							ColorInput:Disconnect()
 						end
@@ -1590,7 +1590,7 @@ function VoidLib:MakeWindow(WindowConfig)
 				end)
 
 				AddConnection(Hue.InputBegan, function(input)
-					if input.UserInputType == Enum.Enum.Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch or Enum.UserInputType.Touch then
+					if input.UserInputType == Enum.Enum.Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch or Enum.UserInputType.Touch then
 						if HueInput then
 							HueInput:Disconnect()
 						end;
@@ -1607,7 +1607,7 @@ function VoidLib:MakeWindow(WindowConfig)
 				end)
 
 				AddConnection(Hue.InputEnded, function(input)
-					if input.UserInputType == Enum.Enum.Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch or Enum.UserInputType.Touch then
+					if input.UserInputType == Enum.Enum.Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch or Enum.UserInputType.Touch then
 						if HueInput then
 							HueInput:Disconnect()
 						end
