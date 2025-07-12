@@ -20,7 +20,7 @@ function UILibrary.new()
     return self
 end
 
--- Create a window with 70% height
+-- Create a window
 function UILibrary:CreateWindow(config)
     if self.Window then
         self:DestroyWindow()
@@ -28,54 +28,130 @@ function UILibrary:CreateWindow(config)
 
     local window = {
         Config = config or {},
-        Title = config.Title or "My Window",
-        Version = config.Version or "v1.0.0",
+        Title = config.Title or "Centrl Beta",
+        Version = config.Version or "v1.1",
         Tabs = {},
         SelectedTab = nil
     }
 
-    -- Main frame with 70% height
+    -- Main frame
     window.MainFrame = Instance.new("Frame")
-    window.MainFrame.Size = UDim2.new(0.6, 0, 0.7, 0) -- Updated to 70% height
+    window.MainFrame.Size = UDim2.new(0.6, 0, 0.7, 0) -- 60% width, 70% height
     window.MainFrame.Position = UDim2.new(0.2, 0, 0.15, 0)
-    window.MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    window.MainFrame.BackgroundColor3 = Color3.fromRGB(28, 37, 38) -- Dark background
     window.MainFrame.BorderSizePixel = 0
     window.MainFrame.Parent = self.ScreenGui
 
     local uiCorner = Instance.new("UICorner")
-    uiCorner.CornerRadius = UDim.new(0, 12)
+    uiCorner.CornerRadius = UDim.new(0, 8)
     uiCorner.Parent = window.MainFrame
 
-    -- Drag handle (top 30%)
-    local dragHandle = Instance.new("Frame")
-    dragHandle.Size = UDim2.new(1, 0, 0.3, 0)
-    dragHandle.Position = UDim2.new(0, 0, 0, 0)
-    dragHandle.BackgroundTransparency = 1
-    dragHandle.Parent = window.MainFrame
+    -- Title bar
+    local titleBar = Instance.new("Frame")
+    titleBar.Size = UDim2.new(1, 0, 0.1, 0)
+    titleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    titleBar.BorderSizePixel = 0
+    titleBar.Parent = window.MainFrame
 
-    -- Title label
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(0.9, 0, 0.15, 0)
-    titleLabel.Position = UDim2.new(0.05, 0, 0.05, 0)
+    titleLabel.Size = UDim2.new(0.8, 0, 0.5, 0)
+    titleLabel.Position = UDim2.new(0.05, 0, 0, 0)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = window.Title
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.TextScaled = true
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Parent = window.MainFrame
+    titleLabel.Parent = titleBar
 
-    -- Version label
     local versionLabel = Instance.new("TextLabel")
-    versionLabel.Size = UDim2.new(0.9, 0, 0.1, 0)
-    versionLabel.Position = UDim2.new(0.05, 0, 0.2, 0)
+    versionLabel.Size = UDim2.new(0.8, 0, 0.5, 0)
+    versionLabel.Position = UDim2.new(0.05, 0, 0.5, 0)
     versionLabel.BackgroundTransparency = 1
     versionLabel.Text = window.Version
-    versionLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    versionLabel.TextScaled = true
+    versionLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
     versionLabel.Font = Enum.Font.Gotham
     versionLabel.TextXAlignment = Enum.TextXAlignment.Left
-    versionLabel.Parent = window.MainFrame
+    versionLabel.Parent = titleBar
+
+    -- Drag handle
+    local dragHandle = titleBar
+
+    -- Window controls (minimize, maximize, close)
+    local minimizeBtn = Instance.new("TextButton")
+    minimizeBtn.Size = UDim2.new(0.05, 0, 0.5, 0)
+    minimizeBtn.Position = UDim2.new(0.9, 0, 0.25, 0)
+    minimizeBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    minimizeBtn.Text = "-"
+    minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    minimizeBtn.Parent = titleBar
+
+    local maximizeBtn = Instance.new("TextButton")
+    maximizeBtn.Size = UDim2.new(0.05, 0, 0.5, 0)
+    maximizeBtn.Position = UDim2.new(0.95, 0, 0.25, 0)
+    maximizeBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    maximizeBtn.Text = "□"
+    maximizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    maximizeBtn.Parent = titleBar
+
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0.05, 0, 0.5, 0)
+    closeBtn.Position = UDim2.new(1, -0.05, 0.25, 0)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    closeBtn.Text = "X"
+    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeBtn.Parent = titleBar
+
+    -- Tab sidebar
+    local tabFrame = Instance.new("Frame")
+    tabFrame.Size = UDim2.new(0.2, 0, 0.9, 0)
+    tabFrame.Position = UDim2.new(0, 0, 0.1, 0)
+    tabFrame.BackgroundTransparency = 1
+    tabFrame.Parent = window.MainFrame
+
+    -- Tab selection
+    function window:SelectTab(tab)
+        if self.SelectedTab then
+            self.SelectedTab.Button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        end
+        self.SelectedTab = tab
+        tab.Button.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
+        tab.Content.Visible = true
+    end
+
+    -- Add tab method
+    function window:AddTab(tabName)
+        local tab = {}
+        tab.Button = Instance.new("TextButton")
+        tab.Button.Size = UDim2.new(1, -10, 0.2, 0)
+        tab.Button.Position = UDim2.new(0, 5, 0.1 + (#self.Tabs * 0.2), 0)
+        tab.Button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        tab.Button.Text = tabName
+        tab.Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tab.Button.Font = Enum.Font.Gotham
+        tab.Button.TextScaled = true
+        tab.Button.Parent = tabFrame
+
+        local buttonCorner = Instance.new("UICorner")
+        buttonCorner.CornerRadius = UDim.new(0, 4)
+        buttonCorner.Parent = tab.Button
+
+        tab.Content = Instance.new("Frame")
+        tab.Content.Size = UDim2.new(0.75, 0, 0.8, 0)
+        tab.Content.Position = UDim2.new(0.25, 0, 0.1, 0)
+        tab.Content.BackgroundTransparency = 1
+        tab.Content.Visible = false
+        tab.Content.Parent = window.MainFrame
+
+        tab.Button.MouseButton1Click:Connect(function()
+            self:SelectTab(tab)
+        end)
+
+        table.insert(self.Tabs, tab)
+        if not self.SelectedTab then
+            self:SelectTab(tab)
+        end
+        return tab
+    end
 
     -- Dragging setup
     window.Dragging = false
@@ -132,68 +208,15 @@ function UILibrary:CreateWindow(config)
     TweenService:Create(titleLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
     TweenService:Create(versionLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
 
-    -- Tab selection
-    function window:SelectTab(tab)
-        if self.SelectedTab then
-            self.SelectedTab.Button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-            self.SelectedTab.Content.Visible = false
-        end
-        self.SelectedTab = tab
-        tab.Button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-        tab.Content.Visible = true
-    end
-
-    -- Add tab method
-    function window:AddTab(tabName)
-        local index = #self.Tabs
-        local tab = {}
-        tab.Button = Instance.new("TextButton")
-        tab.Button.Size = UDim2.new(0.2, 0, 0.1, 0)
-        tab.Button.Position = UDim2.new(0.05 + (0.22 * index), 0, 0.3, 0)
-        tab.Button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        tab.Button.Text = tabName -- User-defined tab name
-        tab.Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        tab.Button.Font = Enum.Font.Gotham
-        tab.Button.TextScaled = true
-        tab.Button.Parent = self.MainFrame
-
-        local buttonCorner = Instance.new("UICorner")
-        buttonCorner.CornerRadius = UDim.new(0, 8)
-        buttonCorner.Parent = tab.Button
-
-        tab.Content = Instance.new("Frame")
-        tab.Content.Size = UDim2.new(0.9, 0, 0.53, 0)
-        tab.Content.Position = UDim2.new(0.05, 0, 0.42, 0)
-        tab.Content.BackgroundTransparency = 1
-        tab.Content.Visible = false
-        tab.Content.Parent = self.MainFrame
-
-        tab.Button.MouseButton1Click:Connect(function()
-            self:SelectTab(tab)
-        end)
-
-        table.insert(self.Tabs, tab)
-
-        if not self.SelectedTab then
-            self:SelectTab(tab)
-        end
-
-        return tab
-    end
-
     self.Window = window
     return window
 end
 
 -- Destroy window
 function UILibrary:DestroyWindow()
-    if self.Window then
-        if self.Window.Connection then
-            self.Window.Connection:Disconnect()
-        end
-        if self.Window.MainFrame then
-            self.Window.MainFrame:Destroy()
-        end
+    if self.Window and self.Window.Connection then
+        self.Window.Connection:Disconnect()
+        self.Window.MainFrame:Destroy()
         self.Window = nil
     end
 end
