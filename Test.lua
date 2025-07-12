@@ -52,27 +52,29 @@ function UILibrary:CreateWindow(config)
     uiCorner.CornerRadius = UDim.new(0, 12)
     uiCorner.Parent = window.MainFrame
 
-    -- Create title label
+    -- Create title label (top-left)
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, 0, 0.15, 0)
-    titleLabel.Position = UDim2.new(0, 0, 0.05, 0)
+    titleLabel.Size = UDim2.new(0.9, 0, 0.15, 0)
+    titleLabel.Position = UDim2.new(0.05, 0, 0.05, 0) -- Top-left with small padding
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = window.Title
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.TextScaled = true
     titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = window.MainFrame
 
-    -- Create version label
+    -- Create version label (below title, top-left)
     local versionLabel = Instance.new("TextLabel")
-    versionLabel.Size = UDim2.new(1, 0, 0.1, 0)
-    versionLabel.Position = UDim2.new(0, 0, 0.2, 0)
+    versionLabel.Size = UDim2.new(0.9, 0, 0.1, 0)
+    versionLabel.Position = UDim2.new(0.05, 0, 0.2, 0) -- Below title with small padding
     versionLabel.BackgroundTransparency = 1
     versionLabel.Text = window.Version
     versionLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
     versionLabel.TextScaled = true
     versionLabel.Font = Enum.Font.Gotham
     versionLabel.TextSize = 0.7 * titleLabel.TextSize -- Smaller than title
+    versionLabel.TextXAlignment = Enum.TextXAlignment.Left
     versionLabel.Parent = window.MainFrame
 
     -- Dragging variables
