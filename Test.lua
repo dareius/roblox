@@ -570,7 +570,6 @@ function OrionLib:MakeWindow(WindowConfig)
 				Size = UDim2.new(0, 32, 0, 32),
 				Position = UDim2.new(0, 10, 0.5, 0)
 			}), {
-				AddThemeObject(MakeElement("Stroke"), "Stroke"),
 				MakeElement("Corner", 1)
 			}),
 			AddThemeObject(SetProps(MakeElement("Label", LocalPlayer.DisplayName, WindowConfig.HidePremium and 14 or 13), {
@@ -622,7 +621,6 @@ function OrionLib:MakeWindow(WindowConfig)
 				Size = UDim2.new(0, 70, 0, 30),
 				Position = UDim2.new(1, -90, 0, 10)
 			}), {
-				AddThemeObject(MakeElement("Stroke"), "Stroke"),
 				AddThemeObject(SetProps(MakeElement("Frame"), {
 					Size = UDim2.new(0, 1, 1, 0),
 					Position = UDim2.new(0.5, 0, 0, 0)
@@ -807,7 +805,6 @@ function OrionLib:MakeWindow(WindowConfig)
 						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
-					AddThemeObject(MakeElement("Stroke"), "Stroke")
 				}), "Second")
 
 				local LabelFunction = {}
@@ -838,7 +835,6 @@ function OrionLib:MakeWindow(WindowConfig)
 						Name = "Content",
 						TextWrapped = true
 					}), "TextDark"),
-					AddThemeObject(MakeElement("Stroke"), "Stroke")
 				}), "Second")
 
 				AddConnection(ParagraphFrame.Content:GetPropertyChangedSignal("Text"), function()
@@ -880,7 +876,6 @@ function OrionLib:MakeWindow(WindowConfig)
 						Size = UDim2.new(0, 20, 0, 20),
 						Position = UDim2.new(1, -30, 0, 7),
 					}), "TextDark"),
-					AddThemeObject(MakeElement("Stroke"), "Stroke"),
 					Click
 				}), "Second")
 
@@ -953,7 +948,6 @@ function OrionLib:MakeWindow(WindowConfig)
 						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
-					AddThemeObject(MakeElement("Stroke"), "Stroke"),
 					ToggleBox,
 					Click
 				}), "Second")
@@ -1049,7 +1043,6 @@ function OrionLib:MakeWindow(WindowConfig)
 						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
-					AddThemeObject(MakeElement("Stroke"), "Stroke"),
 					SliderBar
 				}), "Second")
 
@@ -1065,7 +1058,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				end)
 
 				UserInputService.InputChanged:Connect(function(Input)
-					if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then 
+					if Dragging and (Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch) then 
 						local SizeScale = math.clamp((Input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
 						Slider:Set(SliderConfig.Min + ((SliderConfig.Max - SliderConfig.Min) * SizeScale)) 
 						SaveCfg(game.GameId)
@@ -1155,7 +1148,6 @@ function OrionLib:MakeWindow(WindowConfig)
 						ClipsDescendants = true,
 						Name = "F"
 					}),
-					AddThemeObject(MakeElement("Stroke"), "Stroke"),
 					MakeElement("Corner")
 				}), "Second")
 
@@ -1261,7 +1253,6 @@ function OrionLib:MakeWindow(WindowConfig)
 					Position = UDim2.new(1, -12, 0.5, 0),
 					AnchorPoint = Vector2.new(1, 0.5)
 				}), {
-					AddThemeObject(MakeElement("Stroke"), "Stroke"),
 					AddThemeObject(SetProps(MakeElement("Label", BindConfig.Name, 14), {
 						Size = UDim2.new(1, 0, 1, 0),
 						Font = Enum.Font.GothamBold,
@@ -1280,7 +1271,6 @@ function OrionLib:MakeWindow(WindowConfig)
 						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
-					AddThemeObject(MakeElement("Stroke"), "Stroke"),
 					BindBox,
 					Click
 				}), "Second")
@@ -1391,7 +1381,6 @@ function OrionLib:MakeWindow(WindowConfig)
 					Position = UDim2.new(1, -12, 0.5, 0),
 					AnchorPoint = Vector2.new(1, 0.5)
 				}), {
-					AddThemeObject(MakeElement("Stroke"), "Stroke"),
 					TextboxActual
 				}), "Main")
 
@@ -1406,7 +1395,6 @@ function OrionLib:MakeWindow(WindowConfig)
 						Font = Enum.Font.GothamBold,
 						Name = "Content"
 					}), "Text"),
-					AddThemeObject(MakeElement("Stroke"), "Stroke"),
 					TextContainer,
 					Click
 				}), "Second")
@@ -1515,7 +1503,6 @@ function OrionLib:MakeWindow(WindowConfig)
 					Position = UDim2.new(1, -12, 0.5, 0),
 					AnchorPoint = Vector2.new(1, 0.5)
 				}), {
-					AddThemeObject(MakeElement("Stroke"), "Stroke")
 				}), "Main")
 
 				local ColorpickerFrame = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 5), {
@@ -1543,7 +1530,6 @@ function OrionLib:MakeWindow(WindowConfig)
 						Name = "F"
 					}),
 					ColorpickerContainer,
-					AddThemeObject(MakeElement("Stroke"), "Stroke"),
 				}), "Second")
 
 				AddConnection(Click.MouseButton1Click, function()
