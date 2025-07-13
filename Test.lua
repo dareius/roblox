@@ -541,7 +541,6 @@ function OrionLib:MakeWindow(WindowConfig)
 			Position = UDim2.new(1, -10, 0, 0)
 		}), "Second"), 
 		AddThemeObject(SetProps(MakeElement("Frame"), {
-			Size = UDim2.new(0, 1, 1, 0),
 			Position = UDim2.new(1, -1, 0, 0)
 		}), "Stroke"), 
 		TabHolder,
@@ -550,7 +549,6 @@ function OrionLib:MakeWindow(WindowConfig)
 			Position = UDim2.new(0, 0, 1, -50)
 		}), {
 			AddThemeObject(SetProps(MakeElement("Frame"), {
-				Size = UDim2.new(1, 0, 0, 1)
 			}), "Stroke"), 
 			AddThemeObject(SetChildren(SetProps(MakeElement("Frame"), {
 				AnchorPoint = Vector2.new(0, 0.5),
@@ -594,7 +592,6 @@ function OrionLib:MakeWindow(WindowConfig)
 	}), "Text")
 
 	local WindowTopBarLine = AddThemeObject(SetProps(MakeElement("Frame"), {
-		Size = UDim2.new(1, 0, 0, 1),
 		Position = UDim2.new(0, 0, 1, -1)
 	}), "Stroke")
 
@@ -622,7 +619,6 @@ function OrionLib:MakeWindow(WindowConfig)
 				Position = UDim2.new(1, -90, 0, 10)
 			}), {
 				AddThemeObject(SetProps(MakeElement("Frame"), {
-					Size = UDim2.new(0, 1, 1, 0),
 					Position = UDim2.new(0.5, 0, 0, 0)
 				}), "Stroke"), 
 				CloseBtn,
@@ -1058,7 +1054,7 @@ function OrionLib:MakeWindow(WindowConfig)
 				end)
 
 				UserInputService.InputChanged:Connect(function(Input)
-					if Dragging and (Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch) then 
+					if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then 
 						local SizeScale = math.clamp((Input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
 						Slider:Set(SliderConfig.Min + ((SliderConfig.Max - SliderConfig.Min) * SizeScale)) 
 						SaveCfg(game.GameId)
@@ -1137,7 +1133,6 @@ function OrionLib:MakeWindow(WindowConfig)
 							TextXAlignment = Enum.TextXAlignment.Right
 						}), "TextDark"),
 						AddThemeObject(SetProps(MakeElement("Frame"), {
-							Size = UDim2.new(1, 0, 0, 1),
 							Position = UDim2.new(0, 0, 1, -1),
 							Name = "Line",
 							Visible = false
@@ -1519,7 +1514,6 @@ function OrionLib:MakeWindow(WindowConfig)
 						ColorpickerBox,
 						Click,
 						AddThemeObject(SetProps(MakeElement("Frame"), {
-							Size = UDim2.new(1, 0, 0, 1),
 							Position = UDim2.new(0, 0, 1, -1),
 							Name = "Line",
 							Visible = false
@@ -1697,9 +1691,9 @@ function OrionLib:MakeWindow(WindowConfig)
 	end  
 	
 	OrionLib:MakeNotification({
-		Name = "UI Library Upgrade",
-		Content = "New UI Library Available at sirius.menu/discord and sirius.menu/rayfield",
-		Time = 5
+		Name = "UI Library",
+		Content = "Best ui lib",
+		Time = 2
 	})
 	
 
