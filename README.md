@@ -1,4 +1,3 @@
-
 # Orion UI Library (Deluxe Dark Edition)
 
 This is a mobile-compatible, deluxe-themed version of the Orion UI Library with all borders and dividers removed. This version includes complete support for mobile drag, sliders, and colorpickers.
@@ -8,7 +7,7 @@ This is a mobile-compatible, deluxe-themed version of the Orion UI Library with 
 ## ðŸªŸ Creating a Window
 
 ```lua
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/dareius/roblox/refs/heads/main/Test.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/dareius/roblox/refs/heads/main/Test.lua"))()
 
 local Window = OrionLib:MakeWindow({
     Name = "My UI",
@@ -16,11 +15,6 @@ local Window = OrionLib:MakeWindow({
     ConfigFolder = "MyConfigFolder"
 })
 ```
-
-### Window Options:
-- `Name` (string): UI window title
-- `SaveConfig` (boolean): Enables auto-saving of toggles/sliders/etc.
-- `ConfigFolder` (string): Folder name for config files
 
 ---
 
@@ -33,28 +27,24 @@ local Tab = Window:MakeTab({
 })
 ```
 
-### Tab Options:
-- `Name` (string): Tab name
-- `Icon` (string): Optional Roblox asset ID
-
 ---
 
 ## ðŸ”˜ Tab:AddToggle
 
 ```lua
 local Toggle = Tab:AddToggle({
-    Name = "Enable ESP",
+    Name = "God Mode",
     Default = false,
     Callback = function(Value)
-        print("Toggle State:", Value)
+        print("Toggled:", Value)
     end,
-    Flag = "ESP_Toggle",
+    Flag = "GodToggle",
     Save = true
 })
 ```
 
-### Toggle Supports:
-- `Set(value: boolean)`: Change toggle state programmatically
+### Supports:
+- `Toggle:Set(boolean)`: Change the toggle state programmatically
 
 ---
 
@@ -62,22 +52,22 @@ local Toggle = Tab:AddToggle({
 
 ```lua
 local Slider = Tab:AddSlider({
-    Name = "Walkspeed",
-    Min = 10,
+    Name = "WalkSpeed",
+    Min = 0,
     Max = 100,
     Default = 16,
     Increment = 1,
-    ValueName = "WS",
+    ValueName = "Speed",
     Callback = function(value)
-        print("Slider changed to:", value)
+        print("Speed set to:", value)
     end,
-    Flag = "WalkspeedSlider",
+    Flag = "SpeedSlider",
     Save = true
 })
 ```
 
-### Slider Supports:
-- `Set(value: number)`: Set slider value programmatically
+### Supports:
+- `Slider:Set(number)`: Change slider value dynamically
 
 ---
 
@@ -85,20 +75,20 @@ local Slider = Tab:AddSlider({
 
 ```lua
 local Dropdown = Tab:AddDropdown({
-    Name = "Select Weapon",
+    Name = "Weapon",
     Options = {"Sword", "Gun", "Bow"},
     Default = "Sword",
-    Callback = function(option)
-        print("Selected:", option)
+    Callback = function(selected)
+        print("Selected:", selected)
     end,
     Flag = "WeaponDropdown",
     Save = true
 })
 ```
 
-### Dropdown Supports:
-- `Set(option: string)`: Set selected option
-- `Refresh(options: table, clear: boolean)`: Refresh dropdown options
+### Supports:
+- `Dropdown:Set(optionName)`: Set the selected option
+- `Dropdown:Refresh(optionsTable, clearOld)`: Replace dropdown options
 
 ---
 
@@ -106,19 +96,19 @@ local Dropdown = Tab:AddDropdown({
 
 ```lua
 local Bind = Tab:AddBind({
-    Name = "Activate Ability",
+    Name = "Dash",
     Default = Enum.KeyCode.Q,
     Hold = false,
     Callback = function()
-        print("Key pressed!")
+        print("Key activated!")
     end,
-    Flag = "AbilityBind",
+    Flag = "DashBind",
     Save = true
 })
 ```
 
-### Bind Supports:
-- `Set(Enum.KeyCode or Enum.UserInputType)`
+### Supports:
+- `Bind:Set(KeyCode/UserInputType)`: Set or change the keybind
 
 ---
 
@@ -126,11 +116,11 @@ local Bind = Tab:AddBind({
 
 ```lua
 Tab:AddTextbox({
-    Name = "Enter Name",
+    Name = "Enter Username",
     Default = "",
     TextDisappear = true,
     Callback = function(text)
-        print("Text:", text)
+        print("User typed:", text)
     end
 })
 ```
@@ -151,16 +141,33 @@ local Picker = Tab:AddColorpicker({
 })
 ```
 
-### Colorpicker Supports:
-- `Set(Color3)`
+### Supports:
+- `Picker:Set(Color3)`: Change color programmatically
+
+---
+
+## ðŸ“¦ Tab:AddButton
+
+```lua
+local Button = Tab:AddButton({
+    Name = "Click Me",
+    Callback = function()
+        print("Button was clicked!")
+    end,
+    Icon = "rbxassetid://7733960981"
+})
+```
+
+### Supports:
+- `Button:Set("New Text")`: Change button text
 
 ---
 
 ## ðŸ·ï¸ Tab:AddLabel
 
 ```lua
-local Label = Tab:AddLabel("This is a label")
-Label:Set("New text")
+local Label = Tab:AddLabel("Initial label")
+Label:Set("Updated label")
 ```
 
 ---
@@ -168,8 +175,8 @@ Label:Set("New text")
 ## ðŸ“„ Tab:AddParagraph
 
 ```lua
-local Paragraph = Tab:AddParagraph("Title", "This is paragraph content.")
-Paragraph:Set("Updated content.")
+local Paragraph = Tab:AddParagraph("Title", "This is some content.")
+Paragraph:Set("Updated content")
 ```
 
 ---
@@ -178,8 +185,8 @@ Paragraph:Set("Updated content.")
 
 ```lua
 OrionLib:MakeNotification({
-    Name = "Success",
-    Content = "Loaded successfully!",
+    Name = "Alert",
+    Content = "Something happened!",
     Image = "rbxassetid://7733911829",
     Time = 5
 })
@@ -187,20 +194,25 @@ OrionLib:MakeNotification({
 
 ---
 
-## ðŸ§  Notes
+## âš™ï¸ Config
 
-- All elements with `Flag` + `Save = true` will auto-save and load across sessions.
-- You can call `OrionLib:Init()` to trigger config loading manually.
-
----
-
-## ðŸ–±ï¸ Mobile Support
-
-- âœ… Dragging
-- âœ… Slider dragging
-- âœ… Colorpicker are actually broken
-- âœ… Tap toggles/buttons
+- Use `Flag = "Name"` and `Save = true` to store element values.
+- Call `OrionLib:Init()` to manually load config values.
 
 ---
 
-Enjoy your smooth, modern UI with mobile-friendly controls.
+## ðŸ“± Mobile Support
+
+- âœ… Drag and drop window
+- âœ… Touch-based slider and colorpicker
+- âœ… All buttons, toggles, binds and dropdowns work with mobile touch
+
+---
+
+## ðŸ“‚ Tip
+
+Use `Flag` names to retrieve or manipulate values programmatically from `OrionLib.Flags`.
+
+---
+
+Built with â¤ï¸ for modern executors and mobile compatibility.
