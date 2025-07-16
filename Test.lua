@@ -30,13 +30,13 @@ function Void:CreateWin(settings)
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "VoidUI"
     screenGui.ResetOnSpawn = false
-    screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui", 5)
 
     -- Create main window (Frame)
     local window = Instance.new("Frame")
     window.Name = "Window"
     window.Size = settings.Size
-    window.Position = UDim2.new(0.2, 0, 0.15, 0) -- Adjusted to center 70% height
+    window.Position = UDim2.new(0.2, 0, 0.15, 0) -- Center for 70% height
     window.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Pure black
     window.BorderSizePixel = 0
     window.Parent = screenGui
@@ -76,7 +76,7 @@ function Void:CreateWin(settings)
     local divider = Instance.new("Frame")
     divider.Name = "Divider"
     divider.Size = UDim2.new(1, 0, 0, 1)
-    divider.Position = UDim2.new(0, 0, 0, 60) -- Below version (34 + 16 + 10 padding)
+    divider.Position = UDim2.new(0, 0, 0, 60) -- Below version (34 + 16 + 10)
     divider.BackgroundTransparency = 1
     divider.BorderSizePixel = 0
     divider.Parent = window
@@ -84,9 +84,10 @@ function Void:CreateWin(settings)
     -- Create tab container
     local tabContainer = Instance.new("Frame")
     tabContainer.Name = "TabContainer"
-    tabContainer.Size = UDim2.new(0, 150, 1, -70) -- Fixed width, full height minus top area
-    tabContainer.Position = UDim2.new(0, 10, 0, 70) -- Below divider with padding
+    tabContainer.Size = UDim2.new(0, 150, 1, -70) -- Fixed width, height minus top
+    tabContainer.Position = UDim2.new(0, 10, 0, 70) -- Below divider
     tabContainer.BackgroundTransparency = 1
+    tabContainer.Visible = true -- Ensure container is visible
     tabContainer.Parent = window
 
     -- Create UIListLayout for tabs
@@ -137,12 +138,18 @@ function Void:CreateWin(settings)
         local tabButton = Instance.new("TextButton")
         tabButton.Name = tabName
         tabButton.Size = UDim2.new(1, 0, 0, 30)
-        tabButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        tabButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Dark gray for visibility
         tabButton.Text = tabName
         tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
         tabButton.TextSize = 16
         tabButton.Font = Enum.Font.SourceSans
+        tabButton.Visible = true -- Ensure button is visible
         tabButton.Parent = tabContainer
+
+        -- Add corner rounding to tab button
+        local tabCorner = Instance.new("UICorner")
+        tabCorner.CornerRadius = UDim.new(0, 4)
+        tabCorner.Parent = tabButton
 
         -- Create tab content frame
         local tabContent = Instance.new("Frame")
@@ -150,13 +157,8 @@ function Void:CreateWin(settings)
         tabContent.Size = UDim2.new(1, -170, 1, -70) -- Right side of window
         tabContent.Position = UDim2.new(0, 160, 0, 70) -- Right of tabContainer
         tabContent.BackgroundTransparency = 1
-        tabContent.Visible = false
+        tabContent.Visible = false -- Hidden until selected
         tabContent.Parent = window
-
-        -- Add corner rounding to tab button
-        local tabCorner = Instance.new("UICorner")
-        tabCorner.CornerRadius = UDim.new(0, 4)
-        tabCorner.Parent = tabButton
 
         -- Store tab data
         local tabData = {
@@ -185,7 +187,7 @@ function Void:CreateWin(settings)
             tabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
         end
 
-        return tabContent -- Return content frame for adding elements later
+        return tabContent -- Return content frame for adding elements
     end
 
     -- Return window object with tab functionality
