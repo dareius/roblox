@@ -16,7 +16,7 @@ function Void:CreateWin(settings)
     local defaultSettings = {
         Title = "Void UI",
         Version = "1.0.0",
-        Size = UDim2.new(0.6, 0, 0.6, 0), -- 60% of screen width and height
+        Size = UDim2.new(0.6, 0, 0.7, 0), -- 60% width, 70% height
     }
 
     -- Merge provided settings with defaults
@@ -36,8 +36,8 @@ function Void:CreateWin(settings)
     local window = Instance.new("Frame")
     window.Name = "Window"
     window.Size = settings.Size
-    window.Position = UDim2.new(0.2, 0, 0.2, 0) -- Center the window (20% offset from edges)
-    window.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Dark background
+    window.Position = UDim2.new(0.2, 0, 0.15, 0) -- Adjusted to center 70% height
+    window.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Pure black
     window.BorderSizePixel = 0
     window.Parent = screenGui
 
@@ -49,12 +49,12 @@ function Void:CreateWin(settings)
     -- Create title label
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Name = "Title"
-    titleLabel.Size = UDim2.new(0, 200, 0, 24) -- Semi-small title
+    titleLabel.Size = UDim2.new(0, 200, 0, 24)
     titleLabel.Position = UDim2.new(0, 10, 0, 10) -- Top-left with padding
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = settings.Title
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.TextSize = 18 -- Semi-small font size
+    titleLabel.TextSize = 18
     titleLabel.Font = Enum.Font.SourceSansBold
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = window
@@ -62,15 +62,38 @@ function Void:CreateWin(settings)
     -- Create version label
     local versionLabel = Instance.new("TextLabel")
     versionLabel.Name = "Version"
-    versionLabel.Size = UDim2.new(0, 200, 0, 16) -- Smaller than title
-    versionLabel.Position = UDim2.new(0, 10, 0, 34) -- Below title
+    versionLabel.Size = UDim2.new(0, 200, 0, 16)
+    versionLabel.Position = UDim2.new(0, 10, 0, 34)
     versionLabel.BackgroundTransparency = 1
     versionLabel.Text = "v" .. settings.Version
-    versionLabel.TextColor3 = Color3.fromRGB(150, 150, 150) -- Lighter gray for version
-    versionLabel.TextSize = 14 -- Smaller font size
+    versionLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+    versionLabel.TextSize = 14
     versionLabel.Font = Enum.Font.SourceSans
     versionLabel.TextXAlignment = Enum.TextXAlignment.Left
     versionLabel.Parent = window
+
+    -- Create invisible divider
+    local divider = Instance.new("Frame")
+    divider.Name = "Divider"
+    divider.Size = UDim2.new(1, 0, 0, 1)
+    divider.Position = UDim2.new(0, 0, 0, 60) -- Below version (34 + 16 + 10 padding)
+    divider.BackgroundTransparency = 1
+    divider.BorderSizePixel = 0
+    divider.Parent = window
+
+    -- Create tab container
+    local tabContainer = Instance.new("Frame")
+    tabContainer.Name = "TabContainer"
+    tabContainer.Size = UDim2.new(0, 150, 1, -70) -- Fixed width, full height minus top area
+    tabContainer.Position = UDim2.new(0, 10, 0, 70) -- Below divider with padding
+    tabContainer.BackgroundTransparency = 1
+    tabContainer.Parent = window
+
+    -- Create UIListLayout for tabs
+    local tabLayout = Instance.new("UIListLayout")
+    tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    tabLayout.Padding = UDim.new(0, 5)
+    tabLayout.Parent = tabContainer
 
     -- Make window draggable
     local dragging, dragInput, dragStart, startPos
@@ -84,7 +107,6 @@ function Void:CreateWin(settings)
             dragging = true
             dragStart = input.Position
             startPos = window.Position
-
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
@@ -105,10 +127,72 @@ function Void:CreateWin(settings)
         end
     end)
 
-    -- Return window object for further customization
+    -- Tab management
+    local tabs = {}
+    local currentTab = nil
+
+    -- Function to create a tab
+    function window:AddTab(tabName)
+        -- Create tab button
+        local tabButton = Instance.new("TextButton")
+        tabButton.Name = tabName
+        tabButton.Size = UDim2.new(1, 0, 0, 30)
+        tabButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        tabButton.Text = tabName
+        tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tabButton.TextSize = 16
+        tabButton.Font = Enum.Font.SourceSans
+        tabButton.Parent = tabContainer
+
+        -- Create tab content frame
+        local tabContent = Instance.new("Frame")
+        tabContent.Name = tabName .. "Content"
+        tabContent.Size = UDim2.new(1, -170, 1, -70) -- Right side of window
+        tabContent.Position = UDim2.new(0, 160, 0, 70) -- Right of tabContainer
+        tabContent.BackgroundTransparency = 1
+        tabContent.Visible = false
+        tabContent.Parent = window
+
+        -- Add corner rounding to tab button
+        local tabCorner = Instance.new("UICorner")
+        tabCorner.CornerRadius = UDim.new(0, 4)
+        tabCorner.Parent = tabButton
+
+        -- Store tab data
+        local tabData = {
+            Button = tabButton,
+            Content = tabContent
+        }
+        tabs[tabName] = tabData
+
+        -- Tab switching logic
+        tabButton.MouseButton1Click:Connect(function()
+            if currentTab ~= tabName then
+                if currentTab then
+                    tabs[currentTab].Content.Visible = false
+                    tabs[currentTab].Button.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+                end
+                tabData.Content.Visible = true
+                tabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Highlight active tab
+                currentTab = tabName
+            end
+        end)
+
+        -- Set first tab as active
+        if not currentTab then
+            currentTab = tabName
+            tabData.Content.Visible = true
+            tabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        end
+
+        return tabContent -- Return content frame for adding elements later
+    end
+
+    -- Return window object with tab functionality
     return {
         Window = window,
-        ScreenGui = screenGui
+        ScreenGui = screenGui,
+        AddTab = window.AddTab
     }
 end
 
