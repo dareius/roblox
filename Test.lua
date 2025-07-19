@@ -320,71 +320,38 @@ function syde:AddDrag(Object, Main, ConstrainToParent)
 	assert(typeof(Object) == "Instance" and Object:IsA("GuiObject"), "[AddDrag] Object must be a GuiObject")
 	assert(typeof(Main) == "Instance" and Main:IsA("GuiObject"), "[AddDrag] Main must be a GuiObject")
 
-	local userInput = game:GetService("UserInputService")
-	local tweenService = game:GetService("TweenService")
+	local dragging = false
+	local dragInput
+	local startPos
+	local startInputPos
 
-	local dragging, dragInput, startMousePos, startFramePos = false, nil, nil, nil
-
-	local function getConstrainedPosition(newPos)
-		if not LockToScreen then
-			return newPos
-		end
-
-		local screenSize = workspace.CurrentCamera.ViewportSize
-		local frameSize = Main.AbsoluteSize
-		local anchorPoint = Main.AnchorPoint
-
-		-- Calculate the absolute position based on newPos
-		local absX = newPos.X.Offset
-		local absY = newPos.Y.Offset
-
-		-- Adjust clamping bounds to account for anchor point
-		local minX = 0 + (frameSize.X * anchorPoint.X)
-		local maxX = screenSize.X - (frameSize.X * (1 - anchorPoint.X))
-
-		local minY = 0 + (frameSize.Y * anchorPoint.Y)
-		local maxY = screenSize.Y - (frameSize.Y * (1 - anchorPoint.Y))
-
-		local clampedX = math.clamp(absX, minX, maxX)
-		local clampedY = math.clamp(absY, minY, maxY)
-
-		return UDim2.new(0, clampedX, 0, clampedY)
+	local function update(input)
+		local delta = input.Position - startInputPos
+		Main.Position = UDim2.new(
+			0,
+			startPos.X.Offset + delta.X,
+			0,
+			startPos.Y.Offset + delta.Y
+		)
 	end
 
-
-	syde:AddConnection(Object.InputBegan, function(input)
+	Object.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
-			startMousePos = userInput:GetMouseLocation()
+			startInputPos = input.Position
+			startPos = Main.Position
 
-			-- Convert position to Offset only
-			local screenSize = workspace.CurrentCamera.ViewportSize
-			local absX = screenSize.X * Main.Position.X.Scale + Main.Position.X.Offset
-			local absY = screenSize.Y * Main.Position.Y.Scale + Main.Position.Y.Offset
-
-			Main.Position = UDim2.new(0, absX, 0, absY)
-			startFramePos = Main.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragging = false
+				end
+			end)
 		end
 	end)
 
-
-	syde:AddConnection(userInput.InputChanged, function(input)
-		if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
-			local currentMousePos = userInput:GetMouseLocation()
-			local delta = currentMousePos - startMousePos
-
-			local newPos = UDim2.new(
-				startFramePos.X.Scale, startFramePos.X.Offset + delta.X,
-				startFramePos.Y.Scale, startFramePos.Y.Offset + delta.Y
-			)
-
-			Main:TweenPosition(getConstrainedPosition(newPos), Enum.EasingDirection.Out, Enum.EasingStyle.Quint, dragSpeed, true)
-		end
-	end)
-
-	syde:AddConnection(Object.InputEnded, function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = false
+	Object.InputChanged:Connect(function(input)
+		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			update(input)
 		end
 	end)
 end
