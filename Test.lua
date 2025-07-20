@@ -321,26 +321,22 @@ function syde:AddDrag(Object, Main, ConstrainToParent)
 	assert(typeof(Main) == "Instance" and Main:IsA("GuiObject"), "[AddDrag] Main must be a GuiObject")
 
 	local dragging = false
-	local dragInput
-	local startPos
-	local startInputPos
+	local dragStart, guiStartPos
 
 	local function update(input)
-		local delta = input.Position - startInputPos
-		Main.Position = UDim2.new(
-			0,
-			startPos.X.Offset + delta.X,
-			0,
-			startPos.Y.Offset + delta.Y
-		)
+		local delta = input.Position - dragStart
+		local newPos = guiStartPos + delta
+		Main.Position = UDim2.new(0, newPos.X, 0, newPos.Y)
 	end
 
 	Object.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
-			startInputPos = input.Position
-			startPos = Main.Position
-
+			dragStart = input.Position
+			guiStartPos = Vector2.new(
+				Main.AbsolutePosition.X,
+				Main.AbsolutePosition.Y
+			)
 			input.Changed:Connect(function()
 				if input.UserInputState == Enum.UserInputState.End then
 					dragging = false
